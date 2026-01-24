@@ -1,19 +1,27 @@
 import dayjs from 'dayjs';
-import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, TextField, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, TextField, FormControl, InputLabel, Select, MenuItem, Stack } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 
 import MDButton from "components/MDButton";
 import { createTournamentSchema } from "utils/schemaYup";
 import { createTournament } from 'api/tournamentsAPI';
 import { useState } from 'react';
 import { useAlert } from 'context/AlertContext';
+import MDBox from 'components/MDBox';
+import MDTypography from 'components/MDTypography';
+import cardApi from 'api/cardAPI';
+
 
 const CreateTournaments = ({ open, handleClose }) => {
     const { showAlert } = useAlert();
     const [isLoading, setIsLoading] = useState(false);
+    const [cardBanList, setCardBanList] = useState([]);
+    const [inputCardBan, setInputCardBan] = useState('');
     const {
         register,
         handleSubmit,
@@ -49,10 +57,13 @@ const CreateTournaments = ({ open, handleClose }) => {
         const payload = {
             ...data,
             roundStartedTime: data.roundStartedTime.format('DD-MM-YYYY HH:mm'),
+            bannishCardCodes: cardBanList
         };
 
         try {
-            const dataResult = await createTournament(payload);
+            const dataResult = await createTournament({
+                data: payload
+            });
             console.log(dataResult);
         } catch (error) {
             setIsLoading(false);
@@ -66,8 +77,24 @@ const CreateTournaments = ({ open, handleClose }) => {
         handleClose();
     };
 
+    const handelAddCardBan = async () => {
+        if (!inputCardBan) return;
+        if (cardBanList.includes(inputCardBan)) {
+            showAlert("Card ID đã được thêm vào danh sách", "infor");
+            return;
+        };
+        try {
+            await cardApi.checkExitCardById(inputCardBan);
+            setCardBanList((prev) => [...prev, inputCardBan]);
+            setInputCardBan('');
+        } catch (error) {
+            showAlert("Card ID không tồn tại", "warning");
+        }
+    }
 
-
+    const handelRemoveCardBan = (cardId) => {
+        setCardBanList((prev) => prev.filter((id) => id !== cardId));
+    }
 
     return (
         <Dialog
@@ -135,6 +162,81 @@ const CreateTournaments = ({ open, handleClose }) => {
                             )}
                         />
                     </LocalizationProvider>
+                    <MDBox sx={{
+                        display: 'flex', alignItems: 'center',
+                        justifyContent: 'space-between',
+                        mt: 2
+                    }}>
+                        <MDBox sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <TextField label="Card ID Ban" type="number" onChange={(e) => setInputCardBan(e.target.value)} value={inputCardBan} />
+                            <MDButton color="info" iconOnly startIcon={<AddIcon />} onClick={handelAddCardBan}></MDButton>
+                        </MDBox>
+                        <Stack direction="row" spacing={1} alignItems="center">
+                            <MDTypography fontSize={14} >
+                                Số card bị ban:
+                            </MDTypography>
+                            <MDTypography fontWeight="bold" fontSize={14} color="primary">{cardBanList.length}</MDTypography>
+                        </Stack>
+                    </MDBox>
+                    <MDBox
+                        sx={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: 2,
+                            mt: 2    // khoảng cách giữa các card
+                        }}
+                    >
+                        {cardBanList.map((item, index) => (
+                            <MDBox
+                                key={index}
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    width: { xs: 80, sm: 100, md: 120 }
+                                }}
+                            >
+                                {/* Image wrapper */}
+                                <MDBox sx={{ position: 'relative' }}>
+                                    <img
+                                        src={`https://images.ygoprodeck.com/images/cards_small/${item}.jpg`}
+                                        style={{
+                                            width: '100%',
+                                            display: 'block',
+                                            borderRadius: 6
+                                        }}
+                                        alt={`Card ${index}`}
+                                    />
+
+                                    {/* Close icon */}
+                                    <CloseIcon
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 4,
+                                            right: 4,
+                                            fontSize: 18,
+                                            backgroundColor: 'rgba(255,255,255,0.8)',
+                                            color: '#fd0000',
+                                            borderRadius: '50%',
+                                            cursor: 'pointer',
+                                            padding: '2px',
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(255,255,255,1)'
+                                            }
+                                        }}
+                                        onClick={() => handelRemoveCardBan(item)}
+                                    />
+                                </MDBox>
+
+                                <MDTypography
+                                    fontSize={13}
+                                    sx={{ textAlign: 'center', mt: 0.5 }}
+                                >
+                                    {item}
+                                </MDTypography>
+                            </MDBox>
+                        ))}
+                    </MDBox>
+
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
