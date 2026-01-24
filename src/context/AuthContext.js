@@ -40,22 +40,31 @@ export const AuthProvider = ({ children }) => {
 
     // Kiểm tra auth khi khởi động app
     useEffect(() => {
-        const loadUser = async () => {
-            try {
-                const user = await authAPI.getProfile();
-                dispatch({
-                    type: 'LOGIN',
-                    payload: user.data
-                });
-            } catch (error) {
-                // Nếu có lỗi nghĩa là cookie không hợp lệ hoặc hết hạn
-                dispatch({ type: 'LOGOUT' });
-            } finally {
-                dispatch({ type: 'LOADED' });
-            }
-        };
+        // const loadUser = async () => {
+        //     try {
+        //         const user = await authAPI.getProfile();
+        //         dispatch({
+        //             type: 'LOGIN',
+        //             payload: user.data
+        //         });
+        //     } catch (error) {
+        //         // Nếu có lỗi nghĩa là cookie không hợp lệ hoặc hết hạn
+        //         dispatch({ type: 'LOGOUT' });
+        //     } finally {
+        //         dispatch({ type: 'LOADED' });
+        //     }
+        // };
 
-        loadUser();
+        dispatch({
+            type: 'LOGIN',
+            payload: {
+                id: 1,
+                name: 'Admin Yugi',
+                email: ''
+            }
+        });
+
+        // loadUser();
     }, []);
 
     // Login function - chỉ cần gọi API và xử lý response

@@ -23,9 +23,11 @@ import MDButtonRoot from 'components/MDButton/MDButtonRoot';
 
 // Material Dashboard 2 React contexts
 import { useMaterialUIController } from 'context';
+import { CircularProgress } from '@mui/material';
 
 const MDButton = forwardRef(
-    ({ color, variant, size, circular, iconOnly, children, ...rest }, ref) => {
+    ({ color, variant, size, circular, iconOnly, children, loading, startIcon,
+        endIcon, ...rest }, ref) => {
         const [controller] = useMaterialUIController();
         const { darkMode } = controller;
 
@@ -36,15 +38,40 @@ const MDButton = forwardRef(
                 color="primary"
                 variant={variant === 'gradient' ? 'contained' : variant}
                 size={size}
+                loading={loading}
+                disabled={loading}
                 ownerState={{
                     color,
                     variant,
                     size,
                     circular,
                     iconOnly,
-                    darkMode
-                }}>
-                {children}
+                    darkMode,
+                    loading,
+                }}
+            >
+                {loading ? (
+                    <CircularProgress
+                        size={18}
+                        color="inherit"
+                        sx={{ mr: children ? 1 : 0 }}
+                    />
+                ) : (
+                    startIcon && (
+                        <span className="md-btn-icon start">
+                            {startIcon}
+                        </span>
+                    )
+                )}
+                {/* TEXT */}
+                {!iconOnly && children}
+
+                {/* END ICON (ẩn khi loading) */}
+                {!loading && endIcon && (
+                    <span className="md-btn-icon end">
+                        {endIcon}
+                    </span>
+                )}
             </MDButtonRoot>
         );
     }
@@ -56,7 +83,8 @@ MDButton.defaultProps = {
     variant: 'contained',
     color: 'white',
     circular: false,
-    iconOnly: false
+    iconOnly: false,
+    loading: false,
 };
 
 // Typechecking props for the MDButton
@@ -76,7 +104,11 @@ MDButton.propTypes = {
     ]),
     circular: PropTypes.bool,
     iconOnly: PropTypes.bool,
-    children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired,
+    loading: PropTypes.bool,
+    disabled: PropTypes.bool,
+    startIcon: PropTypes.node,
+    endIcon: PropTypes.node
 };
 
 export default MDButton;

@@ -52,10 +52,10 @@ function Dashboard() {
     };
 
     // Fetch chart data when the component mounts
-    useState(() => {
-        fetchChartData();
-        fetchUserStats();
-    }, []);
+    // useState(() => {
+    //     fetchChartData();
+    //     fetchUserStats();
+    // }, []);
 
 
     return (

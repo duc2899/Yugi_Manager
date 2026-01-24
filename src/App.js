@@ -17,12 +17,12 @@ import theme from 'assets/theme';
 import themeDark from 'assets/theme-dark';
 import routes from 'routes';
 import { useMaterialUIController, setMiniSidenav } from 'context';
-import logo from './assets/images/logos/logo-no.png';
+import logo from './assets/images/logos/logo.png';
 
 import { useAuth } from 'context/AuthContext';
 import LoadingScreen from 'layouts/loading';
 import { AlertProvider } from 'context/AlertContext';
-import ConnectSSE from 'connecSSE';
+// import ConnectSSE from 'connecSSE';
 
 export default function App() {
     const [controller, dispatch] = useMaterialUIController();
@@ -88,20 +88,20 @@ export default function App() {
             return [];
         });
 
-    if (isLoading) return <LoadingScreen />;
+    // if (isLoading) return <LoadingScreen />;
 
     return (
         <ThemeProvider theme={darkMode ? themeDark : theme}>
             <AlertProvider>
                 <CssBaseline />
-                {isAuthenticated && (
+                {/* {isAuthenticated && ( */}
                     <>
                         {layout === 'dashboard' && (
                             <>
                                 <Sidenav
                                     color={sidenavColor}
                                     brand={logo}
-                                    brandName="Tripacker Manager"
+                                    brandName="Yugi Manager"
                                     routes={routes}
                                     onMouseEnter={handleOnMouseEnter}
                                     onMouseLeave={handleOnMouseLeave}
@@ -111,20 +111,23 @@ export default function App() {
                         )}
                         {layout === 'vr' && <Configurator />}
                     </>
-                )}
+                {/* )} */}
 
                 <Routes>
                     {getRoutes(routes)}
                     <Route
                         path="*"
                         element={
-                            <Navigate
-                                to={isAuthenticated ? '/dashboard' : '/authentication/sign-in'}
+                             <Navigate
+                                to={'/dashboard'}
                             />
+                            // <Navigate
+                            //     to={isAuthenticated ? '/dashboard' : '/authentication/sign-in'}
+                            // />
                         }
                     />
                 </Routes>
-                <ConnectSSE></ConnectSSE>
+                {/* <ConnectSSE></ConnectSSE> */}
             </AlertProvider>
         </ThemeProvider>
     );

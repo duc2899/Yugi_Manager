@@ -1,7 +1,7 @@
 import Dashboard from 'layouts/dashboard';
 import Users from 'layouts/users';
-import Billing from 'layouts/bills';
-import Profile from 'layouts/profile';
+import Tournaments from 'layouts/tournaments';
+import Cards from 'layouts/cards';
 import SignIn from 'layouts/authentication/sign-in';
 
 // @mui icons
@@ -19,20 +19,20 @@ const routes = [
     },
     {
         type: 'collapse',
-        name: 'Templates',
-        key: 'templates',
+        name: 'Cards',
+        key: 'cards',
         icon: <Icon fontSize="small">table_view</Icon>,
-        route: '/templates',
-        component: <Profile />,
+        route: '/cards',
+        component: <Cards />,
         requiresAuth: true
     },
     {
         type: 'collapse',
-        name: 'Billing',
-        key: 'billing',
+        name: 'Tournaments',
+        key: 'tournaments',
         icon: <Icon fontSize="small">receipt_long</Icon>,
-        route: '/billing',
-        component: <Billing />,
+        route: '/tournaments',
+        component: <Tournaments />,
         requiresAuth: true
     },
     {
