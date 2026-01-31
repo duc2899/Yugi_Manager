@@ -74,6 +74,7 @@ const CreateTournaments = ({ open, handleClose }) => {
         setIsLoading(false);
 
         reset();
+        showAlert("Tạo giải đấu thành công", "success");
         handleClose();
     };
 

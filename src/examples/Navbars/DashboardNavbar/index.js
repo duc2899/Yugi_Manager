@@ -39,6 +39,7 @@ import {
 } from 'context';
 import { useAuth } from 'context/AuthContext';
 import MDAvatar from 'components/MDAvatar';
+import UpdateVersion from 'layouts/updateVersion';
 
 function DashboardNavbar({ absolute, light, isMini }) {
     const { user, isAuthenticated, logout } = useAuth();
@@ -53,6 +54,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
         darkMode
     } = controller;
     const [openMenu, setOpenMenu] = useState(false);
+    const [openUpdateVersion, setOpenUpdateVersion] = useState(false);
     const route = useLocation().pathname.split('/').slice(1);
 
     useEffect(() => {
@@ -179,6 +181,15 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                 disableRipple
                                 color="inherit"
                                 sx={navbarIconButton}
+                                onClick={() => setOpenUpdateVersion(true)}
+                            >
+                                <Icon sx={iconsStyle}>update</Icon>
+                            </IconButton>
+                            <IconButton
+                                size="large"
+                                disableRipple
+                                color="inherit"
+                                sx={navbarIconButton}
                                 onClick={handleConfiguratorOpen}
                             >
                                 <Icon sx={iconsStyle}>settings</Icon>
@@ -210,6 +221,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
                             </IconButton>
                             {renderMenu()}
+                            <UpdateVersion open={openUpdateVersion} handleClose={() => setOpenUpdateVersion(false)} />
                         </MDBox>
                     </MDBox>
                 )}

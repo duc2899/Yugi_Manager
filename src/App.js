@@ -20,14 +20,14 @@ import { useMaterialUIController, setMiniSidenav } from 'context';
 import logo from './assets/images/logos/logo.png';
 
 import { useAuth } from 'context/AuthContext';
-import LoadingScreen from 'layouts/loading';
+// import LoadingScreen from 'layouts/loading';
 import { AlertProvider } from 'context/AlertContext';
 // import ConnectSSE from 'connecSSE';
 
 export default function App() {
     const [controller, dispatch] = useMaterialUIController();
     const { miniSidenav, direction, layout, sidenavColor, darkMode } = controller;
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     const [onMouseEnter, setOnMouseEnter] = useState(false);
     const { pathname } = useLocation();
