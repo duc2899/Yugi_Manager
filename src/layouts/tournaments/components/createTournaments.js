@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import utc from "dayjs/plugin/utc";
 
 import MDButton from "components/MDButton";
 import { createTournamentSchema } from "utils/schemaYup";
@@ -18,6 +19,9 @@ import cardApi from 'api/cardAPI';
 
 
 const CreateTournaments = ({ open, handleClose }) => {
+
+    dayjs.extend(utc);
+
     const { showAlert } = useAlert();
     const [isLoading, setIsLoading] = useState(false);
     const [cardBanList, setCardBanList] = useState([]);
@@ -56,9 +60,9 @@ const CreateTournaments = ({ open, handleClose }) => {
         setIsLoading(true);
         const payload = {
             ...data,
-            roundStartedTime: data.roundStartedTime.format('DD-MM-YYYY HH:mm'),
+            roundStartedTime: dayjs(data.roundStartedTime).utc().format('DD-MM-YYYY HH:mm'),
             bannishCardCodes: cardBanList
-        };
+        };    
 
         try {
             const dataResult = await createTournament({
