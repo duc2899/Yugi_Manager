@@ -14,12 +14,13 @@ import {
 import MDButton from "components/MDButton";
 import MDBox from 'components/MDBox';
 import { useAlert } from 'context/AlertContext';
+import { io } from "socket.io-client";
 
 
 const UpdateVersion = ({ open, handleClose }) => {
     const WS_URL = process.env.REACT_APP_WS_URL;
 
-    const wsRef = useRef(null);
+    const socketRef = useRef(null);
 
     const { showAlert } = useAlert();
     const [wsResponse, setWsResponse] = useState(null);
@@ -28,40 +29,34 @@ const UpdateVersion = ({ open, handleClose }) => {
     useEffect(() => {
         if (!open) return;
 
-        const ws = new WebSocket(WS_URL);
-        wsRef.current = ws;
+        const socket = io(WS_URL, {
+            path: "/socket.io",
+        });
 
-        ws.onopen = () => {
+        socketRef.current = socket;
 
-            ws.send(JSON.stringify({
-                id: "GET_CONFIG_VERSIONS"
-            }));
-        };
+        socket.on("connect", () => {
+            console.log("🔌 Socket connected");
+            socket.emit("GET_CONFIG_VERSIONS");
+        });
 
-        ws.onmessage = (event) => {
-            try {
-                const res = JSON.parse(event.data);
+        socket.on("GET_CONFIG_VERSIONS", (data) => {
+            console.log("📦 Version data:", data);
+            setWsResponse(data);
+        });
 
-                if (res.id === "GET_CONFIG_VERSIONS") {
-                    setWsResponse(res.data);
-                }
-            } catch (e) {
-                console.error("❌ parse error", e);
-            }
-        };
+        socket.on("disconnect", () => {
+            console.log("❌ Socket disconnected");
+        });
 
-        ws.onerror = (err) => {
-            console.error("❌ WS error", err);
-        };
-
-        ws.onclose = () => {
-            console.log("🔌 WS closed");
-        };
+        socket.on("connect_error", (err) => {
+            console.error("❌ WS error", err.message);
+        });
 
         return () => {
-            ws.close();
+            socket.disconnect();
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
 
@@ -78,20 +73,13 @@ const UpdateVersion = ({ open, handleClose }) => {
             showAlert("Phiên bản mới không được trùng với phiên bản hiện tại", "error");
             return;
         }
-
-        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+        const socket = socketRef.current;
+        if (!socket || !socket.connected) {
             showAlert("WebSocket chưa sẵn sàng", "error");
             return;
         }
 
-        const payload = {
-            id: "TESTING_SET_CLIENT_VERSION",
-            data: {
-                version: newVersion
-            }
-        };
-
-        wsRef.current.send(JSON.stringify(payload));
+        socket.emit("TESTING_SET_CLIENT_VERSION", { version: newVersion });
 
         showAlert("Đã gửi yêu cầu cập nhật phiên bản", "success");
         handleClose();
@@ -130,7 +118,7 @@ const UpdateVersion = ({ open, handleClose }) => {
                         </div>
 
                         <TextField
-                            label="Phiên bản hiện mới"
+                            label="Phiên bản mới"
                             fullWidth
                             margin="normal"
                             value={newVersion}
