@@ -35,13 +35,20 @@ function DashboardLayout({ children }) {
     useEffect(() => {
         setLayout(dispatch, 'dashboard');
     }, [pathname, dispatch]);
+    
+    useEffect(() => {
+        const original = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
 
+        return () => {
+            document.body.style.overflow = original;
+        };
+    }, []);
     return (
         <MDBox
             sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
                 p: 3,
                 position: 'relative',
-
                 [breakpoints.up('xl')]: {
                     marginLeft: miniSidenav ? pxToRem(120) : pxToRem(274),
                     transition: transitions.create(

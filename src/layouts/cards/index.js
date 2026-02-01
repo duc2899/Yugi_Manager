@@ -11,11 +11,11 @@ function Cards() {
         <DashboardLayout>
             <DashboardNavbar />
             <MDBox mb={2} />
-            <MDBox sx={{ display: 'flex', gap: 2, height: '100%', mb: 4 }}>
-                <MDBox sx={{ flex: '0 0 75%' }}>
+            <MDBox sx={{ display: 'flex', gap: 2, height: '100vh', mb: 4 }}>
+                <MDBox sx={{ flex: '0 0 75%', height: '100%', }}>
                     <ShowCards />
                 </MDBox>
-                <MDBox sx={{ flex: '0 0 25%', maxHeight: '100vh', overflow: 'auto' }}>
+                <MDBox sx={{ flex: '0 0 25%', maxHeight: '100%', }}>
                     <Fillter />
                 </MDBox>
             </MDBox>

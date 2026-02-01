@@ -30,7 +30,7 @@ function Fillter() {
     const [selectedTrap, setSelectedTrap] = useState([]);
     const [selectedAttribute, setSelectedAttribute] = useState([]);
     const [starChoosen, setStarChoosen] = useState(0);
-    
+
     const toggleSelect = (id, setState) => {
         if (id === 'all') {
             setState([]);
@@ -68,7 +68,7 @@ function Fillter() {
         divine
     }
     return (
-        <MDBox sx={{ p: '20px', backgroundColor: '#2a2a2a', borderRadius: '8px' }}>
+        <MDBox sx={{ p: '20px', backgroundColor: '#2a2a2a', borderRadius: '8px', display: 'flex', flexDirection: 'column', height: "100%" }}>
 
             {/* Monster giữ riêng vì UI khác */}
             <MDTypography variant="h6" sx={{ mb: '15px', fontWeight: 600, color: '#fff' }}>
