@@ -42,8 +42,11 @@ const STATUS_BILL = [
     'Expired',
 ]
 
+const URL_IMAGE = "https://images.ygoprodeck.com/images/cards_small/"
+
 export {
     PAYMENT_METHODS,
     STATUS_BILL,
-    ROLE_ACCOUNT
+    ROLE_ACCOUNT,
+    URL_IMAGE
 }

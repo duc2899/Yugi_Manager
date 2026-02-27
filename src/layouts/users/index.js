@@ -47,10 +47,11 @@ function Tables() {
 
     const fetchUsers = async (page, limit) => {
         try {
-            const response = await userAPI.getAllUsers({
+            const response = await userAPI.getAllAccounts({
                 page: page,
                 limit: limit,
             });
+
             setUsers(response.data.data);
             setPagination(response.data.pagination);
         } catch (error) {
@@ -59,51 +60,62 @@ function Tables() {
     };
 
     useEffect(() => {
-        fetchUsers(pagination.page, pagination.limit);
-    }, [pagination.page, pagination.limit]);
+        const handleSearch = async () => {
+            try {
+                const response = await userAPI.searchAdvanced({
+                    page: pagination.page,
+                    limit: pagination.limit,
+                    name: debouncedSearchText,
+                    role: currentRole
+                });
+                setUsers(response.data.data);
+                setPagination(response.data.pagination);
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        };
+
+        const shouldSearch = !!currentRole || !!debouncedSearchText;
+        if (shouldSearch) {
+            handleSearch();
+        } else {
+            fetchUsers(pagination.page, pagination.limit);
+        }
+    }, [debouncedSearchText, pagination.page, pagination.limit, currentRole]);
 
 
 
     const rows = users.map((user) => ({
+        code: (
+            <MDTypography variant="button" color="text" fontWeight="medium">
+                {user?.code || 'N/A'}
+            </MDTypography>
+        ),
+        
         user: (
             <MDBox display="flex" alignItems="center" lineHeight={1}>
-                <MDAvatar src={user.avatar?.url} name={user.fullName} size="sm" />
+                <MDAvatar src={user.avatarImage} name={user.displayName} size="sm" />
                 <MDBox ml={2} lineHeight={1}>
                     <MDTypography
                         display="block"
                         variant="button"
                         fontWeight="medium">
-                        {user.fullName}
+                        {user.displayName}
                     </MDTypography>
-                    <MDTypography variant="caption">{user.email}</MDTypography>
+                    <MDTypography variant="caption">{user.username}</MDTypography>
                 </MDBox>
             </MDBox>
         ),
         role: (
             <MDTypography variant="button" color="text" fontWeight="medium">
-                {user.role?.toUpperCase() || 'N/A'}
+                {user?.role?.toUpperCase() || 'N/A'}
             </MDTypography>
-        ),
-        gender: (
-            <MDTypography variant="button" color="text" fontWeight="medium">
-                {user.gender || 'N/A'}
-            </MDTypography>
-        ),
-        verified: (
-            <MDBox ml={-1}>
-                <MDBadge
-                    badgeContent={user.verified ? 'Yes' : 'No'}
-                    color={user.verified ? 'success' : 'error'}
-                    variant="gradient"
-                    size="sm"
-                />
-            </MDBox>
         ),
         isDisabled: (
             <MDBox ml={-1}>
                 <MDBadge
-                    badgeContent={user.isDisabled ? 'Yes' : 'No'}
-                    color={user.isDisabled ? 'success' : 'error'}
+                    badgeContent={user.status === 'ACTIVED' ? 'Yes' : 'No'}
+                    color={user.status === 'ACTIVED' ? 'success' : 'error'}
                     variant="gradient"
                     size="sm"
                 />
@@ -111,7 +123,7 @@ function Tables() {
         ),
         createdAt: (
             <MDTypography variant="caption" color="text" fontWeight="medium">
-                {convertTimeVN(user.createdAt)}
+                {convertTimeVN(user.createdTime)}
             </MDTypography>
         ),
         action: (
@@ -119,7 +131,6 @@ function Tables() {
                 <MDButton
                     variant="gradient"
                     color="info"
-                    iconOnly
                     ml={1}
                     sx={{ mr: 1 }}
                     onClick={() => setModel({ visible: true, isEdit: false, user: user })}
@@ -129,7 +140,6 @@ function Tables() {
                 <MDButton
                     variant="gradient"
                     color="success"
-                    iconOnly
                     onClick={() => setModel({ visible: true, isEdit: true, user: user })}
                 >
                     <EditIcon />
@@ -142,13 +152,12 @@ function Tables() {
         {
             Header: 'user',
             accessor: 'user',
-            width: '25%',
+            width: '10%',
             align: 'left'
         },
+        { Header: 'code', accessor: 'code', align: 'center' },
         { Header: 'role', accessor: 'role', align: 'center' },
-        { Header: 'gender', accessor: 'gender', align: 'center' },
-        { Header: 'verified', accessor: 'verified', align: 'center' },
-        { Header: 'disable', accessor: 'isDisabled', align: 'center' },
+        { Header: 'active', accessor: 'isDisabled', align: 'center' },
         { Header: 'created at', accessor: 'createdAt', align: 'center' },
         { Header: 'action', accessor: 'action', align: 'center' }
     ];
@@ -176,32 +185,32 @@ function Tables() {
         }
     }
 
-    useEffect(() => {
-        const handleSearch = async () => {
-            try {
-                const newPagination = { ...pagination, page: 1 };
-                setPagination(newPagination);
+    // useEffect(() => {
+    //     const handleSearch = async () => {
+    //         try {
+    //             const newPagination = { ...pagination, page: 1 };
+    //             setPagination(newPagination);
 
-                const response = await userAPI.searchAdvanced({
-                    ...newPagination,
-                    name: debouncedSearchText,
-                    role: currentRole
-                });
-                setUsers(response.data.data);
-                setPagination(response.data.pagination);
-            } catch (error) {
-                console.error('Search error:', error);
-            }
-        };
+    //             const response = await userAPI.searchAdvanced({
+    //                 ...newPagination,
+    //                 name: debouncedSearchText,
+    //                 role: currentRole
+    //             });
+    //             setUsers(response.data.data);
+    //             setPagination(response.data.pagination);
+    //         } catch (error) {
+    //             console.error('Search error:', error);
+    //         }
+    //     };
 
-        // Kiểm tra điều kiện search trực tiếp
-        const shouldSearch = !!currentRole || !!debouncedSearchText;
-        if (shouldSearch) {
-            handleSearch();
-        }
+    //     // Kiểm tra điều kiện search trực tiếp
+    //     const shouldSearch = !!currentRole || !!debouncedSearchText;
+    //     if (shouldSearch) {
+    //         handleSearch();
+    //     }
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedSearchText, pagination.page, pagination.limit, currentRole]);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [debouncedSearchText, pagination.page, pagination.limit, currentRole]);
 
 
     const handleChangeRole = (event) => {
@@ -325,13 +334,20 @@ function Tables() {
                                     </MDBox>
                                 }
                             </MDBox>
-                            <MDBox pt={3}>
+                            <MDBox
+                                pt={3}
+                                sx={{
+                                    maxHeight: "60vh",
+                                    overflowY: "auto",
+                                }}
+                            >
                                 <DataTable
                                     table={{ columns, rows }}
                                     isSorted={false}
                                     entriesPerPage={false}
                                     showTotalEntries={false}
                                     noEndBorder
+                                    
                                 />
                             </MDBox>
                         </Card>

@@ -11,9 +11,7 @@ import ReportsLineChart from 'examples/Charts/LineCharts/ReportsLineChart';
 import ComplexStatisticsCard from 'examples/Cards/StatisticsCards/ComplexStatisticsCard';
 
 import { useState } from 'react';
-import billApi from 'api/billAPI';
 import { convertPriceVND } from 'utils';
-import chartApi from 'api/charts';
 
 function Dashboard() {
     const [chartDataBill, setChartDataBill] = useState({
@@ -33,23 +31,23 @@ function Dashboard() {
         currentDayUsers: 0
     });
 
-    const fetchChartData = async () => {
-        try {
-            const response = await billApi.getChartDataBill();
-            setChartDataBill(response.data);
-        } catch (error) {
-            console.error('Error fetching chart data:', error);
-        }
-    };
+    // const fetchChartData = async () => {
+    //     try {
+    //         const response = await billApi.getChartDataBill();
+    //         setChartDataBill(response.data);
+    //     } catch (error) {
+    //         console.error('Error fetching chart data:', error);
+    //     }
+    // };
 
-    const fetchUserStats = async () => {
-        try {
-            const response = await chartApi.getUserStats();
-            setUserStats(response.data);
-        } catch (error) {
-            console.error('Error fetching user stats:', error);
-        }
-    };
+    // const fetchUserStats = async () => {
+    //     try {
+    //         const response = await chartApi.getUserStats();
+    //         setUserStats(response.data);
+    //     } catch (error) {
+    //         console.error('Error fetching user stats:', error);
+    //     }
+    // };
 
     // Fetch chart data when the component mounts
     // useState(() => {

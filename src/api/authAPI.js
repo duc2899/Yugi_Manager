@@ -1,7 +1,7 @@
-import axiosClient from './axiosClient';
+import { yugiClient } from './axiosClient';
 const authAPI = {
     login: async credentials => {
-        const response = await axiosClient.post(
+        const response = await yugiClient.post(
             '/auth/loginNormal',
             credentials
         );
@@ -9,12 +9,12 @@ const authAPI = {
     },
 
     logout: async () => {
-        const response = await axiosClient.post('/auth/logout');
+        const response = await yugiClient.post('/auth/logout');
         return response.data;
     },
 
     getProfile: async () => {
-        const response = await axiosClient.get('/user/userInformation');
+        const response = await yugiClient.get('/user/userInformation');
         return response.data;
     }
 };

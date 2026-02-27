@@ -45,7 +45,6 @@ const MDPagination = forwardRef(
                         ref={ref}
                         variant={active ? context.variant : 'outlined'}
                         color={active ? context.color : 'secondary'}
-                        iconOnly
                         circular
                         ownerState={{ variant, active, paginationSize }}>
                         {children}

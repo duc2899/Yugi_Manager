@@ -22,7 +22,6 @@ import logo from './assets/images/logos/logo.png';
 import { useAuth } from 'context/AuthContext';
 // import LoadingScreen from 'layouts/loading';
 import { AlertProvider } from 'context/AlertContext';
-// import ConnectSSE from 'connecSSE';
 
 export default function App() {
     const [controller, dispatch] = useMaterialUIController();
@@ -127,7 +126,6 @@ export default function App() {
                         }
                     />
                 </Routes>
-                {/* <ConnectSSE></ConnectSSE> */}
             </AlertProvider>
         </ThemeProvider>
     );

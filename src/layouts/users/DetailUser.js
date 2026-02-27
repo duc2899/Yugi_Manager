@@ -77,6 +77,18 @@ const DetailUser = ({
     }, [user]);
 
 
+    const ResourceItem = ({ label, value }) => (
+        <Box display="flex" alignItems="center">
+            <Typography variant="inherit" sx={{ minWidth: 100 }}>
+                {label}
+            </Typography>
+            <Typography variant="body2" sx={{ ml: 2 }}>
+                {value !== undefined && value !== null ? value.toString() : 'N/A'}
+            </Typography>
+        </Box>
+    );
+
+
 
     return (
         <Dialog open={visible} onClose={onClose} maxWidth="sm" fullWidth>
@@ -84,21 +96,23 @@ const DetailUser = ({
             <DialogContent dividers>
                 <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
                     <Avatar
-                        src={user?.avatar.url}
+                        src={user?.avatarImage}
                         sx={{ width: 120, height: 120, mb: 2 }}
                     />
                 </Box>
                 <Paper variant="outlined" sx={{ p: 2 }}>
                     <Box display="flex" flexDirection="column" gap={2}>
-                        <Box display="flex" alignItems="center">
-                            <Typography variant="body2" sx={{ minWidth: 100 }}>Full name</Typography>
-                            <Typography variant="inherit" sx={{ ml: 2 }}>{user?.fullName}</Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center">
-                            <Typography variant="body2" sx={{ minWidth: 100 }}>Email</Typography>
-                            <Typography variant="inherit" sx={{ ml: 2 }}>{user?.email}</Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center">
+                        <ResourceItem label="Username" value={user?.displayName} />
+                        <ResourceItem label="Gold" value={user?.gold} />
+                        <ResourceItem label="Ruby" value={user?.ruby} />
+                        <ResourceItem label="Exp" value={user?.exp} />
+                        <ResourceItem label="Level" value={user?.level} />
+                        <ResourceItem label="Rank" value={user?.rank} />
+                        <ResourceItem label="Tournament Score" value={user?.tournamentScore} />
+
+
+
+                        {/* <Box display="flex" alignItems="center">
                             <Typography variant="body2" sx={{ minWidth: 100 }}>Role</Typography>
                             <Select
                                 value={roles.includes(role) ? role : ''}
@@ -114,9 +128,9 @@ const DetailUser = ({
                                     </MenuItem>
                                 ))}
                             </Select>
-                        </Box>
+                        </Box> */}
                         <Box display="flex" alignItems="center">
-                            <Typography variant="body2" sx={{ minWidth: 100 }}>Disable</Typography>
+                            <Typography variant="inherit" sx={{ minWidth: 100 }}>Disable</Typography>
                             <Switch
                                 checked={disabled}
                                 onChange={handleDisableChange}
