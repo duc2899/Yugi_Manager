@@ -1,4 +1,5 @@
 import axios from "axios";
+import { yugiClient } from "./axiosClient";
 
 const API_URL = "https://admin.yugimaster.com/test-tournament";
 
@@ -17,3 +18,12 @@ export const createTournament = async (data) => {
         throw error.response?.data || error.message;
     }
 };
+
+export const getTournaments = async (params = {}) => {
+    try {
+        const response = await yugiClient.get("/tournaments", { params })
+        return response.data
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+}

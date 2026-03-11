@@ -60,8 +60,31 @@ const formatTimestampFixed = (ts) => {
     return `${month}/${day}/${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
+/**
+ * Format timestamp to Vietnam time
+ * @param {number|string} ts - The timestamp to format
+ */
+const formatTimestampVN = (ts) => {
+    
+    const d = new Date(ts);
+
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+    });
+
+    return formatter.format(d);
+};
+
 export {
     convertTimeVN,
     convertPriceVND,
-    formatTimestampFixed
+    formatTimestampFixed,
+    formatTimestampVN
 }

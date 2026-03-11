@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -12,18 +12,13 @@ import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import Footer from 'examples/Footer';
 import MDTypography from 'components/MDTypography';
-import { formatTimestampFixed } from 'utils';
+import { formatTimestampVN } from 'utils';
 import MDButton from 'components/MDButton';
 import CreateTournaments from './components/createTournaments';
+import { getTournaments } from 'api/tournamentsAPI';
 
 
 function Tables() {
-    const [age, setAge] = useState('');
-    const [open, setOpen] = useState(false);
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
-
     const status = [
         {
             name: "Tất cả",
@@ -51,177 +46,19 @@ function Tables() {
             color: "#F44336"
         }
     ]
+    const [currentStatus, setCurrentStatus] = useState('');
+    const [data, setData] = useState([])
+    const [open, setOpen] = useState(false);
+    const [pagination, setPagination] = useState({
+        total: 0,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+    });
 
-    const tournamentsData = [
-        // {
-        //     "debugRoundCountdownTime": "Jan 22, 2026, 8:37:00 AM",
-        //     "rubyFee": 10,
-        //     "debugRoundStartedTime": "Jan 22, 2026, 8:38:00 AM",
-        //     "type": "SERVER",
-        //     "numberJoinRoomPlayers": 0,
-        //     "roundIndex": 2,
-        //     "limitNumberPlayers": 4,
-        //     "numberRegisteredPlayers": 4,
-        //     "name": "Test tournament-22/01/2026",
-        //     "roundCountdownTime": 1769071020000,
-        //     "debugTournamentStaredTime": "Jan 22, 2026, 8:35:00 AM",
-        //     "id": 228952400,
-        //     "bannishCardCodes": [
-        //         "69247929"
-        //     ],
-        //     "roundStartedTime": 1769071080000,
-        //     "rubyReward": 1000,
-        //     "tournamentStaredTime": 1769070900000,
-        //     "status": "COMPLETED"
-        // },
-        // {
-        //     "debugRoundCountdownTime": "Jan 22, 2026, 8:25:00 AM",
-        //     "rubyFee": 10,
-        //     "debugRoundStartedTime": "Jan 22, 2026, 8:26:00 AM",
-        //     "type": "SERVER",
-        //     "numberJoinRoomPlayers": 0,
-        //     "roundIndex": 2,
-        //     "limitNumberPlayers": 4,
-        //     "numberRegisteredPlayers": 4,
-        //     "name": "Test tournament-22/01/2026",
-        //     "roundCountdownTime": 1769070300000,
-        //     "debugTournamentStaredTime": "Jan 22, 2026, 8:25:00 AM",
-        //     "id": 1655540089,
-        //     "bannishCardCodes": [
-        //         "69247929"
-        //     ],
-        //     "roundStartedTime": 1769070360000,
-        //     "rubyReward": 1000,
-        //     "tournamentStaredTime": 1769070300000,
-        //     "status": "COMPLETED"
-        // },
-        // {
-        //     "debugRoundCountdownTime": "Jan 22, 2026, 7:46:00 AM",
-        //     "rubyFee": 10,
-        //     "debugRoundStartedTime": "Jan 22, 2026, 7:47:00 AM",
-        //     "type": "SERVER",
-        //     "numberJoinRoomPlayers": 0,
-        //     "roundIndex": 3,
-        //     "limitNumberPlayers": 4,
-        //     "numberRegisteredPlayers": 4,
-        //     "name": "Test tournament-22/01/2026",
-        //     "roundCountdownTime": 1769067960000,
-        //     "debugTournamentStaredTime": "Jan 22, 2026, 7:45:00 AM",
-        //     "id": 525680389,
-        //     "bannishCardCodes": [
-        //         "69247929"
-        //     ],
-        //     "roundStartedTime": 1769068020000,
-        //     "rubyReward": 1000,
-        //     "tournamentStaredTime": 1769067900000,
-        //     "status": "COMPLETED"
-        // },
-        // {
-        //     "debugRoundCountdownTime": "Jan 20, 2026, 9:46:00 AM",
-        //     "rubyFee": 10,
-        //     "debugRoundStartedTime": "Jan 20, 2026, 9:47:00 AM",
-        //     "type": "SERVER",
-        //     "numberJoinRoomPlayers": 0,
-        //     "roundIndex": 2,
-        //     "limitNumberPlayers": 4,
-        //     "numberRegisteredPlayers": 4,
-        //     "name": "Test phong-20/01/2026",
-        //     "roundCountdownTime": 1768902360000,
-        //     "debugTournamentStaredTime": "Jan 20, 2026, 9:45:00 AM",
-        //     "id": 206573665,
-        //     "bannishCardCodes": [
-        //         "69247929"
-        //     ],
-        //     "roundStartedTime": 1768902420000,
-        //     "rubyReward": 1000,
-        //     "tournamentStaredTime": 1768902300000,
-        //     "status": "COMPLETED"
-        // },
-        // {
-        //     "debugRoundCountdownTime": "Jan 19, 2026, 8:50:00 AM",
-        //     "rubyFee": 10,
-        //     "debugRoundStartedTime": "Jan 19, 2026, 8:51:00 AM",
-        //     "type": "SERVER",
-        //     "numberJoinRoomPlayers": 0,
-        //     "roundIndex": 2,
-        //     "limitNumberPlayers": 4,
-        //     "numberRegisteredPlayers": 4,
-        //     "name": "Test phong-19/01/2026",
-        //     "roundCountdownTime": 1768812600000,
-        //     "debugTournamentStaredTime": "Jan 19, 2026, 8:50:00 AM",
-        //     "id": 868806828,
-        //     "bannishCardCodes": [
-        //         "69247929"
-        //     ],
-        //     "roundStartedTime": 1768812660000,
-        //     "rubyReward": 1000,
-        //     "tournamentStaredTime": 1768812600000,
-        //     "status": "COMPLETED"
-        // },
-        // {
-        //     "debugRoundCountdownTime": "Jan 19, 2026, 8:30:00 AM",
-        //     "rubyFee": 10,
-        //     "debugRoundStartedTime": "Jan 19, 2026, 8:31:00 AM",
-        //     "type": "SERVER",
-        //     "numberJoinRoomPlayers": 0,
-        //     "roundIndex": 2,
-        //     "limitNumberPlayers": 4,
-        //     "numberRegisteredPlayers": 4,
-        //     "name": "Test phong-19/01/2026",
-        //     "roundCountdownTime": 1768811400000,
-        //     "debugTournamentStaredTime": "Jan 19, 2026, 8:30:00 AM",
-        //     "id": 1770846747,
-        //     "bannishCardCodes": [
-        //         "69247929"
-        //     ],
-        //     "roundStartedTime": 1768811460000,
-        //     "rubyReward": 1000,
-        //     "tournamentStaredTime": 1768811400000,
-        //     "status": "COMPLETED"
-        // },
-        // {
-        //     "debugRoundCountdownTime": "Jan 19, 2026, 8:20:00 AM",
-        //     "rubyFee": 10,
-        //     "debugRoundStartedTime": "Jan 19, 2026, 8:21:00 AM",
-        //     "type": "SERVER",
-        //     "numberJoinRoomPlayers": 0,
-        //     "roundIndex": 1,
-        //     "limitNumberPlayers": 4,
-        //     "numberRegisteredPlayers": 2,
-        //     "name": "Test phong-19/01/2026",
-        //     "roundCountdownTime": 1768810800000,
-        //     "debugTournamentStaredTime": "Jan 19, 2026, 8:21:00 AM",
-        //     "id": 1232617908,
-        //     "bannishCardCodes": [
-        //         "69247929"
-        //     ],
-        //     "roundStartedTime": 1768810860000,
-        //     "rubyReward": 1000,
-        //     "tournamentStaredTime": 1768810860000,
-        //     "status": "COMPLETED"
-        // },
-        // {
-        //     "debugRoundCountdownTime": "Jan 19, 2026, 8:14:00 AM",
-        //     "rubyFee": 10,
-        //     "debugRoundStartedTime": "Jan 19, 2026, 8:15:00 AM",
-        //     "type": "SERVER",
-        //     "numberJoinRoomPlayers": 0,
-        //     "roundIndex": 1,
-        //     "limitNumberPlayers": 4,
-        //     "numberRegisteredPlayers": 2,
-        //     "name": "Test phong-19/01/2026",
-        //     "roundCountdownTime": 1768810440000,
-        //     "debugTournamentStaredTime": "Jan 19, 2026, 8:15:00 AM",
-        //     "id": 1592703556,
-        //     "bannishCardCodes": [
-        //         "69247929"
-        //     ],
-        //     "roundStartedTime": 1768810500000,
-        //     "rubyReward": 1000,
-        //     "tournamentStaredTime": 1768810500000,
-        //     "status": "COMPLETED"
-        // },
-    ]
+    const handleChangeStatus = (event) => {
+        setCurrentStatus(event.target.value);
+    };
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -231,10 +68,30 @@ function Tables() {
         setOpen(false);
     };
 
+    const fetchData = async (page, limit) => {
+        try {
+            const response = await getTournaments({
+                page: page,
+                limit: limit,
+            });
+
+            setData(response.data.data);
+            setPagination(response.data.pagination);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData(1, 10)
+    }, [])
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
-            <MDBox pt={6} pb={3}>
+            <MDBox pt={6} pb={3} sx={{
+
+            }}>
                 <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', mb: 4 }}>
                     <MDButton variant="gradient" color="primary" onClick={handleClickOpen}>
                         Tạo giải đấu mới
@@ -248,9 +105,9 @@ function Tables() {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={age}
+                            value={currentStatus}
                             label="Trạng thái"
-                            onChange={handleChange}
+                            onChange={handleChangeStatus}
                             sx={{ p: 1.5 }}
                         >
                             {status.map((s) => (
@@ -262,7 +119,7 @@ function Tables() {
                     </FormControl>
                 </Box>
                 {
-                    tournamentsData.length === 0 ? (
+                    data.length === 0 ? (
                         <MDBox sx={{
                             backgroundColor: '#fff',
                             borderRadius: '8px',
@@ -287,118 +144,116 @@ function Tables() {
                         display: 'grid',
                         gridAutoRows: 'auto',
                         gridTemplateColumns: 'repeat(auto-fit, minmax(620px, 1fr))',
-                        gap: '10px'
+                        gap: '10px',
+                        maxHeight: "600px", overflowY: "scroll"
                     }} >
-                        {tournamentsData.map((tournamentsDataItem) => ((
-                            <>
-                                <MDBox
-                                    key={tournamentsDataItem.id}
-                                    sx={{
-                                        backgroundColor: '#fff',
-                                        borderRadius: '8px',
-                                        boxShadow: '0 2px 14px 0 rgba(32, 40, 45, 0.08)',
-                                        p: 2,
-                                    }}>
-                                    <MDBox sx={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                    }}>
-                                        <MDTypography
-                                            display="inline"
-                                            variant="h3"
-                                            textTransform="capitalize"
-                                            fontWeight="bold">
-                                            {tournamentsDataItem.name}
-                                        </MDTypography>
+                        {data.map((tournamentsDataItem) => ((
+                            <MDBox
+                                key={tournamentsDataItem.id}
+                                sx={{
+                                    backgroundColor: '#fff',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 2px 14px 0 rgba(32, 40, 45, 0.08)',
+                                    p: 2,
+                                }}>
+                                <MDBox sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}>
+                                    <MDTypography
+                                        display="inline"
+                                        variant="h3"
+                                        textTransform="capitalize"
+                                        fontWeight="bold">
+                                        {tournamentsDataItem.name}
+                                    </MDTypography>
+                                    <Stack direction={'row'} spacing={1}>
+                                        <Chip label={tournamentsDataItem.status} color="success" variant="filled" />
+                                        <Chip label={tournamentsDataItem.type} color="success" variant="outlined" />
+                                    </Stack>
+                                </MDBox>
+                                <MDBox sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', gap: 3 }}>
+                                    <MDBox>
                                         <Stack direction={'row'} spacing={1}>
-                                            <Chip label={tournamentsDataItem.status} color="success" variant="filled" />
-                                            <Chip label={tournamentsDataItem.type} color="success" variant="outlined" />
+                                            <MDTypography
+                                                variant="body2" component="p" color="text" fontWeight="bold">
+                                                Phí tham gia:
+                                            </MDTypography>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text">
+                                                {tournamentsDataItem.rubyFee} Ruby
+                                            </MDTypography>
                                         </Stack>
+                                        <Stack direction={'row'} spacing={1}>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text" fontWeight="bold">
+                                                Phần thưởng:
+                                            </MDTypography>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text">
+                                                {tournamentsDataItem.rubyReward} Ruby
+                                            </MDTypography>
+                                        </Stack>
+
+                                        <Stack direction={'row'} spacing={1}>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text" fontWeight="bold">
+                                                Danh sách đăng ký:
+                                            </MDTypography>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text">
+                                                {tournamentsDataItem.registers.length}/{tournamentsDataItem.limitNumberPlayers}
+                                            </MDTypography>
+                                        </Stack>
+
+
                                     </MDBox>
-                                    <MDBox sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', gap: 3 }}>
-                                        <MDBox>
-                                            <Stack direction={'row'} spacing={1}>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text" fontWeight="bold">
-                                                    Phí tham gia:
-                                                </MDTypography>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text">
-                                                    {tournamentsDataItem.rubyFee} Ruby
-                                                </MDTypography>
-                                            </Stack>
-                                            <Stack direction={'row'} spacing={1}>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text" fontWeight="bold">
-                                                    Phần thưởng:
-                                                </MDTypography>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text">
-                                                    {tournamentsDataItem.rubyReward} Ruby
-                                                </MDTypography>
-                                            </Stack>
+                                    <MDBox>
+                                        <Stack direction={'row'} spacing={1}>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text" fontWeight="bold">
+                                                Vòng đấu:
+                                            </MDTypography>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text">
+                                                {tournamentsDataItem.roundIndex}
+                                            </MDTypography>
+                                        </Stack>
 
-                                            <Stack direction={'row'} spacing={1}>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text" fontWeight="bold">
-                                                    Danh sách đăng ký:
-                                                </MDTypography>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text">
-                                                    {tournamentsDataItem.numberRegisteredPlayers}/{tournamentsDataItem.limitNumberPlayers}
-                                                </MDTypography>
-                                            </Stack>
+                                        <Stack direction={'row'} spacing={1}>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text" fontWeight="bold">
+                                                Số cards cấm sử dụng:
+                                            </MDTypography>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text">
+                                                {tournamentsDataItem.bannishCardCodes.length}
+                                            </MDTypography>
+                                        </Stack>
 
+                                        <Stack direction={'row'} spacing={1}>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text" fontWeight="bold">
+                                                Thời gian bắt đầu:
+                                            </MDTypography>
+                                            <MDTypography
+                                                variant="body2" component="p" color="text">
+                                                {formatTimestampVN(tournamentsDataItem.tournamentStartedTime)}
+                                            </MDTypography>
+                                        </Stack>
 
-                                        </MDBox>
-                                        <MDBox>
-                                            <Stack direction={'row'} spacing={1}>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text" fontWeight="bold">
-                                                    Vòng đấu:
-                                                </MDTypography>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text">
-                                                    {tournamentsDataItem.roundIndex}
-                                                </MDTypography>
-                                            </Stack>
-
-                                            <Stack direction={'row'} spacing={1}>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text" fontWeight="bold">
-                                                    Số cards cấm sử dụng:
-                                                </MDTypography>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text">
-                                                    {tournamentsDataItem.bannishCardCodes.length}
-                                                </MDTypography>
-                                            </Stack>
-
-                                            <Stack direction={'row'} spacing={1}>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text" fontWeight="bold">
-                                                    Thời gian bắt đầu:
-                                                </MDTypography>
-                                                <MDTypography
-                                                    variant="body2" component="p" color="text">
-                                                    {formatTimestampFixed(tournamentsDataItem.tournamentStaredTime)}
-                                                </MDTypography>
-                                            </Stack>
-
-                                        </MDBox>
                                     </MDBox>
-                                    <MDBox sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, cursor: 'pointer' }}>
-                                        <ArrowForwardIcon sx={{ color: '#1976d2' }} />
-                                        <MDTypography
-                                            variant="body2" component="p" color="#1976d2" sx={{ cursor: 'pointer' }}>
-                                            Xem chi tiết
-                                        </MDTypography>
-                                    </MDBox>
-
+                                </MDBox>
+                                <MDBox sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, cursor: 'pointer' }}>
+                                    <ArrowForwardIcon sx={{ color: '#1976d2' }} />
+                                    <MDTypography
+                                        variant="body2" component="p" color="#1976d2" sx={{ cursor: 'pointer' }}>
+                                        Xem chi tiết
+                                    </MDTypography>
                                 </MDBox>
 
-                            </>
+                            </MDBox>
                         )))}
                     </div>
                 }
