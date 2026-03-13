@@ -1,6 +1,7 @@
 import Dashboard from 'layouts/dashboard';
 import Users from 'layouts/users';
 import Tournaments from 'layouts/tournaments';
+import DetailTournament from 'layouts/tournaments/detail';
 import Cards from 'layouts/cards';
 import SignIn from 'layouts/authentication/sign-in';
 
@@ -48,6 +49,11 @@ const routes = [
         route: '/authentication/sign-in',
         component: <SignIn />,
         requiresAuth: false
+    },
+    {
+        route: '/tournaments/:id',
+        component: <DetailTournament />,
+        requiresAuth: true
     }
 ];
 

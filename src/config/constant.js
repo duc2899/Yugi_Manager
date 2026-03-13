@@ -43,10 +43,53 @@ const STATUS_BILL = [
 ]
 
 const URL_IMAGE = "https://images.ygoprodeck.com/images/cards_small/"
+const STATUS_TOURNAMENT = [
+    {
+        name: "Tất cả",
+        key: "ALL",
+        color: ""
+    },
+    {
+        name: "Đã hoàn thành",
+        key: "COMPLETED",
+        color: "#4CAF50"
+    },
+    {
+        name: "Đang diễn ra",
+        key: "INPROGRESS",
+        color: "#2196F3"
+    },
+    {
+        name: "Dự kiến",
+        key: "COMING",
+        color: "#FF9800"
+    },
+    {
+        name: "Đã hủy",
+        key: "CANCELLED",
+        color: "#F44336"
+    }
+]
 
+const TYPE_TOURNAMENTS = [
+    {
+        name: "Tất cả",
+        key: "ALL"
+    },
+    {
+        name: "Server",
+        key: "SERVER"
+    },
+    {
+        name: "Local",
+        key: "LOCAL"
+    },
+]
 export {
     PAYMENT_METHODS,
     STATUS_BILL,
     ROLE_ACCOUNT,
-    URL_IMAGE
+    URL_IMAGE,
+    STATUS_TOURNAMENT,
+    TYPE_TOURNAMENTS
 }

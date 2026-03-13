@@ -16,9 +16,10 @@ import { useAlert } from 'context/AlertContext';
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import cardApi from 'api/cardAPI';
+import { TYPE_TOURNAMENTS } from 'config/constant';
 
 
-const CreateTournaments = ({ open, handleClose }) => {
+const CreateTournaments = ({ open, handleClose, fectchData }) => {
 
     dayjs.extend(utc);
 
@@ -36,7 +37,7 @@ const CreateTournaments = ({ open, handleClose }) => {
         resolver: yupResolver(createTournamentSchema),
         defaultValues: {
             name: '',
-            type: '',
+            type: 'SERVER',
             rubyFee: '',
             rubyReward: '',
             limitNumberPlayers: '',
@@ -44,31 +45,18 @@ const CreateTournaments = ({ open, handleClose }) => {
         },
     });
 
-
-    const TYPE_TUOURNAMENT = [
-        {
-            value: "Server",
-            key: "SERVER"
-        },
-        {
-            value: "Local",
-            key: "LOCAL"
-        }
-    ]
-
     const onSubmit = async (data) => {
         setIsLoading(true);
         const payload = {
             ...data,
             roundStartedTime: dayjs(data.roundStartedTime).utc().format('DD-MM-YYYY HH:mm'),
             bannishCardCodes: cardBanList
-        };    
+        };
 
         try {
-            const dataResult = await createTournament({
+            await createTournament({
                 data: payload
             });
-            console.log(dataResult);
         } catch (error) {
             setIsLoading(false);
             showAlert("Lỗi không tạo được tournament", "error");
@@ -79,6 +67,7 @@ const CreateTournaments = ({ open, handleClose }) => {
 
         reset();
         showAlert("Tạo giải đấu thành công", "success");
+        fectchData()
         handleClose();
     };
 
@@ -129,9 +118,9 @@ const CreateTournaments = ({ open, handleClose }) => {
                             control={control}
                             render={({ field }) => (
                                 <Select {...field} label="Loại giải đấu" sx={{ p: 1.5 }}>
-                                    {TYPE_TUOURNAMENT.map((item) => (
+                                    {TYPE_TOURNAMENTS.map((item) => item.key !== "ALL" && (
                                         <MenuItem key={item.key} value={item.key}>
-                                            {item.value}
+                                            {item.name}
                                         </MenuItem>
                                     ))}
                                 </Select>
