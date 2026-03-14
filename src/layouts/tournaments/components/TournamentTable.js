@@ -9,14 +9,11 @@ import MDBox from "components/MDBox";
 import MDTypography from 'components/MDTypography';
 import MDPagination from 'components/MDPagination';
 import { formatTimestampVN } from "utils";
-import { STATUS_TOURNAMENT } from "config/constant";
+import { getStatusInfo } from "utils";
+
 
 const TournamentTable = ({ data, pagination, setPagination }) => {
     const navigate = useNavigate();
-
-    const getStatusColor = (key) => {
-        return STATUS_TOURNAMENT.find((item) => item.key === key)?.color || "#999";
-    };
 
     // Generate pagination items
     const paginationItems = [];
@@ -84,8 +81,8 @@ const TournamentTable = ({ data, pagination, setPagination }) => {
                                     {tournamentsDataItem.name}
                                 </MDTypography>
                                 <Stack direction={'row'} spacing={1}>
-                                    <Chip label={tournamentsDataItem.status} variant="filled" sx={{
-                                        backgroundColor: getStatusColor(tournamentsDataItem.status),
+                                    <Chip label={getStatusInfo(tournamentsDataItem.status, "name")} variant="filled" sx={{
+                                        backgroundColor: getStatusInfo(tournamentsDataItem.status, "color"),
                                         color: "#fff"
                                     }} />
                                     <Chip label={tournamentsDataItem.type} variant="outlined" />

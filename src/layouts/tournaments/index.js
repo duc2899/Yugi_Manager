@@ -8,7 +8,7 @@ import CreateTournaments from './components/CreateTournamentModal';
 import TournamentTable from './components/TournamentTable';
 import TournamentFilter from './components/TournamentFilter';
 
-import { getTournaments } from 'api/tournamentsAPI';
+import tournamentAPI from 'api/tournamentsAPI';
 
 function Tournaments() {
 
@@ -50,7 +50,7 @@ function Tournaments() {
                 params.name = debouncedSearchText.trim();
             }
 
-            const response = await getTournaments(params);
+            const response = await tournamentAPI.getTournaments(params);
 
             setData(response.data.data);
             setPagination(response.data.pagination);
@@ -61,7 +61,7 @@ function Tournaments() {
 
     useEffect(() => {
         fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pagination.page, pagination.limit, filter.status, filter.type, debouncedSearchText]);
 
 

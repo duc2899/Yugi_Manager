@@ -10,7 +10,7 @@ import utc from "dayjs/plugin/utc";
 
 import MDButton from "components/MDButton";
 import { createTournamentSchema } from "utils/schemaYup";
-import { createTournament } from 'api/tournamentsAPI';
+import tournamentAPI from 'api/tournamentsAPI';
 import { useState } from 'react';
 import { useAlert } from 'context/AlertContext';
 import MDBox from 'components/MDBox';
@@ -54,7 +54,7 @@ const CreateTournaments = ({ open, handleClose, fectchData }) => {
         };
 
         try {
-            await createTournament({
+            await tournamentAPI.createTournament({
                 data: payload
             });
         } catch (error) {

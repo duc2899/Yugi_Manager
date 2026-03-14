@@ -11,7 +11,7 @@ import Icon from '@mui/material/Icon';
 const routes = [
     {
         type: 'collapse',
-        name: 'Dashboard',
+        name: 'Tổng quan',
         key: 'dashboard',
         icon: <Icon fontSize="small">dashboard</Icon>,
         route: '/dashboard',
@@ -20,7 +20,7 @@ const routes = [
     },
     {
         type: 'collapse',
-        name: 'Cards',
+        name: 'Thẻ bài',
         key: 'cards',
         icon: <Icon fontSize="small">table_view</Icon>,
         route: '/cards',
@@ -38,7 +38,7 @@ const routes = [
     },
     {
         type: 'collapse',
-        name: 'Users',
+        name: 'Người chơi',
         key: 'users',
         icon: <Icon fontSize="small">person</Icon>,
         route: '/users',
@@ -52,6 +52,8 @@ const routes = [
     },
     {
         route: '/tournaments/:id',
+        name: 'Tournaments',
+        key: 'tournaments',
         component: <DetailTournament />,
         requiresAuth: true
     }

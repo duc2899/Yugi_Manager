@@ -32,6 +32,7 @@ const authReducer = (state, action) => {
 };
 
 export const AuthProvider = ({ children }) => {
+
     const [state, dispatch] = useReducer(authReducer, {
         user: null,
         isAuthenticated: false,
@@ -40,20 +41,20 @@ export const AuthProvider = ({ children }) => {
 
     // Kiểm tra auth khi khởi động app
     useEffect(() => {
-        // const loadUser = async () => {
-        //     try {
-        //         const user = await authAPI.getProfile();
-        //         dispatch({
-        //             type: 'LOGIN',
-        //             payload: user.data
-        //         });
-        //     } catch (error) {
-        //         // Nếu có lỗi nghĩa là cookie không hợp lệ hoặc hết hạn
-        //         dispatch({ type: 'LOGOUT' });
-        //     } finally {
-        //         dispatch({ type: 'LOADED' });
-        //     }
-        // };
+        const loadUser = async () => {
+            try {
+                const user = await authAPI.getProfile();
+                dispatch({
+                    type: 'LOGIN',
+                    payload: user.data
+                });
+            } catch (error) {
+                // Nếu có lỗi nghĩa là cookie không hợp lệ hoặc hết hạn
+                dispatch({ type: 'LOGOUT' });
+            } finally {
+                dispatch({ type: 'LOADED' });
+            }
+        };
 
         dispatch({
             type: 'LOGIN',
@@ -64,7 +65,7 @@ export const AuthProvider = ({ children }) => {
             }
         });
 
-        // loadUser();
+        loadUser();
     }, []);
 
     // Login function - chỉ cần gọi API và xử lý response
@@ -79,10 +80,15 @@ export const AuthProvider = ({ children }) => {
                 type: 'LOGIN',
                 payload: user.data
             });
-            return true;
+            return {
+                status: true,
+                message: "Đăng nhập thành công"
+            };
         } catch (error) {
-            console.error('Login failed:', error);
-            return false;
+            return {
+                status: false,
+                message: error.response.data.message
+            };
         }
     };
 

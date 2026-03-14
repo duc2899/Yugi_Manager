@@ -24,14 +24,12 @@ import MDButton from 'components/MDButton';
 import DetailUser from './DetailUser';
 import MDPagination from 'components/MDPagination';
 import { convertTimeVN } from 'utils';
-import { Box, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import { useDebounce } from 'use-debounce';
-import { ROLE_ACCOUNT } from 'config/constant';
 
 function Tables() {
     const [users, setUsers] = useState([]);
     const [textSearch, setTextSearch] = useState("")
-    const [currentRole, setCurrentRole] = useState('');
     const [debouncedSearchText] = useDebounce(textSearch, 500);
     const [pagination, setPagination] = useState({
         total: 0,
@@ -45,43 +43,30 @@ function Tables() {
         user: null
     });
 
-    const fetchUsers = async (page, limit) => {
+    const fetchData = async () => {
         try {
-            const response = await userAPI.getAllAccounts({
-                page: page,
-                limit: limit,
-            });
+            const params = {
+                page: pagination.page,
+                limit: pagination.limit,
+            };
+            if (debouncedSearchText) {
+                params.key = debouncedSearchText.trim();
+            }
+
+            const response = await userAPI.getAllAccounts(params);
 
             setUsers(response.data.data);
             setPagination(response.data.pagination);
         } catch (error) {
-            console.error('Error fetching users:', error);
+            console.error("Error fetching tournaments:", error);
         }
     };
 
     useEffect(() => {
-        const handleSearch = async () => {
-            try {
-                const response = await userAPI.searchAdvanced({
-                    page: pagination.page,
-                    limit: pagination.limit,
-                    name: debouncedSearchText,
-                    role: currentRole
-                });
-                setUsers(response.data.data);
-                setPagination(response.data.pagination);
-            } catch (error) {
-                console.error('Search error:', error);
-            }
-        };
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pagination.page, pagination.limit, debouncedSearchText]);
 
-        const shouldSearch = !!currentRole || !!debouncedSearchText;
-        if (shouldSearch) {
-            handleSearch();
-        } else {
-            fetchUsers(pagination.page, pagination.limit);
-        }
-    }, [debouncedSearchText, pagination.page, pagination.limit, currentRole]);
 
 
 
@@ -91,7 +76,7 @@ function Tables() {
                 {user?.code || 'N/A'}
             </MDTypography>
         ),
-        
+
         user: (
             <MDBox display="flex" alignItems="center" lineHeight={1}>
                 <MDAvatar src={user.avatarImage} name={user.displayName} size="sm" />
@@ -105,11 +90,6 @@ function Tables() {
                     <MDTypography variant="caption">{user.username}</MDTypography>
                 </MDBox>
             </MDBox>
-        ),
-        role: (
-            <MDTypography variant="button" color="text" fontWeight="medium">
-                {user?.role?.toUpperCase() || 'N/A'}
-            </MDTypography>
         ),
         isDisabled: (
             <MDBox ml={-1}>
@@ -150,16 +130,15 @@ function Tables() {
 
     const columns = [
         {
-            Header: 'user',
+            Header: 'Người chơi',
             accessor: 'user',
             width: '10%',
             align: 'left'
         },
         { Header: 'code', accessor: 'code', align: 'center' },
-        { Header: 'role', accessor: 'role', align: 'center' },
-        { Header: 'active', accessor: 'isDisabled', align: 'center' },
-        { Header: 'created at', accessor: 'createdAt', align: 'center' },
-        { Header: 'action', accessor: 'action', align: 'center' }
+        { Header: 'Hoạt động', accessor: 'isDisabled', align: 'center' },
+        { Header: 'Ngày tạo tài khoản', accessor: 'createdAt', align: 'center' },
+        { Header: 'Hành động', accessor: 'action', align: 'center' }
     ];
 
     const handlePageChange = (newPage) => {
@@ -185,46 +164,13 @@ function Tables() {
         }
     }
 
-    // useEffect(() => {
-    //     const handleSearch = async () => {
-    //         try {
-    //             const newPagination = { ...pagination, page: 1 };
-    //             setPagination(newPagination);
-
-    //             const response = await userAPI.searchAdvanced({
-    //                 ...newPagination,
-    //                 name: debouncedSearchText,
-    //                 role: currentRole
-    //             });
-    //             setUsers(response.data.data);
-    //             setPagination(response.data.pagination);
-    //         } catch (error) {
-    //             console.error('Search error:', error);
-    //         }
-    //     };
-
-    //     // Kiểm tra điều kiện search trực tiếp
-    //     const shouldSearch = !!currentRole || !!debouncedSearchText;
-    //     if (shouldSearch) {
-    //         handleSearch();
-    //     }
-
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [debouncedSearchText, pagination.page, pagination.limit, currentRole]);
-
-
-    const handleChangeRole = (event) => {
-        setCurrentRole(event.target.value);
-    };
-
     const isSearching = useMemo(() => {
-        return !!currentRole || !!textSearch;
-    }, [currentRole, textSearch]);
+        return !!textSearch;
+    }, [textSearch]);
 
     const handelResetFillter = () => {
-        setCurrentRole("")
         setTextSearch("")
-        fetchUsers(pagination.page, pagination.limit);
+        fetchData();
     }
 
     return (
@@ -244,7 +190,7 @@ function Tables() {
                                 borderRadius="lg"
                                 coloredShadow="info">
                                 <MDTypography variant="h6" color="white">
-                                    Users List
+                                    Danh sách người chơi
                                 </MDTypography>
                             </MDBox>
                             <MDBox
@@ -261,7 +207,7 @@ function Tables() {
                                 {/* Search Input - Full width trên mobile */}
                                 <TextField
                                     fullWidth
-                                    label="Search name..."
+                                    label="Tìm kiếm tên hoặc Code"
                                     size="small"
                                     value={textSearch}
                                     onChange={handleSearchText}
@@ -270,59 +216,6 @@ function Tables() {
                                         minWidth: { sm: '200px' },
                                     }}
                                 />
-                                {/* Payment Selector - Full width trên mobile */}
-                                <MDBox sx={{
-                                    width: { xs: '100%', sm: 'auto' },
-                                    minWidth: { sm: '200px' },
-                                    flexGrow: { xs: 1, sm: 0 }
-                                }}>
-                                    <FormControl fullWidth size="small">
-                                        <InputLabel>Role</InputLabel>
-                                        <Select
-                                            label="Role"
-                                            value={currentRole || ''}
-                                            onChange={handleChangeRole}
-                                            sx={{
-                                                '& .MuiSelect-select': {
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis'
-                                                },
-                                                padding: "8px"
-                                            }}
-                                            renderValue={(selected) => (
-                                                <Box component="span" sx={{
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    display: 'inline-block',
-                                                    width: '100%'
-                                                }}>
-                                                    {selected || 'Select method'}
-                                                </Box>
-                                            )}
-                                        >
-                                            {ROLE_ACCOUNT.map((role) => (
-                                                <MenuItem
-                                                    key={role}
-                                                    value={role}
-                                                    sx={{ minWidth: '200px' }}
-                                                >
-                                                    <Box sx={{
-                                                        display: 'flex',
-                                                        justifyContent: 'space-between',
-                                                        width: '100%'
-                                                    }}>
-                                                        <MDTypography variant="button" color="black">
-                                                            {role}
-                                                        </MDTypography>
-
-                                                    </Box>
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </MDBox>
 
                                 {isSearching &&
                                     <MDBox sx={{
@@ -347,7 +240,7 @@ function Tables() {
                                     entriesPerPage={false}
                                     showTotalEntries={false}
                                     noEndBorder
-                                    
+
                                 />
                             </MDBox>
                         </Card>

@@ -26,21 +26,19 @@ import BasicLayout from 'layouts/authentication/components/BasicLayout';
 // Images
 import bgImage from 'assets/images/bg-sign-in-basic.jpeg';
 import { useAuth } from 'context/AuthContext';
+import { useAlert } from 'context/AlertContext';
 
-// ✅ Validation schema
-const schema = yup.object().shape({
-    email: yup
-        .string()
-        .email('Email không hợp lệ')
-        .required('Vui lòng nhập email'),
-    password: yup.string().required('Vui lòng nhập mật khẩu')
-});
 
 function Basic() {
-    const { login, user } = useAuth();
+    const schema = yup.object().shape({
+        username: yup.string().required('Vui lòng nhập username'),
+        password: yup.string().required('Vui lòng nhập mật khẩu')
+    });
+
+    const { login } = useAuth();
     const [rememberMe, setRememberMe] = useState(false);
     const handleSetRememberMe = () => setRememberMe(!rememberMe);
-    // const { showAlert } = useAlert();
+    const { showAlert } = useAlert();
     const {
         register,
         handleSubmit,
@@ -50,11 +48,12 @@ function Basic() {
     });
 
     const onSubmit = async data => {
-        const success = await login(data);
-        if (success) {
-            // Login thành công, redirect hoặc làm gì đó
-            console.log('User info:', user);
+        const res = await login(data);
+        if (res.status) {
+            showAlert(res.message, "success")
+            return
         }
+        showAlert(res.message, "error")
     };
 
     return (
@@ -115,17 +114,17 @@ function Basic() {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <MDBox mb={2}>
                             <MDInput
-                                type="email"
-                                label="Email"
+                                type="username"
+                                label="Username"
                                 fullWidth
-                                {...register('email')}
-                                error={!!errors.email}
+                                {...register('username')}
+                                error={!!errors.username}
                             />
                         </MDBox>
                         <MDBox mb={2}>
                             <MDInput
                                 type="password"
-                                label="Password"
+                                label="Mật khẩu"
                                 fullWidth
                                 {...register('password')}
                                 error={!!errors.password}
@@ -146,7 +145,7 @@ function Basic() {
                                     userSelect: 'none',
                                     ml: -1
                                 }}>
-                                &nbsp;&nbsp;Remember me
+                                &nbsp;&nbsp;Ghi nhớ
                             </MDTypography>
                         </MDBox>
                         <MDBox mt={4} mb={1}>
@@ -157,7 +156,7 @@ function Basic() {
                                 fullWidth
                                 circular
                             >
-                                Sign in
+                                Đăng nhập
                             </MDButton>
                         </MDBox>
                     </form>

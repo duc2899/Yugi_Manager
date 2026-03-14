@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Icon from '@mui/material/Icon';
 import IconButton from '@mui/material/IconButton';
 import {
@@ -14,75 +14,35 @@ import {
 import MDButton from "components/MDButton";
 import MDBox from 'components/MDBox';
 import { useAlert } from 'context/AlertContext';
-import { io } from "socket.io-client";
+import adminAPI from "api/adminAPI";
 
 
 const UpdateVersion = ({ open, handleClose }) => {
-    const WS_URL = process.env.REACT_APP_WS_URL;
-
-    const socketRef = useRef(null);
 
     const { showAlert } = useAlert();
-    const [wsResponse, setWsResponse] = useState(null);
+    const [oldVersion, setOldVersion] = useState("");
     const [newVersion, setNewVersion] = useState("");
 
+    const fetchData = async () => {
+        const result = await adminAPI.getVersionClient();
+        setOldVersion(result.data.version);
+    }
     useEffect(() => {
-        if (!open) return;
+        fetchData()
+    }, [])
 
-        const socket = io(WS_URL, {
-            path: "/socket.io",
-        });
-
-        socketRef.current = socket;
-
-        socket.on("connect", () => {
-            console.log("🔌 Socket connected");
-            socket.emit("GET_CONFIG_VERSIONS");
-        });
-
-        socket.on("GET_CONFIG_VERSIONS", (data) => {
-            console.log("📦 Version data:", data);
-            setWsResponse(data);
-        });
-
-        socket.on("disconnect", () => {
-            console.log("❌ Socket disconnected");
-        });
-
-        socket.on("connect_error", (err) => {
-            console.error("❌ WS error", err.message);
-        });
-
-        return () => {
-            socket.disconnect();
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open]);
-
-
-
-
-
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!newVersion) {
             showAlert("Vui lòng nhập phiên bản mới", "error");
             return;
         }
-
-        if (newVersion === wsResponse?.currentVersion) {
-            showAlert("Phiên bản mới không được trùng với phiên bản hiện tại", "error");
-            return;
+        try {
+            await adminAPI.setVersionClient({ version: newVersion });
+            showAlert("Đã gửi yêu cầu cập nhật phiên bản", "success");
+            handleClose();
+        } catch (error) {            
+            showAlert(error.errors[0].message, "error");
         }
-        const socket = socketRef.current;
-        if (!socket || !socket.connected) {
-            showAlert("WebSocket chưa sẵn sàng", "error");
-            return;
-        }
-
-        socket.emit("TESTING_SET_CLIENT_VERSION", { version: newVersion });
-
-        showAlert("Đã gửi yêu cầu cập nhật phiên bản", "success");
-        handleClose();
     };
 
 
@@ -100,7 +60,7 @@ const UpdateVersion = ({ open, handleClose }) => {
                     <MDBox>
                         <TextField
                             disabled
-                            value={wsResponse?.clientVersion || "Not found version"}
+                            value={oldVersion || "Not found version"}
                             label="Phiên bản hiện tại"
                             fullWidth
                             margin="normal"

@@ -2,7 +2,7 @@ import { yugiClient } from './axiosClient';
 const authAPI = {
     login: async credentials => {
         const response = await yugiClient.post(
-            '/auth/loginNormal',
+            '/auth/login',
             credentials
         );
         return response.data;
@@ -14,7 +14,7 @@ const authAPI = {
     },
 
     getProfile: async () => {
-        const response = await yugiClient.get('/user/userInformation');
+        const response = await yugiClient.get('/auth/profile');
         return response.data;
     }
 };

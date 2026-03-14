@@ -22,11 +22,12 @@ import logo from './assets/images/logos/logo.png';
 import { useAuth } from 'context/AuthContext';
 // import LoadingScreen from 'layouts/loading';
 import { AlertProvider } from 'context/AlertContext';
+import LoadingScreen from 'layouts/loading';
 
 export default function App() {
     const [controller, dispatch] = useMaterialUIController();
     const { miniSidenav, direction, layout, sidenavColor, darkMode } = controller;
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
 
     const [onMouseEnter, setOnMouseEnter] = useState(false);
     const { pathname } = useLocation();
@@ -87,13 +88,13 @@ export default function App() {
             return [];
         });
 
-    // if (isLoading) return <LoadingScreen />;
+    if (isLoading) return <LoadingScreen />;
 
     return (
         <ThemeProvider theme={darkMode ? themeDark : theme}>
             <AlertProvider>
                 <CssBaseline />
-                {/* {isAuthenticated && ( */}
+                {isAuthenticated && (
                     <>
                         {layout === 'dashboard' && (
                             <>
@@ -110,19 +111,16 @@ export default function App() {
                         )}
                         {layout === 'vr' && <Configurator />}
                     </>
-                {/* )} */}
+                )}
 
                 <Routes>
                     {getRoutes(routes)}
                     <Route
                         path="*"
                         element={
-                             <Navigate
-                                to={'/dashboard'}
+                            <Navigate
+                                to={isAuthenticated ? '/dashboard' : '/authentication/sign-in'}
                             />
-                            // <Navigate
-                            //     to={isAuthenticated ? '/dashboard' : '/authentication/sign-in'}
-                            // />
                         }
                     />
                 </Routes>

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import ShieldIcon from '@mui/icons-material/Shield';
 // react-router components
 import { useLocation } from 'react-router-dom';
 
@@ -42,7 +44,7 @@ import MDAvatar from 'components/MDAvatar';
 import UpdateVersion from 'layouts/updateVersion';
 
 function DashboardNavbar({ absolute, light, isMini }) {
-    const { user, isAuthenticated, logout } = useAuth();
+    const { user, logout } = useAuth();
 
     const [navbarType, setNavbarType] = useState();
     const [controller, dispatch] = useMaterialUIController();
@@ -111,14 +113,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
             sx={{ mt: 2 }}
         >
             <NotificationItem
+                disable
+                icon={<ShieldIcon />}
+                title={user.role.toUpperCase()}
+            />
+            <NotificationItem
                 icon={<PermContactCalendarIcon />}
                 title="My Profile"
             />
             <NotificationItem
                 onClick={handleLogout}
-                icon={<Icon sx={{
-                    color: "red"
-                }}>logout</Icon>}
+                icon={<PowerSettingsNewIcon />}
                 title="Logout"
             />
         </Menu>
@@ -210,14 +215,18 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                 size="large"
                                 disableRipple
                             >
-                                {
-                                    isAuthenticated ?
-                                        <MDAvatar src={user.avatar} alt="Avatar" size="xs" onClick={handleOpenMenu} />
-                                        :
-                                        <Icon sx={iconsStyle} fontSize="large">
-                                            account_circle
-                                        </Icon>
-                                }
+                                <MDAvatar
+                                    src={user?.avatar || ""}
+                                    alt="Avatar"
+                                    size="xs"
+                                    sx={{
+                                        bgcolor: !user?.avatar ? "primary.main" : undefined,
+                                        pt: 0.3
+                                    }}
+                                    onClick={handleOpenMenu}
+                                >
+                                    {!user?.avatar && user?.username?.charAt(0).toUpperCase()}
+                                </MDAvatar>
 
                             </IconButton>
                             {renderMenu()}

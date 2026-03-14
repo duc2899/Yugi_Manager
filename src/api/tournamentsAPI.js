@@ -10,20 +10,31 @@ const axiosClient = axios.create({
     }
 });
 
-export const createTournament = async (data) => {
-    try {
-        const response = await axiosClient.post(`/createTournament`, data);
-        return response.data;
-    } catch (error) {
-        throw error.response?.data || error.message;
-    }
-};
-
-export const getTournaments = async (params = {}) => {
-    try {
-        const response = await yugiClient.get("/tournaments", { params })
-        return response.data
-    } catch (error) {
-        throw error.response?.data || error.message;
+const tournamentAPI = {
+    createTournament: async (data) => {
+        try {
+            const response = await axiosClient.post(`/createTournament`, data);
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+    getTournaments: async (params = {}) => {
+        try {
+            const response = await yugiClient.get("/tournaments", { params })
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+    getDetailTournament: async (id) => {
+        try {
+            const response = await yugiClient.get(`/tournaments/${id}`)
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 }
+
+export default tournamentAPI;

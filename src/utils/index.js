@@ -1,3 +1,4 @@
+import { STATUS_TOURNAMENT } from 'config/constant';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
@@ -65,7 +66,7 @@ const formatTimestampFixed = (ts) => {
  * @param {number|string} ts - The timestamp to format
  */
 const formatTimestampVN = (ts) => {
-    
+
     const d = new Date(ts);
 
     const formatter = new Intl.DateTimeFormat("en-US", {
@@ -82,9 +83,23 @@ const formatTimestampVN = (ts) => {
     return formatter.format(d);
 };
 
+/**
+ * Get status info
+ * @param {string} key - status key
+ * @param {string} type - "color" | "name"
+ */
+const getStatusInfo = (key, type = "color") => {
+    const status = STATUS_TOURNAMENT.find((item) => item.key === key);
+
+    if (!status) return type === "color" ? "#999" : "";
+
+    return status[type];
+};
+
 export {
     convertTimeVN,
     convertPriceVND,
     formatTimestampFixed,
-    formatTimestampVN
+    formatTimestampVN,
+    getStatusInfo
 }
