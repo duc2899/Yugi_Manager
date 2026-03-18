@@ -10,20 +10,12 @@ import MDBox from 'components/MDBox';
 
 const TournamentFilter = ({ filter, setFilter, setOpen }) => {
 
-    const handleChangeStatus = (event) => {
+    const handleChangeFilter = (field) => (event) => {
         setFilter((prev) => ({
             ...prev,
-            status: event.target.value
-        }))
+            [field]: event.target.value
+        }));
     };
-
-    const handleChangeType = (event) => {
-        setFilter((prev) => ({
-            ...prev,
-            type: event.target.value
-        }))
-    };
-
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -92,7 +84,7 @@ const TournamentFilter = ({ filter, setFilter, setOpen }) => {
                         <Select
                             value={filter.status}
                             label="Trạng thái"
-                            onChange={handleChangeStatus}
+                            onChange={handleChangeFilter("status")}
                             sx={{ p: 1.5 }}
                         >
                             {STATUS_TOURNAMENT.map((s) => (
@@ -118,7 +110,7 @@ const TournamentFilter = ({ filter, setFilter, setOpen }) => {
                         <Select
                             value={filter.type}
                             label="Loại"
-                            onChange={handleChangeType}
+                            onChange={handleChangeFilter("type")}
                             sx={{ p: 1.5 }}
                         >
                             {TYPE_TOURNAMENTS.map((s) => (

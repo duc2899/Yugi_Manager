@@ -34,16 +34,15 @@ function IconFilterGroup({
                                 '&:hover': { backgroundColor: '#5a5a5a' }
                             }}
                         >
-                            {item.name === 'All'
-                                ? 'All'
-                                : (
-                                    <img
-                                        src={icons[item.key]}
-                                        alt={item.name}
-                                        style={{ width: 24, height: 24 }}
-                                    />
-                                )
-                            }
+                            {item.name === 'All' || !icons || !icons[item.key] ? (
+                                item.name
+                            ) : (
+                                <img
+                                    src={icons[item.key]}
+                                    alt={item.name}
+                                    style={{ width: 24, height: 24 }}
+                                />
+                            )}
                         </MDButton>
                     </Tooltip>
                 )) : (

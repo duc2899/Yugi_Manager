@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect } from 'react';
 
 // react-github-btn
@@ -45,7 +30,8 @@ import {
     setWhiteSidenav,
     setFixedNavbar,
     setSidenavColor,
-    setDarkMode
+    setDarkMode,
+    setLang
 } from 'context';
 
 function Configurator() {
@@ -56,7 +42,8 @@ function Configurator() {
         sidenavColor,
         transparentSidenav,
         whiteSidenav,
-        darkMode
+        darkMode,
+        lang
     } = controller;
     const [disabled, setDisabled] = useState(false);
     const sidenavColors = [
@@ -102,6 +89,9 @@ function Configurator() {
     };
     const handleFixedNavbar = () => setFixedNavbar(dispatch, !fixedNavbar);
     const handleDarkMode = () => setDarkMode(dispatch, !darkMode);
+    const handleChangeLang = (value) => {
+        setLang(dispatch, value)
+    }
 
     // sidenav type buttons styles
     const sidenavTypeButtonsStyles = ({
@@ -117,9 +107,8 @@ function Configurator() {
         '&:hover, &:focus, &:focus:not(:hover)': {
             background: darkMode ? background.sidenav : white.main,
             color: darkMode ? white.main : dark.main,
-            border: `${borderWidth[1]} solid ${
-                darkMode ? white.main : dark.main
-            }`
+            border: `${borderWidth[1]} solid ${darkMode ? white.main : dark.main
+                }`
         }
     });
 
@@ -153,10 +142,10 @@ function Configurator() {
                 px={3}>
                 <MDBox>
                     <MDTypography variant="h5">
-                        Material UI Configurator
+                        Cài đặt
                     </MDTypography>
                     <MDTypography variant="body2" color="text">
-                        See our dashboard options.
+                        Tùy chọn bảng điều khiển
                     </MDTypography>
                 </MDBox>
 
@@ -181,7 +170,7 @@ function Configurator() {
 
             <MDBox pt={0.5} pb={3} px={3}>
                 <MDBox>
-                    <MDTypography variant="h6">Sidenav Colors</MDTypography>
+                    <MDTypography variant="h6">Màu thanh điều khiển</MDTypography>
 
                     <MDBox mb={0.5}>
                         {sidenavColors.map(color => (
@@ -195,11 +184,10 @@ function Configurator() {
                                     width: '24px',
                                     height: '24px',
                                     padding: 0,
-                                    border: `${borderWidth[1]} solid ${
-                                        darkMode
+                                    border: `${borderWidth[1]} solid ${darkMode
                                             ? background.sidenav
                                             : white.main
-                                    }`,
+                                        }`,
                                     borderColor: () => {
                                         let borderColorValue =
                                             sidenavColor === color && dark.main;
@@ -247,7 +235,7 @@ function Configurator() {
                 </MDBox>
 
                 <MDBox mt={3} lineHeight={1}>
-                    <MDTypography variant="h6">Sidenav Type</MDTypography>
+                    <MDTypography variant="h6">Loại thanh điều khiển</MDTypography>
                     <MDTypography variant="button" color="text">
                         Choose between different sidenav types.
                     </MDTypography>
@@ -269,7 +257,7 @@ function Configurator() {
                                     ? sidenavTypeActiveButtonStyles
                                     : sidenavTypeButtonsStyles
                             }>
-                            Dark
+                            Tối
                         </MDButton>
                         <MDBox sx={{ mx: 1, width: '8rem', minWidth: '8rem' }}>
                             <MDButton
@@ -283,7 +271,7 @@ function Configurator() {
                                         ? sidenavTypeActiveButtonStyles
                                         : sidenavTypeButtonsStyles
                                 }>
-                                Transparent
+                                Trong suốt
                             </MDButton>
                         </MDBox>
                         <MDButton
@@ -297,8 +285,50 @@ function Configurator() {
                                     ? sidenavTypeActiveButtonStyles
                                     : sidenavTypeButtonsStyles
                             }>
-                            White
+                            Trắng
                         </MDButton>
+                    </MDBox>
+                </MDBox>
+                  <MDBox mt={3} lineHeight={1}>
+                    <MDTypography variant="h6">Ngôn ngữ</MDTypography>
+                    <MDTypography variant="button" color="text">
+                        Hãy chọn ngôn ngữ bạn muốn
+                    </MDTypography>
+
+                    <MDBox
+                        sx={{
+                            display: 'flex',
+                            mt: 2,
+                            mr: 1
+                        }}>
+                        <MDButton
+                            color="dark"
+                            variant="gradient"
+                            onClick={() => handleChangeLang("vn")}
+                            disabled={disabled}
+                            fullWidth
+                            sx={
+                               lang === "vn"
+                                        ? sidenavTypeActiveButtonStyles
+                                        : sidenavTypeButtonsStyles
+                            }>
+                            Tiếng việt
+                        </MDButton>
+                        <MDBox sx={{ mx: 1, width: '8rem', minWidth: '8rem' }}>
+                            <MDButton
+                                color="dark"
+                                variant="gradient"
+                               onClick={() => handleChangeLang("en")}
+                                disabled={disabled}
+                                fullWidth
+                                sx={
+                                    lang === "en"
+                                        ? sidenavTypeActiveButtonStyles
+                                        : sidenavTypeButtonsStyles
+                                }>
+                                Tiếng Anh
+                            </MDButton>
+                        </MDBox>
                     </MDBox>
                 </MDBox>
                 <MDBox
@@ -320,8 +350,7 @@ function Configurator() {
                     justifyContent="space-between"
                     alignItems="center"
                     lineHeight={1}>
-                    <MDTypography variant="h6">Light / Dark</MDTypography>
-
+                    <MDTypography variant="h6">Sáng / Tối</MDTypography>
                     <Switch checked={darkMode} onChange={handleDarkMode} />
                 </MDBox>
                 <Divider />

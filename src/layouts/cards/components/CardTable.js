@@ -1,26 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import cardApi from "../../../../api/cardAPI";
+import cardApi from "../../../api/cardAPI";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import wind from 'assets/images/attributes/wind.png';
-import dark from 'assets/images/attributes/dark.png';
-import divine from 'assets/images/attributes/divine.png';
-import earth from 'assets/images/attributes/earth.png';
-import fire from 'assets/images/attributes/fire.png';
-import light from 'assets/images/attributes/light.png';
-import water from 'assets/images/attributes/water.png';
+
 import { Stack } from "@mui/material";
 import LazyImage from "components/common/LazyImage";
 import { URL_IMAGE } from "config/constant";
 import MDInput from "components/MDInput";
 import { useDebounce } from "use-debounce";
+import { useMaterialUIController } from "context";
+import {  ATTRIBUTE_ICONS } from "config/filter";
+import { BACKGROUND_CARDS } from "config/constant";
 
-function ShowCards() {
-
+function ShowCards({ cards, setCards }) {
+    const [controller] = useMaterialUIController();
+    const {
+        lang
+    } = controller;
     const PREVIEW_WIDTH = 280;
     const PREVIEW_HEIGHT = 350;
     const OFFSET = 20;
-    const [cards, setCards] = useState([]);
+
     const [hoverCard, setHoverCard] = useState(null);
     const [pos, setPos] = useState({ x: 0, y: 0 });
     const [page, setPage] = useState(1);
@@ -117,67 +117,6 @@ function ShowCards() {
         event.currentTarget.style.transform = 'scale(1)'
     }
 
-    const ATTRIBUTE_ICONS = {
-        dark,
-        light,
-        earth,
-        water,
-        fire,
-        wind,
-        divine
-    }
-
-    const BACKGROUND_CARDS = [
-        {
-            type: "Monster",
-            monsterType: "Normal",
-            background: "radial-gradient(circle at top left, #F7D58A, #C9A24D)",
-        },
-        {
-            type: "Monster",
-            monsterType: "Effect",
-            background: "radial-gradient(circle at top left, #F3A55A, #C96B2C)",
-        },
-        {
-            type: "Monster",
-            monsterType: "Ritual",
-            background: "radial-gradient(circle at top left, #7FB3E6, #2F6DB3)",
-        },
-        {
-            type: "Monster",
-            monsterType: "Fusion",
-            background: "radial-gradient(circle at top left, #C28BD9, #6B2C91)"
-        },
-        {
-            type: "Monster",
-            monsterType: "Synchro",
-            background: "radial-gradient(circle at top left, #F5F5F5, #9E9E9E)"
-        },
-        {
-            type: "Monster",
-            monsterType: "Xyz",
-            background: "radial-gradient(circle at top left, #555555, #000000)"
-        },
-        {
-            type: "Monster",
-            monsterType: "Pendulum",
-            background: "linear-gradient(135deg, #2E8B57, #D2B48C)"
-        },
-        {
-            type: "Monster",
-            monsterType: "Link",
-            background: "radial-gradient(circle at top left, #1E90FF, #0B3C6D)"
-        },
-        {
-            type: "Spell",
-            background: "radial-gradient(circle at top left, #4CAF91, #1E7F6F)"
-        },
-        {
-            type: "Trap",
-            background: "radial-gradient(circle at top left, #C94B9A, #7A1F5C)"
-        }
-    ]
-
     const getBackgroundByType = (type, monsterType = null) => {
         const bgObj = BACKGROUND_CARDS.find((bg) => bg.type.toLowerCase() === type.toLowerCase() && (monsterType ? bg.monsterType.toLowerCase() === monsterType.toLowerCase() : true));
         return bgObj ? bgObj.background : "radial-gradient(circle at top left, #F7D58A, #C9A24D)";
@@ -189,7 +128,6 @@ function ShowCards() {
             setTextSearch(val);
         }
     }
-
 
     return (
         <div style={{
@@ -372,7 +310,7 @@ function ShowCards() {
                             </MDBox>
                             <div style={{ padding: "10px" }}>
                                 <MDTypography variant="body2" color={"black"} fontWeight="regular">
-                                    {hoverCard.desc}
+                                    {lang === "en" ? hoverCard.desc : hoverCard.descVN}
                                 </MDTypography>
                             </div>
                         </div>

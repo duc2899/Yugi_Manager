@@ -85,11 +85,65 @@ const TYPE_TOURNAMENTS = [
         key: "LOCAL"
     },
 ]
+
+const BACKGROUND_CARDS = [
+    {
+        type: "Monster",
+        monsterType: "Normal",
+        background: "radial-gradient(circle at top left, #F7D58A, #C9A24D)",
+    },
+    {
+        type: "Monster",
+        monsterType: "Effect",
+        background: "radial-gradient(circle at top left, #F3A55A, #C96B2C)",
+    },
+    {
+        type: "Monster",
+        monsterType: "Ritual",
+        background: "radial-gradient(circle at top left, #7FB3E6, #2F6DB3)",
+    },
+    {
+        type: "Monster",
+        monsterType: "Fusion",
+        background: "radial-gradient(circle at top left, #C28BD9, #6B2C91)"
+    },
+    {
+        type: "Monster",
+        monsterType: "Synchro",
+        background: "radial-gradient(circle at top left, #F5F5F5, #9E9E9E)"
+    },
+    {
+        type: "Monster",
+        monsterType: "Xyz",
+        background: "radial-gradient(circle at top left, #555555, #000000)"
+    },
+    {
+        type: "Monster",
+        monsterType: "Pendulum",
+        background: "linear-gradient(135deg, #2E8B57, #D2B48C)"
+    },
+    {
+        type: "Monster",
+        monsterType: "Link",
+        background: "radial-gradient(circle at top left, #1E90FF, #0B3C6D)"
+    },
+    {
+        type: "Spell",
+        background: "radial-gradient(circle at top left, #4CAF91, #1E7F6F)"
+    },
+    {
+        type: "Trap",
+        background: "radial-gradient(circle at top left, #C94B9A, #7A1F5C)"
+    }
+]
+
+
 export {
     PAYMENT_METHODS,
     STATUS_BILL,
     ROLE_ACCOUNT,
     URL_IMAGE,
     STATUS_TOURNAMENT,
-    TYPE_TOURNAMENTS
+    TYPE_TOURNAMENTS,
+    BACKGROUND_CARDS,
 }

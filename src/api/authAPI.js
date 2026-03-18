@@ -9,7 +9,7 @@ const authAPI = {
     },
 
     logout: async () => {
-        const response = await yugiClient.post('/auth/logout');
+        const response = await yugiClient.get('/auth/logout');
         return response.data;
     },
 

@@ -42,6 +42,9 @@ function reducer(state, action) {
         case 'DARKMODE': {
             return { ...state, darkMode: action.value };
         }
+        case 'LANG': {
+            return { ...state, lang: action.value };
+        }
         default: {
             throw new Error(`Unhandled action type: ${action.type}`);
         }
@@ -60,7 +63,8 @@ function MaterialUIControllerProvider({ children }) {
         openConfigurator: false,
         direction: 'ltr',
         layout: 'dashboard',
-        darkMode: false
+        darkMode: false,
+        lang: "vn"
     };
 
     const [controller, dispatch] = useReducer(reducer, initialState);
@@ -106,7 +110,8 @@ const setOpenConfigurator = (dispatch, value) =>
 const setDirection = (dispatch, value) =>
     dispatch({ type: 'DIRECTION', value });
 const setLayout = (dispatch, value) => dispatch({ type: 'LAYOUT', value });
-const setDarkMode = (dispatch, value) => dispatch({ type: 'DARKMODE', value });
+const setDarkMode = (dispatch, value) => dispatch({ type: 'DARKMODE', value })
+const setLang = (dispatch, value) => dispatch({ type: 'LANG', value });;
 
 export {
     MaterialUIControllerProvider,
@@ -120,5 +125,6 @@ export {
     setOpenConfigurator,
     setDirection,
     setLayout,
-    setDarkMode
+    setDarkMode,
+    setLang
 };

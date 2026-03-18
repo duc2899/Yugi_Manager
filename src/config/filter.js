@@ -1,4 +1,21 @@
-const TYPE_MONSTERS = [
+import wind from 'assets/images/attributes/wind.png';
+import dark from 'assets/images/attributes/dark.png';
+import divine from 'assets/images/attributes/divine.png';
+import earth from 'assets/images/attributes/earth.png';
+import fire from 'assets/images/attributes/fire.png';
+import light from 'assets/images/attributes/light.png';
+import water from 'assets/images/attributes/water.png';
+
+
+import normal from 'assets/images/spell/normal.png';
+import continuous from 'assets/images/spell/continuous.png';
+import counter from 'assets/images/spell/counter.png';
+import equip from 'assets/images/spell/equip.png';
+import field from 'assets/images/spell/field.png';
+import ritual from 'assets/images/spell/ritual.png';
+import quickPlay from 'assets/images/spell/quickPlay.png';
+
+const TYPE_CATEGORIES_MONSTERS = [
     {
         name: 'All',
         key: 'all'
@@ -150,4 +167,29 @@ const TYPE_ATTRIBUTES = [
     }
 ]
 
-export  { TYPE_MONSTERS, TYPE_SPELLS, TYPE_TRAPS, TYPE_ATTRIBUTES };
+const ATTRIBUTE_ICONS = {
+    dark,
+    light,
+    earth,
+    water,
+    fire,
+    wind,
+    divine
+}
+
+const SPELL_ICONS = {
+    normal,
+    field,
+    equip,
+    quickPlay,
+    continuous,
+    ritual
+}
+
+const TRAP_ICONS = {
+    normal,
+    continuous,
+    counter
+}
+
+export { TYPE_CATEGORIES_MONSTERS, TYPE_SPELLS, SPELL_ICONS, TYPE_TRAPS, TYPE_ATTRIBUTES, ATTRIBUTE_ICONS, TRAP_ICONS };
