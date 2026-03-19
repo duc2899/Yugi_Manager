@@ -20,13 +20,13 @@ function IconFilterGroup({
                 {data.length > 0 ? data.map(item => (
                     <Tooltip key={item.key} title={item.name} arrow>
                         <MDButton
-                            onClick={() => onSelect(item.key)}
+                            onClick={() => onSelect(item.name)}
                             size="small"
                             sx={{
                                 padding: '8px',
                                 minWidth: '40px',
                                 height: '40px',
-                                backgroundColor: selected.includes(item.key)
+                                backgroundColor: selected.includes(item.name)
                                     ? '#ffa500'
                                     : '#4a4a4a',
                                 color: '#fff',

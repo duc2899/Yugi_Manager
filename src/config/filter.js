@@ -17,152 +17,152 @@ import quickPlay from 'assets/images/spell/quickPlay.png';
 
 const TYPE_CATEGORIES_MONSTERS = [
     {
-        name: 'All',
+        name: 'ALL',
         key: 'all'
     },
     {
-        name: 'Normal',
+        name: 'NORMAL',
         key: 'normal'
     },
     {
-        name: 'Effect',
+        name: 'EFFECT',
         key: 'effect'
     },
     {
-        name: 'Fusion',
+        name: 'FUSION',
         key: 'fusion'
     },
     {
-        name: 'Synchro',
+        name: 'SYNCHRO',
         key: 'synchro'
     },
     {
-        name: 'Ritual',
+        name: 'RITUAL',
         key: 'ritual'
     },
     {
-        name: 'Xyz',
+        name: 'XYZ',
         key: 'xyz'
     },
     {
-        name: 'Link',
+        name: 'LINK',
         key: 'link'
     },
     {
-        name: 'Pendulum',
+        name: 'PENDULUM',
         key: 'pendulum'
     },
     {
-        name: 'Token',
+        name: 'TOKEN',
         key: 'token'
     },
     {
-        name: "Gemini",
+        name: "GEMINI",
         key: "gemini"
     },
     {
-        name: "Spirit",
+        name: "SPIRIT",
         key: "spirit"
     },
     {
-        name: "Toon",
+        name: "TOON",
         key: "toon"
     },
     {
-        name: "Union",
+        name: "UNION",
         key: "union"
     },
     {
-        name: "Flip",
+        name: "FLIP",
         key: "flip"
     },
     {
-        name: "Tuner",
+        name: "TUNER",
         key: "tuner"
     }
 ]
 
 const TYPE_SPELLS = [
     {
-        name: 'All',
+        name: 'ALL',
         key: 'all'
     },
     {
-        name: 'Normal',
+        name: 'NORMAL',
         key: 'normal'
     },
     {
-        name: 'Field',
+        name: 'FIELD',
         key: 'field'
     },
     {
-        name: 'Equip',
+        name: 'EQUIP',
         key: 'equip'
     },
     {
-        name: 'Quick-Play',
+        name: 'QUICK-PLAY',
         key: 'quickPlay'
     },
     {
-        name: 'Continuous',
+        name: 'CONTINUOUS',
         key: 'continuous'
     },
     {
-        name: 'Ritual',
+        name: 'RITUAL',
         key: 'ritual'
     }
 ]
 
 const TYPE_TRAPS = [
     {
-        name: 'All',
+        name: 'ALL',
         key: 'all'
     },
     {
-        name: 'Normal',
+        name: 'NORMAL',
         key: 'normal'
     },
     {
-        name: 'Continuous',
+        name: 'CONTINUOUS',
         key: 'continuous'
     },
     {
-        name: 'Counter',
+        name: 'COUNTER',
         key: 'counter'
     }
 ]
 
 const TYPE_ATTRIBUTES = [
     {
-        name: 'All',
+        name: 'ALL',
         key: 'all'
     },
     {
-        name: 'Dark',
+        name: 'DARK',
         key: 'dark'
     },
     {
-        name: 'Light',
+        name: 'LIGHT',
         key: 'light'
     },
     {
-        name: 'Earth',
+        name: 'EARTH',
         key: 'earth'
     },
     {
-        name: 'Water',
+        name: 'WATER',
         key: 'water'
     },
     {
-        name: 'Fire',
+        name: 'FIRE',
         key: 'fire'
     },
     {
-        name: 'Wind',
+        name: 'WIND',
         key: 'wind'
     },
     {
-        name: 'Divine',
+        name: 'DIVINE',
         key: 'divine'
     }
 ]
@@ -192,4 +192,10 @@ const TRAP_ICONS = {
     counter
 }
 
-export { TYPE_CATEGORIES_MONSTERS, TYPE_SPELLS, SPELL_ICONS, TYPE_TRAPS, TYPE_ATTRIBUTES, ATTRIBUTE_ICONS, TRAP_ICONS };
+const FILTER_GROUP = {
+    MONSTER: ["monsterType", "monsterCategory", "monsterAttribute", "level"],
+    SPELL: ["spellType"],
+    TRAP: ["trapType"]
+};
+
+export { TYPE_CATEGORIES_MONSTERS, TYPE_SPELLS, SPELL_ICONS, TYPE_TRAPS, FILTER_GROUP, TYPE_ATTRIBUTES, ATTRIBUTE_ICONS, TRAP_ICONS };

@@ -6,28 +6,92 @@ import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import Footer from 'examples/Footer';
 import Fillter from './components/CardFilter';
 import ShowCards from './components/CardTable';
+import { useDebounce } from 'use-debounce';
+import cardApi from "../../api/cardAPI";
+import { buildParams } from 'helpers/card';
 
 function Cards() {
     const [cards, setCards] = useState([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const [textSearch, setTextSearch] = useState("");
+    const [debouncedSearchText] = useDebounce(textSearch, 500);
+
     const [filter, setFilter] = useState({
         monsterType: [],
-        monsterCategories: [],
+        monsterCategory: [],
         type: null,
         monsterAttribute: [],
         level: null,
         spellType: null,
         trapType: null
-    })
+    });
+
+    const fetchCards = async (pageNumber = 1, isReset = false) => {
+        if (loading) return;
+
+        try {
+            setLoading(true);
+
+            const params = buildParams(pageNumber, filter, debouncedSearchText);
+
+            const res = await cardApi.searchCard(params);
+            const newCards = res.data.data;
+
+            if (isReset) {
+                setCards(newCards);
+            } else {
+                setCards(prev => [...prev, ...newCards]);
+            }
+
+            setHasMore(newCards.length > 0);
+
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // // load lần đầu
+    // useEffect(() => {
+    //     fetchCards(1, true);
+    // }, []);
+
+    // khi filter/search thay đổi → reset
+    useEffect(() => {
+        setPage(1);
+        setCards([]);
+        fetchCards(1, true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filter, debouncedSearchText]);
+
+    // load more
+    const handleLoadMore = () => {
+        if (!hasMore || loading) return;
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchCards(nextPage);
+    };
     return (
         <DashboardLayout>
             <DashboardNavbar />
             <MDBox mb={2} />
             <MDBox sx={{ display: 'flex', gap: 2, height: '100vh', mb: 4 }}>
                 <MDBox sx={{ flex: '0 0 75%', height: '100%', }}>
-                    <ShowCards cards={cards} setCards={setCards}/>
+                    <ShowCards
+                        cards={cards}
+                        loading={loading}
+                        hasMore={hasMore}
+                        onLoadMore={handleLoadMore}
+                        textSearch={textSearch}
+                        setTextSearch={setTextSearch}
+                    />
                 </MDBox>
                 <MDBox sx={{ flex: '0 0 25%', maxHeight: '100%', }}>
-                    <Fillter filter={filter} setFilter={setFilter}/>
+                    <Fillter filter={filter} setFilter={setFilter} />
                 </MDBox>
             </MDBox>
             <Footer />

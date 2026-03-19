@@ -107,12 +107,12 @@ export default styled(Button)(({ theme, ownerState }) => {
                 boxShadow: hoveredBoxShadowValue
             },
 
-            '&:focus:not(:hover)': {
-                backgroundColor: focusedBackgroundValue,
-                boxShadow: palette[color]
-                    ? boxShadow([0, 0], [0, 3.2], palette[color].main, 0.5)
-                    : boxShadow([0, 0], [0, 3.2], white.main, 0.5)
-            },
+            // '&:focus:not(:hover)': {
+            //     backgroundColor: focusedBackgroundValue,
+            //     boxShadow: palette[color]
+            //         ? boxShadow([0, 0], [0, 3.2], palette[color].main, 0.5)
+            //         : boxShadow([0, 0], [0, 3.2], white.main, 0.5)
+            // },
 
             '&:disabled': {
                 backgroundColor: backgroundValue,
@@ -154,10 +154,10 @@ export default styled(Button)(({ theme, ownerState }) => {
                 borderColor: colorValue
             },
 
-            '&:focus:not(:hover)': {
-                background: transparent.main,
-                boxShadow: boxShadowValue
-            },
+            // '&:focus:not(:hover)': {
+            //     background: transparent.main,
+            //     boxShadow: boxShadowValue
+            // },
 
             '&:active:not(:hover)': {
                 backgroundColor: colorValue,

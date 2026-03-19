@@ -1,45 +1,82 @@
 import React from 'react';
-import MDBox from 'components/MDBox';
-import MDTypography from 'components/MDTypography';
-import { Box, Tooltip } from '@mui/material';
-
 
 import star from 'assets/images/star.png';
 
-
-import { TYPE_SPELLS, TYPE_TRAPS, TYPE_ATTRIBUTES, TYPE_CATEGORIES_MONSTERS } from 'config/filter';
+import MDBox from 'components/MDBox';
+import MDTypography from 'components/MDTypography';
+import { Box, Tooltip } from '@mui/material';
+import { TYPE_SPELLS, TYPE_TRAPS, TYPE_ATTRIBUTES, TYPE_CATEGORIES_MONSTERS, SPELL_ICONS, TRAP_ICONS, FILTER_GROUP, ATTRIBUTE_ICONS } from 'config/filter';
 import IconFilterGroup from './IconFilterGroup';
-import { SPELL_ICONS } from 'config/filter';
-import { TRAP_ICONS } from 'config/filter';
-import { ATTRIBUTE_ICONS } from 'config/filter';
+import { hasValue, resetFields } from 'helpers/card';
 
 function Filter({ filter, setFilter }) {
 
+   
+    
     const handleChangeFilter = (field, isMultiple = false) => (value) => {
         setFilter((prev) => {
+            // ===== 1. update value =====
+            let newValue;
+
             if (isMultiple) {
-                // dạng array (multi select)
                 const current = prev[field] || [];
 
                 if (value === "all") {
-                    return { ...prev, [field]: [] };
+                    newValue = [];
+                } else {
+                    newValue = current.includes(value)
+                        ? current.filter((i) => i !== value)
+                        : [...current, value];
+                }
+            } else {
+                newValue = prev[field] === value ? null : value;
+            }
+
+            let newFilter = {
+                ...prev,
+                [field]: newValue
+            };
+
+            // ===== FIX TOGGLE OFF =====
+            if (!hasValue(newValue)) {
+                let activeGroup = null;
+
+                if (FILTER_GROUP.MONSTER.includes(field)) activeGroup = "MONSTER";
+                if (FILTER_GROUP.SPELL.includes(field)) activeGroup = "SPELL";
+                if (FILTER_GROUP.TRAP.includes(field)) activeGroup = "TRAP";
+
+                if (activeGroup) {
+                    newFilter = resetFields(newFilter, FILTER_GROUP[activeGroup]);
                 }
 
-                const exists = current.includes(value);
-
                 return {
-                    ...prev,
-                    [field]: exists
-                        ? current.filter((i) => i !== value)
-                        : [...current, value]
+                    ...newFilter,
+                    type: null
                 };
             }
 
-            // dạng single (radio-like)
-            return {
-                ...prev,
-                [field]: prev[field] === value ? null : value
-            };
+            // ===== 2. determine group =====
+            let activeGroup = null;
+
+            if (FILTER_GROUP.MONSTER.includes(field)) activeGroup = "MONSTER";
+            if (FILTER_GROUP.SPELL.includes(field)) activeGroup = "SPELL";
+            if (FILTER_GROUP.TRAP.includes(field)) activeGroup = "TRAP";
+
+            if (!activeGroup) return newFilter;
+
+            // ===== 3. reset other groups =====
+            const otherGroups = Object.keys(FILTER_GROUP).filter(
+                (g) => g !== activeGroup
+            );
+
+            otherGroups.forEach((group) => {
+                newFilter = resetFields(newFilter, FILTER_GROUP[group]);
+            });
+
+            // ===== 4. set type =====
+            newFilter.type = activeGroup;
+
+            return newFilter;
         });
     };
 
@@ -47,10 +84,10 @@ function Filter({ filter, setFilter }) {
         <MDBox sx={{ p: '20px', backgroundColor: '#2a2a2a', borderRadius: '8px', display: 'flex', flexDirection: 'column', height: "100%" }}>
 
             <IconFilterGroup
-                title="Monster Type"
+                title="Monster Categories"
                 data={TYPE_CATEGORIES_MONSTERS}
-                selected={filter.monsterType}
-                onSelect={handleChangeFilter("monsterType", true)}
+                selected={filter.monsterCategory}
+                onSelect={handleChangeFilter("monsterCategory", true)}
                 icons={[]}
             />
 

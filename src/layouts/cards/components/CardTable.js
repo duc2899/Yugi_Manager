@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import cardApi from "../../../api/cardAPI";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
@@ -7,12 +6,18 @@ import { Stack } from "@mui/material";
 import LazyImage from "components/common/LazyImage";
 import { URL_IMAGE } from "config/constant";
 import MDInput from "components/MDInput";
-import { useDebounce } from "use-debounce";
 import { useMaterialUIController } from "context";
-import {  ATTRIBUTE_ICONS } from "config/filter";
+import { ATTRIBUTE_ICONS } from "config/filter";
 import { BACKGROUND_CARDS } from "config/constant";
 
-function ShowCards({ cards, setCards }) {
+function CardTable({
+    cards,
+    loading,
+    hasMore,
+    onLoadMore,
+    textSearch,
+    setTextSearch
+}) {
     const [controller] = useMaterialUIController();
     const {
         lang
@@ -23,45 +28,10 @@ function ShowCards({ cards, setCards }) {
 
     const [hoverCard, setHoverCard] = useState(null);
     const [pos, setPos] = useState({ x: 0, y: 0 });
-    const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
-    const [textSearch, setTextSearch] = useState("")
-    const [debouncedSearchText] = useDebounce(textSearch, 500);
 
 
     const observerRef = useRef(null);
     const bottomRef = useRef(null);
-
-    const fetchCards = async (pageNumber) => {
-        if (loading || !hasMore) return;
-
-        try {
-            setLoading(true);
-
-            const data = await cardApi.getAllCards({
-                page: pageNumber,
-                limit: 90,
-            });
-
-            const newCards = data.data.data;
-
-            if (newCards.length === 0) {
-                setHasMore(false);
-            } else {
-                setCards(prev => [...prev, ...newCards]);
-            }
-
-        } catch (error) {
-            console.error("Error fetching cards:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchCards(1);
-    }, []);
 
     useEffect(() => {
         if (!hasMore) return;
@@ -69,26 +39,18 @@ function ShowCards({ cards, setCards }) {
         observerRef.current = new IntersectionObserver(
             (entries) => {
                 if (entries[0].isIntersecting && !loading) {
-                    const nextPage = page + 1;
-                    setPage(nextPage);
-                    fetchCards(nextPage);
+                    onLoadMore();
                 }
             },
-            {
-                threshold: 1,
-            }
+            { threshold: 1 }
         );
 
         if (bottomRef.current) {
             observerRef.current.observe(bottomRef.current);
         }
 
-        return () => {
-            if (observerRef.current) {
-                observerRef.current.disconnect();
-            }
-        };
-    }, [page, loading, hasMore]);
+        return () => observerRef.current?.disconnect();
+    }, [hasMore, loading]);
 
     const handleMouseEnter = (card, e) => {
         setHoverCard(card);
@@ -120,13 +82,6 @@ function ShowCards({ cards, setCards }) {
     const getBackgroundByType = (type, monsterType = null) => {
         const bgObj = BACKGROUND_CARDS.find((bg) => bg.type.toLowerCase() === type.toLowerCase() && (monsterType ? bg.monsterType.toLowerCase() === monsterType.toLowerCase() : true));
         return bgObj ? bgObj.background : "radial-gradient(circle at top left, #F7D58A, #C9A24D)";
-    }
-
-    const handleSearchText = (e) => {
-        const val = e.target.value;
-        if (val !== textSearch) {
-            setTextSearch(val);
-        }
     }
 
     return (
@@ -321,4 +276,4 @@ function ShowCards({ cards, setCards }) {
     );
 }
 
-export default ShowCards;
+export default CardTable;
