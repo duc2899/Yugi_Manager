@@ -252,11 +252,12 @@ function Configurator() {
                             onClick={handleDarkSidenav}
                             disabled={disabled}
                             fullWidth
-                            sx={
-                                !transparentSidenav && !whiteSidenav
-                                    ? sidenavTypeActiveButtonStyles
-                                    : sidenavTypeButtonsStyles
-                            }>
+                            // sx={
+                            //     !transparentSidenav && !whiteSidenav
+                            //         ? sidenavTypeActiveButtonStyles
+                            //         : sidenavTypeButtonsStyles
+                            // }
+                        >
                             Tối
                         </MDButton>
                         <MDBox sx={{ mx: 1, width: '8rem', minWidth: '8rem' }}>

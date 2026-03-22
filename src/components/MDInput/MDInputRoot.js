@@ -22,7 +22,7 @@ export default styled(TextField)(({ theme, ownerState }) => {
     const { error, success, disabled } = ownerState;
 
     const {
-        grey,
+        gray,
         transparent,
         error: colorError,
         success: colorSuccess
@@ -69,8 +69,17 @@ export default styled(TextField)(({ theme, ownerState }) => {
 
     return {
         backgroundColor: disabled
-            ? `${grey[200]} !important`
+            ? `${gray[200]} !important`
             : transparent.main,
+
+        // ===== HIDE ARROW NUMBER INPUT =====
+        "& input[type=number]": {
+            MozAppearance: "textfield", // Firefox
+        },
+        "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+            WebkitAppearance: "none", // Chrome, Safari
+            margin: 0,
+        },
         pointerEvents: disabled ? 'none' : 'auto',
         ...(error && errorStyles()),
         ...(success && successStyles())

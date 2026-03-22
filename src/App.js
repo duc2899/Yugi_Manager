@@ -61,7 +61,7 @@ export default function App() {
             setMiniSidenav(dispatch, true);
             setOnMouseEnter(false);
         }
-    };
+    };    
 
     const getRoutes = allRoutes =>
         allRoutes.flatMap(route => {

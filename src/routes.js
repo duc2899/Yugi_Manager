@@ -7,6 +7,7 @@ import SignIn from 'layouts/authentication/sign-in';
 
 // @mui icons
 import Icon from '@mui/material/Icon';
+import AccountsAdmin from 'layouts/userAdmin';
 
 const routes = [
     {
@@ -43,6 +44,15 @@ const routes = [
         icon: <Icon fontSize="small">person</Icon>,
         route: '/users',
         component: <Users />,
+        requiresAuth: true
+    },
+    {
+        type: 'collapse',
+        name: 'Người dùng',
+        key: 'users-admin',
+        icon: <Icon fontSize="small">person</Icon>,
+        route: '/users-admin',
+        component: <AccountsAdmin />,
         requiresAuth: true
     },
     {

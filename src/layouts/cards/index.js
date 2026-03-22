@@ -5,7 +5,7 @@ import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import Footer from 'examples/Footer';
 import Fillter from './components/CardFilter';
-import ShowCards from './components/CardTable';
+import CardTable from './components/CardTable';
 import { useDebounce } from 'use-debounce';
 import cardApi from "../../api/cardAPI";
 import { buildParams } from 'helpers/card';
@@ -24,10 +24,14 @@ function Cards() {
         monsterCategory: [],
         type: null,
         monsterAttribute: [],
-        level: null,
+        lte: null,
+        gte: null,
         spellType: null,
         trapType: null
     });
+
+    console.log(filter);
+    
 
     const fetchCards = async (pageNumber = 1, isReset = false) => {
         if (loading) return;
@@ -55,14 +59,8 @@ function Cards() {
         }
     };
 
-    // // load lần đầu
-    // useEffect(() => {
-    //     fetchCards(1, true);
-    // }, []);
-
     // khi filter/search thay đổi → reset
     useEffect(() => {
-        setPage(1);
         setCards([]);
         fetchCards(1, true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,7 +79,7 @@ function Cards() {
             <MDBox mb={2} />
             <MDBox sx={{ display: 'flex', gap: 2, height: '100vh', mb: 4 }}>
                 <MDBox sx={{ flex: '0 0 75%', height: '100%', }}>
-                    <ShowCards
+                    <CardTable
                         cards={cards}
                         loading={loading}
                         hasMore={hasMore}

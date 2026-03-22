@@ -1,27 +1,80 @@
 import React from 'react';
 
-import star from 'assets/images/star.png';
-
 import MDBox from 'components/MDBox';
-import MDTypography from 'components/MDTypography';
-import { Box, Tooltip } from '@mui/material';
-import { TYPE_SPELLS, TYPE_TRAPS, TYPE_ATTRIBUTES, TYPE_CATEGORIES_MONSTERS, SPELL_ICONS, TRAP_ICONS, FILTER_GROUP, ATTRIBUTE_ICONS } from 'config/filter';
+import { TYPE_SPELLS, TYPE_TRAPS, TYPE_ATTRIBUTES, MONSTER_TYPES, TYPE_CATEGORIES_MONSTERS, SPELL_ICONS, TRAP_ICONS, FILTER_GROUP, ATTRIBUTE_ICONS, NEED_MONSTER_CATEGORY } from 'config/card';
 import IconFilterGroup from './IconFilterGroup';
 import { hasValue, resetFields } from 'helpers/card';
+import RangeFilter from './RangeFilter';
+import { TYPE_CARDS } from 'config/card';
 
 function Filter({ filter, setFilter }) {
 
-   
-    
+    const getGroupByField = (field) => {
+        if (FILTER_GROUP.MONSTER.includes(field)) return TYPE_CARDS.MONSTER;
+        if (FILTER_GROUP.SPELL.includes(field)) return TYPE_CARDS.SPELL;
+        if (FILTER_GROUP.TRAP.includes(field)) return TYPE_CARDS.TRAP;
+        return null;
+    };
+
+
+    const handelResetField = (field) => {
+        setFilter((prev) => {
+            const group = getGroupByField(field);
+
+            let newFilter = {
+                ...prev,
+                [field]: Array.isArray(prev[field]) ? [] : null
+            };
+
+            // nếu field thuộc group → reset cả group
+            if (group) {
+                newFilter = resetFields(newFilter, FILTER_GROUP[group]);
+
+                // check xem còn field nào trong group còn value không
+                const stillHasValue = FILTER_GROUP[group].some((f) =>
+                    hasValue(newFilter[f])
+                );
+
+                newFilter.type = stillHasValue ? group : null;
+            }
+
+            return newFilter;
+        });
+    };
+
     const handleChangeFilter = (field, isMultiple = false) => (value) => {
         setFilter((prev) => {
-            // ===== 1. update value =====
+
+            // ===== 🚫 GUARD =====
+            if (NEED_MONSTER_CATEGORY.includes(field) && !prev.monsterCategory?.length) {
+                return prev;
+            }
+
+            const group = getGroupByField(field);
+
+            // ===== 🆕 RANGE =====
+            if (field === "gte" || field === "lte") {
+                const newFilter = {
+                    ...prev,
+                    gte: value.gte ?? null,
+                    lte: value.lte ?? null,
+                };
+
+                if (!hasValue(newFilter.gte) && !hasValue(newFilter.lte)) {
+                    const reset = resetFields(newFilter, FILTER_GROUP.MONSTER);
+                    return { ...reset, type: null };
+                }
+
+                return { ...newFilter, type: TYPE_CARDS.MONSTER };
+            }
+
+            // ===== 1. UPDATE VALUE =====
             let newValue;
 
             if (isMultiple) {
                 const current = prev[field] || [];
 
-                if (value === "all") {
+                if (value == "all") {
                     newValue = [];
                 } else {
                     newValue = current.includes(value)
@@ -37,16 +90,10 @@ function Filter({ filter, setFilter }) {
                 [field]: newValue
             };
 
-            // ===== FIX TOGGLE OFF =====
+            // ===== 2. CLEAR VALUE =====
             if (!hasValue(newValue)) {
-                let activeGroup = null;
-
-                if (FILTER_GROUP.MONSTER.includes(field)) activeGroup = "MONSTER";
-                if (FILTER_GROUP.SPELL.includes(field)) activeGroup = "SPELL";
-                if (FILTER_GROUP.TRAP.includes(field)) activeGroup = "TRAP";
-
-                if (activeGroup) {
-                    newFilter = resetFields(newFilter, FILTER_GROUP[activeGroup]);
+                if (group) {
+                    newFilter = resetFields(newFilter, FILTER_GROUP[group]);
                 }
 
                 return {
@@ -55,39 +102,53 @@ function Filter({ filter, setFilter }) {
                 };
             }
 
-            // ===== 2. determine group =====
-            let activeGroup = null;
+            // ===== 3. KHÔNG THUỘC GROUP =====
+            if (!group) return newFilter;
 
-            if (FILTER_GROUP.MONSTER.includes(field)) activeGroup = "MONSTER";
-            if (FILTER_GROUP.SPELL.includes(field)) activeGroup = "SPELL";
-            if (FILTER_GROUP.TRAP.includes(field)) activeGroup = "TRAP";
+            // ===== 4. RESET GROUP KHÁC =====
+            Object.keys(FILTER_GROUP)
+                .filter((g) => g !== group)
+                .forEach((g) => {
+                    newFilter = resetFields(newFilter, FILTER_GROUP[g]);
+                });
 
-            if (!activeGroup) return newFilter;
-
-            // ===== 3. reset other groups =====
-            const otherGroups = Object.keys(FILTER_GROUP).filter(
-                (g) => g !== activeGroup
-            );
-
-            otherGroups.forEach((group) => {
-                newFilter = resetFields(newFilter, FILTER_GROUP[group]);
-            });
-
-            // ===== 4. set type =====
-            newFilter.type = activeGroup;
-
-            return newFilter;
+            // ===== 5. SET TYPE =====
+            return {
+                ...newFilter,
+                type: group
+            };
         });
     };
 
     return (
-        <MDBox sx={{ p: '20px', backgroundColor: '#2a2a2a', borderRadius: '8px', display: 'flex', flexDirection: 'column', height: "100%" }}>
+        <MDBox
+            borderRadius="3px"
+            border="2"
+            opacity="2"
+            sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                height: "85%",
+                overflow: "auto",
+            }}
+        >
 
             <IconFilterGroup
                 title="Monster Categories"
                 data={TYPE_CATEGORIES_MONSTERS}
                 selected={filter.monsterCategory}
                 onSelect={handleChangeFilter("monsterCategory", true)}
+                onReset={() => handelResetField("monsterCategory")}
+                icons={[]}
+            />
+
+            <IconFilterGroup
+                title="Monster Type"
+                data={MONSTER_TYPES}
+                selected={filter.monsterType}
+                onSelect={handleChangeFilter("monsterType", true)}
+                onReset={() => handelResetField("monsterType")}
                 icons={[]}
             />
 
@@ -96,6 +157,7 @@ function Filter({ filter, setFilter }) {
                 data={TYPE_SPELLS}
                 selected={filter.spellType ? [filter.spellType] : []}
                 onSelect={handleChangeFilter("spellType")}
+                onReset={() => handelResetField("spellType")}
                 icons={SPELL_ICONS}
             />
 
@@ -104,6 +166,7 @@ function Filter({ filter, setFilter }) {
                 data={TYPE_TRAPS}
                 selected={filter.trapType ? [filter.trapType] : []}
                 onSelect={handleChangeFilter("trapType")}
+                onReset={() => handelResetField("trapType")}
                 icons={TRAP_ICONS}
             />
 
@@ -112,32 +175,15 @@ function Filter({ filter, setFilter }) {
                 data={TYPE_ATTRIBUTES}
                 selected={filter.monsterAttribute}
                 onSelect={handleChangeFilter("monsterAttribute", true)}
+                onReset={() => handelResetField("monsterAttribute")}
                 icons={ATTRIBUTE_ICONS}
             />
 
-            <MDTypography variant="h6" sx={{ mb: '15px', fontWeight: 600, color: '#fff' }}>
-                Star Level
-            </MDTypography>
-            <Box sx={{ display: 'flex', gap: '8px', mb: '25px', flexWrap: 'wrap' }}>
-                {[...Array(12)].map((_, index) => {
-                    const starLevel = index + 1;
-                    const isSelected = starLevel <= filter.level;
-                    return (
-                        <Tooltip key={starLevel} title={`${starLevel} stars`} arrow>
-                            <img
-                                src={star}
-                                alt={`${starLevel} stars`}
-                                key={starLevel}
-                                style={{ width: '20px', height: '20px', cursor: 'pointer', opacity: isSelected ? 1 : 0.5, }}
-                                onClick={() => handleChangeFilter("level")(starLevel)}
-                                onMouseEnter={(e) => e.target.style.opacity = 1}
-                                onMouseLeave={(e) => e.target.style.opacity = isSelected ? 1 : 0.5}
-                            />
-                        </Tooltip>
-                    );
-
-                })}
-            </Box>
+            <RangeFilter
+                title="Level"
+                value={{ gte: filter.gte, lte: filter.lte }}
+                onChange={handleChangeFilter("gte")}
+            />
         </MDBox>
     );
 }

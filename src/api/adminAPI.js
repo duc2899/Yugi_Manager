@@ -1,6 +1,14 @@
 import { yugiClient } from './axiosClient';
 
 const adminAPI = {
+    getAllAccounts: async () => {
+        try {
+            const response = await yugiClient.get("/admin/accounts");
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
     getVersionClient: async () => {
         try {
             const response = await yugiClient.get("/admin/get-version-client");
