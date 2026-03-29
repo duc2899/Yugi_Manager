@@ -24,6 +24,14 @@ const adminAPI = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
+    },
+    toggleBanUser: async (data) => {
+        try {
+            const response = await yugiClient.post("/admin/toggle-ban", data);
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 }
 

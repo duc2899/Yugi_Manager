@@ -20,13 +20,19 @@ import { useEffect, useMemo, useState } from 'react';
 import adminAPI from 'api/adminAPI';
 import MDBadge from 'components/MDBadge';
 import MDButton from 'components/MDButton';
-import DetailUser from './DetailUser';
 import MDPagination from 'components/MDPagination';
 import { convertTimeVN } from 'utils';
-import { TextField } from '@mui/material';
+import { Switch, TextField } from '@mui/material';
 import { useDebounce } from 'use-debounce';
+import { useAuth } from 'context/AuthContext';
+import MDAvatar from 'components/MDAvatar';
+import ModalConfirm from './ModalConfirm';
+import { useAlert } from 'context/AlertContext';
 
 function AccountsAdmin() {
+    const { user } = useAuth();
+    const { showAlert } = useAlert();
+
     const [users, setUsers] = useState([]);
     const [textSearch, setTextSearch] = useState("")
     const [debouncedSearchText] = useDebounce(textSearch, 500);
@@ -36,9 +42,9 @@ function AccountsAdmin() {
         limit: 10,
         totalPages: 1,
     });
-    const [model, setModel] = useState({
-        visible: false,
-        isEdit: false,
+
+    const [openConfirm, setOpenConfirm] = useState({
+        isOpen: false,
         user: null
     });
 
@@ -66,21 +72,34 @@ function AccountsAdmin() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pagination.page, pagination.limit, debouncedSearchText]);
 
+    const handelBanUnBan = async () => {
+        try {
+            if (!openConfirm.user) {
+                showAlert("Không tìm thấy user này", "error")
+            }
+            const data = await adminAPI.toggleBanUser({ _id: openConfirm.user._id });
+            showAlert(
+                data.data.isDisabled ? "Ban user thành công!" : "Gỡ ban user thành công!", ""
+            );
+            fetchData()
+        } catch (error) {
+            showAlert(error.message, "error")
+        }
+    }
 
 
-
-    const rows = users.map((user) => ({
+    const rows = users.map((u) => ({
         _id: (
-            <MDTypography variant="button" color="text" fontWeight="medium">
-                {user._id || 'N/A'}
+            <MDTypography variant="button" color={u._id === user._id ? "primary" : "text"} fontWeight="medium">
+                {u._id || 'N/A'}
             </MDTypography>
         ),
 
         role: (
             <MDBox ml={-1}>
                 <MDBadge
-                    badgeContent={user.role}
-                    color={user.role === "admin" ? 'primary' : 'secondary'}
+                    badgeContent={u.role}
+                    color={u.role === "admin" ? 'primary' : 'secondary'}
                     variant="gradient"
                     size="sm"
                 />
@@ -89,35 +108,45 @@ function AccountsAdmin() {
 
         user: (
             <MDBox display="flex" alignItems="center" lineHeight={1}>
-                <MDBox lineHeight={1}>
+                <MDAvatar
+                    src={u?.avatar || ""}
+                    alt="Avatar"
+                    size="xs"
+                    sx={{
+                        bgcolor: !u?.avatar ? "primary.main" : undefined,
+                        pt: 0.3
+                    }}
+                >
+                    {!u?.avatar && u?.username?.charAt(0).toUpperCase()}
+                </MDAvatar>
+
+                <MDBox ml={2} lineHeight={1}>
                     <MDTypography
                         display="block"
                         variant="button"
                         fontWeight="medium">
-                        {user.fullName}
+                        {u.fullName}
                     </MDTypography>
-                    <MDTypography variant="caption">{user.username}</MDTypography>
+                    <MDTypography variant="caption">{u.username}</MDTypography>
                 </MDBox>
             </MDBox>
         ),
         isDisabled: (
             <MDBox ml={-1}>
-                <MDBadge
-                    badgeContent={!user.isDisabled ? 'Yes' : 'No'}
-                    color={!user.isDisabled ? 'success' : 'error'}
-                    variant="gradient"
-                    size="sm"
-                />
+                <Switch checked={!u.isDisabled} onClick={() => setOpenConfirm({
+                    user: u,
+                    isOpen: true
+                })} />
             </MDBox>
         ),
         createdAt: (
             <MDTypography variant="caption" color="text" fontWeight="medium">
-                {convertTimeVN(user.createdTime)}
+                {convertTimeVN(u.createdTime)}
             </MDTypography>
         ),
         lastedLogin: (
             <MDTypography variant="caption" color="text" fontWeight="medium">
-                {convertTimeVN(user.lastedLogin)}
+                {convertTimeVN(u.lastedLogin)}
             </MDTypography>
         ),
         action: (
@@ -127,14 +156,14 @@ function AccountsAdmin() {
                     color="info"
                     ml={1}
                     sx={{ mr: 1 }}
-                    onClick={() => setModel({ visible: true, isEdit: false, user: user })}
+                    // onClick={() => setModel({ visible: true, isEdit: false, user: user })}
                 >
                     <InfoIcon />
                 </MDButton>
                 <MDButton
                     variant="gradient"
                     color="success"
-                    onClick={() => setModel({ visible: true, isEdit: true, user: user })}
+                    // onClick={() => setModel({ visible: true, isEdit: true, user: user })}
                 >
                     <EditIcon />
                 </MDButton>
@@ -274,7 +303,7 @@ function AccountsAdmin() {
                 </MDBox>
             </MDBox>
             <Footer />
-            {model.visible &&
+            {/* {model.visible &&
                 <DetailUser
                     visible={model.visible}
                     isEdit={model.isEdit}
@@ -304,7 +333,8 @@ function AccountsAdmin() {
                         user: null
                     })}
                 />
-            }
+            } */}
+            <ModalConfirm open={openConfirm} setOpen={setOpenConfirm} handleBanUnban={handelBanUnBan} />
         </DashboardLayout>
     );
 }

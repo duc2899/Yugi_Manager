@@ -99,6 +99,9 @@ function DashboardNavbar({ absolute, light, isMini }) {
         await logout();
         handleCloseMenu();
     };
+
+    const handelOpenUpdateVersion = () => setOpenUpdateVersion(true);
+    
     // Render the notifications menu
     const renderMenu = () => (
         <Menu
@@ -186,7 +189,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                 disableRipple
                                 color="inherit"
                                 sx={navbarIconButton}
-                                onClick={() => setOpenUpdateVersion(true)}
+                                onClick={handelOpenUpdateVersion}
                             >
                                 <Icon sx={iconsStyle}>update</Icon>
                             </IconButton>

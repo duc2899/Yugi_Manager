@@ -109,26 +109,6 @@ const DetailUser = ({
                         <ResourceItem label="Level" value={user?.level} />
                         <ResourceItem label="Rank" value={user?.rank} />
                         <ResourceItem label="Tournament Score" value={user?.tournamentScore} />
-
-
-
-                        {/* <Box display="flex" alignItems="center">
-                            <Typography variant="body2" sx={{ minWidth: 100 }}>Role</Typography>
-                            <Select
-                                value={roles.includes(role) ? role : ''}
-                                onChange={handleRoleChange}
-                                fullWidth
-                                size="small"
-                                sx={{ padding: "8px", ml: 2 }}
-                                disabled={!isEdit}
-                            >
-                                {roles.map((r) => (
-                                    <MenuItem key={r} value={r}>
-                                        {r}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </Box> */}
                         <Box display="flex" alignItems="center">
                             <Typography variant="inherit" sx={{ minWidth: 100 }}>Disable</Typography>
                             <Switch

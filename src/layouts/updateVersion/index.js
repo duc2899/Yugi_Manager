@@ -1,20 +1,13 @@
 import { useEffect, useState } from "react";
 import Icon from '@mui/material/Icon';
 import IconButton from '@mui/material/IconButton';
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    DialogContentText,
-    TextField
-} from "@mui/material";
-
 
 import MDButton from "components/MDButton";
 import MDBox from 'components/MDBox';
 import { useAlert } from 'context/AlertContext';
 import adminAPI from "api/adminAPI";
+import MDDialog from "components/MDDialog";
+import MDInput from "components/MDInput";
 
 
 const UpdateVersion = ({ open, handleClose }) => {
@@ -27,9 +20,10 @@ const UpdateVersion = ({ open, handleClose }) => {
         const result = await adminAPI.getVersionClient();
         setOldVersion(result.data.version);
     }
+
     useEffect(() => {
-        fetchData()
-    }, [])
+        if (open) fetchData()
+    }, [open])
 
     const handleSubmit = async () => {
         if (!newVersion) {
@@ -40,65 +34,52 @@ const UpdateVersion = ({ open, handleClose }) => {
             await adminAPI.setVersionClient({ version: newVersion });
             showAlert("Đã gửi yêu cầu cập nhật phiên bản", "success");
             handleClose();
-        } catch (error) {            
+        } catch (error) {
             showAlert(error.errors[0].message, "error");
         }
     };
 
 
     return (
-        <Dialog
+        <MDDialog
             open={open}
             onClose={handleClose}
-            maxWidth="xs"
-            fullWidth
-        >
-            <DialogTitle>Thay đổi phiên bản</DialogTitle>
+            title="Thay đổi phiên bản"
+            content={
+                <MDBox>
+                    <MDInput
+                        value={oldVersion || "Not found version"}
+                        label="Phiên bản hiện tại"
+                        fullWidth
+                    />
 
-            <DialogContent sx={{ pt: 4 }}>
-                <DialogContentText>
-                    <MDBox>
-                        <TextField
-                            disabled
-                            value={oldVersion || "Not found version"}
-                            label="Phiên bản hiện tại"
-                            fullWidth
-                            margin="normal"
-                        />
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                        <IconButton disableRipple>
+                            <Icon sx={(theme) => ({ fontSize: 15, color: theme.palette.text.secondary })}>
+                                arrow_downward
+                            </Icon>
+                        </IconButton>
+                    </div>
 
-                        <div style={{
-                            display: "flex",
-                            justifyContent: "center"
-                        }}>
-                            <IconButton disableRipple>
-                                <Icon sx={{ fontSize: 15, color: "gray" }}>
-                                    arrow_downward
-                                </Icon>
-                            </IconButton>
-                        </div>
-
-                        <TextField
-                            label="Phiên bản mới"
-                            fullWidth
-                            margin="normal"
-                            value={newVersion}
-                            onChange={(e) => setNewVersion(e.target.value)}
-                        />
-
-
-                    </MDBox>
-                </DialogContentText>
-
-                <DialogActions>
+                    <MDInput
+                        label="Phiên bản mới"
+                        fullWidth
+                        value={newVersion}
+                        onChange={(e) => setNewVersion(e.target.value)}
+                    />
+                </MDBox>
+            }
+            actions={
+                <>
                     <MDButton onClick={handleClose} color="error">
                         Hủy
                     </MDButton>
                     <MDButton color="success" onClick={handleSubmit}>
                         Cập nhật
                     </MDButton>
-                </DialogActions>
-            </DialogContent>
-        </Dialog>
+                </>
+            }
+        />
     );
 };
 
