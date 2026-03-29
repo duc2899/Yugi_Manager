@@ -99,7 +99,7 @@ function CardTable({
                     gap: "20px",
                 }}>
                     <MDTypography variant="h6" sx={{ margin: 0 }}>Total Cards: {cards.length}</MDTypography>
-                    <MDInput placeholder="Search cards..." onChange={(e) => setTextSearch(e.target.value)} value={textSearch} sx={{ width: "400px" }} />
+                    {/* <MDInput placeholder="Search cards..." onChange={(e) => setTextSearch(e.target.value)} value={textSearch} sx={{ width: "400px" }} /> */}
                 </MDBox>
             </div>
             {
