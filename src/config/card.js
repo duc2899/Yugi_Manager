@@ -15,185 +15,116 @@ import field from 'assets/images/spell/field.png';
 import ritual from 'assets/images/spell/ritual.png';
 import quickPlay from 'assets/images/spell/quickPlay.png';
 
-const TYPE_CATEGORIES_MONSTERS = [
-    {
-        name: 'ALL',
-        key: 'all'
-    },
-    {
-        name: 'NORMAL',
-        key: 'normal'
-    },
-    {
-        name: 'EFFECT',
-        key: 'effect'
-    },
-    {
-        name: 'FUSION',
-        key: 'fusion'
-    },
-    {
-        name: 'SYNCHRO',
-        key: 'synchro'
-    },
-    {
-        name: 'RITUAL',
-        key: 'ritual'
-    },
-    {
-        name: 'XYZ',
-        key: 'xyz'
-    },
-    {
-        name: 'LINK',
-        key: 'link'
-    },
-    {
-        name: 'PENDULUM',
-        key: 'pendulum'
-    },
-    {
-        name: 'TOKEN',
-        key: 'token'
-    },
-    {
-        name: "GEMINI",
-        key: "gemini"
-    },
-    {
-        name: "SPIRIT",
-        key: "spirit"
-    },
-    {
-        name: "TOON",
-        key: "toon"
-    },
-    {
-        name: "UNION",
-        key: "union"
-    },
-    {
-        name: "FLIP",
-        key: "flip"
-    },
-    {
-        name: "TUNER",
-        key: "tuner"
-    }
-]
-
-const MONSTER_TYPES = [
-    { name: "AQUA", key: "aqua" },
-    { name: "BEAST", key: "beast" },
-    { name: "BEAST-WARRIOR", key: "beast_warrior" },
-    { name: "CREATOR GOD", key: "creator_god" },
-    { name: "CYBERSE", key: "cyberse" },
-    { name: "DINOSAUR", key: "dinosaur" },
-    { name: "DIVINE-BEAST", key: "divine_beast" },
-    { name: "DRAGON", key: "dragon" },
-    { name: "FAIRY", key: "fairy" },
-    { name: "FIEND", key: "fiend" },
-    { name: "FISH", key: "fish" },
-    { name: "INSECT", key: "insect" },
-    { name: "MACHINE", key: "machine" },
-    { name: "PLANT", key: "plant" },
-    { name: "PSYCHIC", key: "psychic" },
-    { name: "PYRO", key: "pyro" },
-    { name: "REPTILE", key: "reptile" },
-    { name: "ROCK", key: "rock" },
-    { name: "SEA SERPENT", key: "sea_serpent" },
-    { name: "SPELLCASTER", key: "spellcaster" },
-    { name: "THUNDER", key: "thunder" },
-    { name: "WARRIOR", key: "warrior" },
-    { name: "WINGED BEAST", key: "winged_beast" },
-    { name: "WYRM", key: "wyrm" },
-    { name: "ZOMBIE", key: "zombie" }
+export const TYPE_SPELLS = [
+    { key: "NORMAL", name: "Normal", icon: normal },
+    { key: "FIELD", name: "Field", icon: field },
+    { key: "EQUIP", name: "Equip", icon: equip },
+    { key: "QUICK_PLAY", name: "Quick Play", icon: quickPlay },
+    { key: "CONTINUOUS", name: "Continuous", icon: continuous },
+    { key: "RITUAL", name: "Ritual", icon: ritual },
 ];
 
-const TYPE_SPELLS = [
-    {
-        name: 'ALL',
-        key: 'all'
-    },
-    {
-        name: 'NORMAL',
-        key: 'normal'
-    },
-    {
-        name: 'FIELD',
-        key: 'field'
-    },
-    {
-        name: 'EQUIP',
-        key: 'equip'
-    },
-    {
-        name: 'QUICK_PLAY',
-        key: 'quickPlay'
-    },
-    {
-        name: 'CONTINUOUS',
-        key: 'continuous'
-    },
-    {
-        name: 'RITUAL',
-        key: 'ritual'
-    }
-]
+export const TYPE_TRAPS = [
+    { key: "NORMAL", name: "Normal", icon: normal },
+    { key: "CONTINUOUS", name: "Continuous", icon: continuous },
+    { key: "COUNTER", name: "Counter", icon: counter },
+];
 
-const TYPE_TRAPS = [
-    {
-        name: 'ALL',
-        key: 'all'
-    },
-    {
-        name: 'NORMAL',
-        key: 'normal'
-    },
-    {
-        name: 'CONTINUOUS',
-        key: 'continuous'
-    },
-    {
-        name: 'COUNTER',
-        key: 'counter'
-    }
-]
+export const TYPE_CATEGORIES_MONSTERS = [
+    { key: "NORMAL", name: "Normal", icon: "" },
+    { key: "EFFECT", name: "Effect", icon: "" },
+    { key: "FUSION", name: "Fusion", icon: "" },
+    { key: "SYNCHRO", name: "Synchro", icon: "" },
+    { key: "RITUAL", name: "Ritual", icon: "" },
+    { key: "XYZ", name: "Xyz", icon: "" },
+    { key: "LINK", name: "Link", icon: "" },
+    { key: "PENDULUM", name: "Pendulum", icon: "" },
+    { key: "TOKEN", name: "Token", icon: "" },
+    { key: "GEMINI", name: "Gemini", icon: "" },
+    { key: "SPIRIT", name: "Spirit", icon: "" },
+    { key: "TOON", name: "Toon", icon: "" },
+    { key: "UNION", name: "Union", icon: "" },
+    { key: "FLIP", name: "Flip", icon: "" },
+    { key: "TUNER", name: "Tuner", icon: "" },
+];
+
+const TYPE_MONSTERS = [
+    { key: "AQUA", name: "Aqua" },
+    { key: "BEAST", name: "Beast" },
+    { key: "BEAST-WARRIOR", name: "Beast-Warrior" },
+    { key: "CREATOR GOD", name: "Creator God" },
+    { key: "CYBERSE", name: "Cyberse" },
+    { key: "DINOSAUR", name: "Dinosaur" },
+    { key: "DIVINE-BEAST", name: "DIVINE-BEAST" },
+    { key: "DRAGON", name: "Dragon" },
+    { key: "FAIRY", name: "Fairy" },
+    { key: "FIEND", name: "Fiend" },
+    { key: "FISH", name: "Fish" },
+    { key: "INSECT", name: "Insect" },
+    { key: "MACHINE", name: "Machine" },
+    { key: "PLANT", name: "Plant" },
+    { key: "PSYCHIC", name: "Psychic" },
+    { key: "PYRO", name: "Pyro" },
+    { key: "REPTILE", name: "Reptile" },
+    { key: "ROCK", name: "Rock" },
+    { key: "SEA SERPENT", name: "Sea Serpent" },
+    { key: "SPELLCASTER", name: "Spellcaster" },
+    { key: "THUNDER", name: "Thunder" },
+    { key: "WARRIOR", name: "Warrior" },
+    { key: "WINGED BEAST", name: "Winged Beast" },
+    { key: "WYRM", name: "Wyrm" },
+    { key: "ZOMBIE", name: "Zombie" }
+];
 
 const TYPE_ATTRIBUTES = [
     {
-        name: 'ALL',
-        key: 'all'
+        key: 'DARK',
+        name: 'Dark',
+        icon: dark
     },
     {
-        name: 'DARK',
-        key: 'dark'
+        key: 'LIGHT',
+        name: 'Light',
+        icon: light
     },
     {
-        name: 'LIGHT',
-        key: 'light'
+        key: 'EARTH',
+        name: 'Earth',
+        icon: earth
     },
     {
-        name: 'EARTH',
-        key: 'earth'
+        key: 'WATER',
+        name: 'Water',
+        icon: water
     },
     {
-        name: 'WATER',
-        key: 'water'
+        key: 'FIRE',
+        name: 'Fire',
+        icon: fire
     },
     {
-        name: 'FIRE',
-        key: 'fire'
+        key: 'WIND',
+        name: 'Wind',
+        icon: wind
     },
     {
-        name: 'WIND',
-        key: 'wind'
-    },
-    {
-        name: 'DIVINE',
-        key: 'divine'
+        key: 'DIVINE',
+        name: 'Divine',
+        icon: divine
     }
 ]
+
+const CARD_TYPES = [
+    { key: "MONSTER", name: "Monster" },
+    { key: "SPELL", name: "Spell" },
+    { key: "TRAP", name: "Trap" },
+];
+
+const CARD_TYPE = {
+    MONSTER: "MONSTER",
+    SPELL: "SPELL",
+    TRAP: "TRAP",
+};
 
 const ATTRIBUTE_ICONS = {
     dark,
@@ -220,19 +151,10 @@ const TRAP_ICONS = {
     counter
 }
 
-const FILTER_GROUP = {
-    MONSTER: ["monsterCategory", "monsterAttribute", "lte", "gte", "monsterType"],
-    SPELL: ["spellType"],
-    TRAP: ["trapType"],
+const TYPE_BY_CATEGORY = {
+    MONSTER: TYPE_CATEGORIES_MONSTERS,
+    SPELL: TYPE_SPELLS,
+    TRAP: TYPE_TRAPS,
 };
 
-const NEED_MONSTER_CATEGORY = ["monsterAttribute", "gte", "lte", "monsterType"]
-
-const TYPE_CARDS = {
-    MONSTER: "MONSTER",
-    TRAP: "TRAP",
-    SPELL: "SPELL"
-}
-
-
-export { TYPE_CATEGORIES_MONSTERS, TYPE_CARDS, TYPE_SPELLS, SPELL_ICONS, TYPE_TRAPS, FILTER_GROUP, TYPE_ATTRIBUTES, ATTRIBUTE_ICONS, TRAP_ICONS, MONSTER_TYPES, NEED_MONSTER_CATEGORY };
+export { CARD_TYPES, CARD_TYPE, TYPE_ATTRIBUTES, TYPE_MONSTERS, ATTRIBUTE_ICONS, SPELL_ICONS, TRAP_ICONS, TYPE_BY_CATEGORY };

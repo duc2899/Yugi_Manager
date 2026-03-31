@@ -4,7 +4,6 @@ import MDTypography from "components/MDTypography";
 
 import LazyImage from "components/common/LazyImage";
 import { URL_IMAGE } from "config/constant";
-import MDInput from "components/MDInput";
 import { useMaterialUIController } from "context";
 import CardHover from "./CardHover";
 
@@ -13,8 +12,6 @@ function CardTable({
     loading,
     hasMore,
     onLoadMore,
-    textSearch,
-    setTextSearch
 }) {
     const [controller] = useMaterialUIController();
     const {
@@ -99,7 +96,6 @@ function CardTable({
                     gap: "20px",
                 }}>
                     <MDTypography variant="h6" sx={{ margin: 0 }}>Total Cards: {cards.length}</MDTypography>
-                    {/* <MDInput placeholder="Search cards..." onChange={(e) => setTextSearch(e.target.value)} value={textSearch} sx={{ width: "400px" }} /> */}
                 </MDBox>
             </div>
             {
@@ -139,7 +135,9 @@ function CardTable({
                     </div>
                 )
                     : (
-                        <p>No cards to display.</p>
+                        <div style={{ textAlign: 'center', padding: 50 }}>
+                            {loading ? "Loading..." : "Không tìm thấy thẻ nào."}
+                        </div>
                     )
             }
 

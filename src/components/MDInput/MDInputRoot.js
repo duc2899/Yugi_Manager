@@ -22,7 +22,7 @@ export default styled(TextField)(({ theme, ownerState }) => {
     const { error, success, disabled } = ownerState;
 
     const {
-        gray,
+        grey,
         transparent,
         error: colorError,
         success: colorSuccess
@@ -69,7 +69,7 @@ export default styled(TextField)(({ theme, ownerState }) => {
 
     return {
         backgroundColor: disabled
-            ? `${gray[200]} !important`
+            ? `${grey[200]} !important`
             : transparent.main,
 
         // ===== HIDE ARROW NUMBER INPUT =====

@@ -1,13 +1,9 @@
-const buildParams = (pageNumber, filter, search) => {
+const buildParams = (pageNumber, filter) => {
     const params = {
         page: pageNumber,
         limit: 90,
     };
-
-    if (search) {
-        params.name = search.trim();
-    }
-
+    
     Object.entries(filter).forEach(([key, value]) => {
         if (!value) return;
 
