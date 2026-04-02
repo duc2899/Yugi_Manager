@@ -2,7 +2,6 @@ import React from "react";
 
 const Zone = ({
   title = "Zone",
-  countText = "",
   cards = [],
   onDropCard,
   renderCard,
@@ -14,12 +13,11 @@ const Zone = ({
 
   const handleDrop = (e) => {
     e.preventDefault();
-    const cardData = e.dataTransfer.getData("card");
-    if (!cardData) return;
 
-    const card = JSON.parse(cardData);
+    const cardId = e.dataTransfer.getData("cardId");
+    if (!cardId) return;
 
-    if (onDropCard) onDropCard(card);
+    if (onDropCard) onDropCard(cardId);
   };
 
   return (
@@ -28,8 +26,9 @@ const Zone = ({
         width: "100%",
         borderRadius: "12px",
         border: "1px solid rgba(255,255,255,0.15)",
-        background: "rgba(0,0,0,0.35)",
+        background: "rgba(43, 43, 43, 0.35)",
         overflow: "hidden",
+        marginTop: "10px",
       }}
     >
       {/* HEADER */}
@@ -44,12 +43,12 @@ const Zone = ({
         }}
       >
         <span style={{ fontWeight: "bold", color: "white", fontSize: "14px" }}>
-          {title}
+          {title}: {cards.length}
         </span>
 
-        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "13px" }}>
-          {countText}
-        </span>
+        {/* <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "13px" }}>
+
+        </span> */}
       </div>
 
       {/* BODY */}
@@ -67,8 +66,8 @@ const Zone = ({
         }}
       >
         {cards.length > 0 ? (
-          cards.map((card, index) => (
-            <div key={card._id || index}>{renderCard(card)}</div>
+          cards.map((cardId, index) => (
+            <div key={`${cardId}-${index}`}>{renderCard(cardId)}</div>
           ))
         ) : (
           <div
@@ -78,7 +77,7 @@ const Zone = ({
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              color: "rgba(255,255,255,0.4)",
+              color: "white",
               fontSize: "13px",
               fontStyle: "italic",
               border: "1px dashed rgba(255,255,255,0.2)",

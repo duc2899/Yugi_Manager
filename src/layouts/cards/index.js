@@ -9,13 +9,14 @@ import CardTable from "./components/CardTable";
 import cardApi from "../../api/cardAPI";
 import { buildParams } from "helpers/card";
 import { TYPE_ATTRIBUTES, CARD_TYPES } from "config/card";
-import CardDeck from "./components/CardDeck";
+import Zone from "./components/Zone";
 
 function Cards() {
   const [cards, setCards] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [mainDeck, setMainDeck] = useState([]);
 
   const [filter, setFilter] = useState({
     monsterType: null,
@@ -30,8 +31,6 @@ function Cards() {
     def: null,
     name: null,
   });
-
-
 
   const fetchCards = async (pageNumber = 1, isReset = false) => {
     if (loading) return;
@@ -73,6 +72,10 @@ function Cards() {
     fetchCards(nextPage);
   };
 
+  const handleDropToMainDeck = (cardId) => {
+    setMainDeck((prev) => [...prev, cardId]);
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -80,7 +83,19 @@ function Cards() {
       <Fillter filter={filter} setFilter={setFilter} optionsCategory={CARD_TYPES} optionsAttribute={TYPE_ATTRIBUTES} />
       <MDBox sx={{ display: "flex", gap: 2, height: "100vh", mb: 4 }}>
         <MDBox sx={{ flex: "0 0 75%", height: "100%" }}>
-          <CardDeck></CardDeck>
+          <Zone title="Main Deck"
+            cards={mainDeck}
+            onDropCard={handleDropToMainDeck}
+            renderCard={(cardId) => (
+              <img
+                src={`https://images.ygoprodeck.com/images/cards_small/${cardId}.jpg`}
+                style={{ width: "55px", borderRadius: "6px" }}
+                alt="card"
+              />
+            )}
+          ></Zone>
+          <Zone title="Extra Deck"></Zone>
+          <Zone title="Side Deck"></Zone>
         </MDBox>
         <MDBox sx={{ flex: "0 0 25%", maxHeight: "100%" }}>
           <CardTable

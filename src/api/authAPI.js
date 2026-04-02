@@ -1,5 +1,10 @@
 import { yugiClient } from './axiosClient';
 const authAPI = {
+    register: async data => {
+        const response = await yugiClient.post('/auth/register', data);
+        return response.data;
+    },
+
     login: async credentials => {
         const response = await yugiClient.post(
             '/auth/login',

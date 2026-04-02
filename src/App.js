@@ -27,7 +27,8 @@ import LoadingScreen from 'layouts/loading';
 export default function App() {
     const [controller, dispatch] = useMaterialUIController();
     const { miniSidenav, direction, layout, sidenavColor, darkMode } = controller;
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, isLoading, user } = useAuth();
+
 
     const [onMouseEnter, setOnMouseEnter] = useState(false);
     const { pathname } = useLocation();
@@ -61,20 +62,37 @@ export default function App() {
             setMiniSidenav(dispatch, true);
             setOnMouseEnter(false);
         }
-    };    
+    };
 
-    const getRoutes = allRoutes =>
-        allRoutes.flatMap(route => {
+    const getRoutes = (allRoutes) =>
+        allRoutes.flatMap((route) => {
             if (route.collapse) return getRoutes(route.collapse);
+
             if (route.route) {
+                // ===== AUTH CHECK =====
                 if (route.requiresAuth && !isAuthenticated) {
                     return (
                         <Route
                             key={route.key}
                             path={route.route}
-                            element={<Navigate to="/authentication/sign-in" />}
+                            element={<Navigate to="/authentication/sign-in" replace />}
                         />
                     );
+                }
+
+                // ===== ROLE CHECK =====
+                if (route.roles && route.roles.length > 0) {
+                    const userRole = user?.role.toUpperCase();
+
+                    if (!userRole || !route.roles.includes(userRole)) {
+                        return (
+                            <Route
+                                key={route.key}
+                                path={route.route}
+                                element={<Navigate to="/403" replace />}
+                            />
+                        );
+                    }
                 }
 
                 return (
@@ -85,6 +103,7 @@ export default function App() {
                     />
                 );
             }
+
             return [];
         });
 
@@ -105,6 +124,7 @@ export default function App() {
                                     routes={routes}
                                     onMouseEnter={handleOnMouseEnter}
                                     onMouseLeave={handleOnMouseLeave}
+                                    role={user?.role.toUpperCase()}
                                 />
                                 <Configurator />
                             </>

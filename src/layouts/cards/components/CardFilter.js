@@ -5,7 +5,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDSelectField from "components/MDSelectField";
-import { TYPE_BY_CATEGORY, CARD_TYPE, TYPE_MONSTERS} from "config/card";
+import { TYPE_BY_CATEGORY, CARD_TYPE, TYPE_MONSTERS } from "config/card";
 import useDebouncedFilterInputs from "hooks/useDebouncedFilterInputs";
 
 export default function CardFilterBar({
@@ -44,10 +44,46 @@ export default function CardFilterBar({
     const optionsType = getOptionsTypeByCategory(filter.category);
 
     const handleChange = (field) => (e) => {
-        setFilter((prev) => ({
-            ...prev,
-            [field]: e.target.value,
-        }));
+        const value = e.target.value;
+
+        setFilter((prev) => {
+            const next = {
+                ...prev,
+                [field]: value,
+            };
+
+            if(field === ""){
+                next.monsterType = null;
+                next.monsterCategory = null;
+                next.monsterAttribute = null;
+                next.atk = null;
+                next.def = null;
+                next.gte = null;
+                next.lte = null;
+                next.spellType = null;
+                next.trapType = null;
+            }
+
+            if (field === "category" && value !== CARD_TYPE.MONSTER) {
+                next.monsterType = null;
+                next.monsterCategory = null;
+                next.monsterAttribute = null;
+                next.atk = null;
+                next.def = null;
+                next.gte = null;
+                next.lte = null;
+            }
+
+            if (field === "category" && value !== CARD_TYPE.SPELL) {
+                next.spellType = null;
+            }
+
+            if (field === "category" && value !== CARD_TYPE.TRAP) {
+                next.trapType = null;
+            }
+
+            return next;
+        });
     };
 
     const menuProps = {
@@ -75,7 +111,7 @@ export default function CardFilterBar({
                 width: "100%",
                 borderRadius: "12px",
                 padding: "12px",
-                border: `1px solid ${theme.palette.divider}`,
+                border: `2px dashed ${theme.palette.divider}`,
                 backgroundColor: theme.palette.background.card,
             })}
         >
@@ -100,7 +136,7 @@ export default function CardFilterBar({
                             </MDBox>
                             <MDBox sx={inputBoxStyle}>
                                 <MDSelectField
-                                    value={""}
+                                    value={filter.monsterCategory || filter.spellType || filter.trapType || ""}
                                     onChange={handleChange(getOptionsType(filter.category))}
                                     MenuProps={menuProps}
                                     disabled={!filter.category} // nếu chưa chọn category thì disable
@@ -173,11 +209,24 @@ export default function CardFilterBar({
                             </MDTypography>
 
                             <MDBox sx={inputBoxStyle}>
-                                <MDSelectField value={filter.type} onChange={handleChange("monsterType")} MenuProps={menuProps} disabled={filter.category !== CARD_TYPE.MONSTER}>
+                                <MDSelectField value={filter.monsterType} onChange={handleChange("monsterType")} MenuProps={menuProps} disabled={filter.category !== CARD_TYPE.MONSTER}>
                                     <MenuItem value="">(All)</MenuItem>
                                     {TYPE_MONSTERS.map((item) => (
-                                        <MenuItem key={item.key} value={item.key}>
-                                            {item.name}
+                                        <MenuItem
+                                            key={item.key}
+                                            value={item.key}
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 1,
+                                            }}
+                                        >
+                                            <img
+                                                src={item.icon}
+                                                alt={item.name}
+                                                style={{ width: 18, height: 18, objectFit: "contain" }}
+                                            />
+                                            <span>{item.name}</span>
                                         </MenuItem>
                                     ))}
                                 </MDSelectField>

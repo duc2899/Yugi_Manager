@@ -6,11 +6,12 @@ import PropTypes from 'prop-types';
 // Custom styles for MDInput
 import MDInputRoot from 'components/MDInput/MDInputRoot';
 
-const MDInput = forwardRef(({ error, success, disabled, ...rest }, ref) => (
+const MDInput = forwardRef(({ error, success, helperText, disabled, ...rest }, ref) => (
     <MDInputRoot
         {...rest}
         ref={ref}
-        ownerState={{ error, success, disabled }}
+        helperText={helperText}
+        ownerState={{ error, success, disabled, helperText }}
     />
 ));
 
@@ -18,14 +19,16 @@ const MDInput = forwardRef(({ error, success, disabled, ...rest }, ref) => (
 MDInput.defaultProps = {
     error: false,
     success: false,
-    disabled: false
+    disabled: false,
+    helperText: ''
 };
 
 // Typechecking props for the MDInput
 MDInput.propTypes = {
     error: PropTypes.bool,
     success: PropTypes.bool,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    helperText: PropTypes.string
 };
 
 export default MDInput;

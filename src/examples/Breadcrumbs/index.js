@@ -26,8 +26,10 @@ import Icon from '@mui/material/Icon';
 // Material Dashboard 2 React components
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
+import { useAuth } from 'context/AuthContext';
 
 function Breadcrumbs({ icon, title, route, light }) {
+    const { user } = useAuth();
     const routes = route.slice(0, -1);
 
     return (
@@ -49,20 +51,22 @@ function Breadcrumbs({ icon, title, route, light }) {
                         <Icon>{icon}</Icon>
                     </MDTypography>
                 </Link>
-                {routes.map(el => (
-                    <Link to={`/${el}`} key={el}>
-                        <MDTypography
-                            component="span"
-                            variant="button"
-                            fontWeight="regular"
-                            textTransform="capitalize"
-                            color={light ? 'white' : 'dark'}
-                            opacity={light ? 0.8 : 0.5}
-                            sx={{ lineHeight: 0 }}>
-                            {el}
-                        </MDTypography>
-                    </Link>
-                ))}
+
+                {routes
+                    .filter((r) => !r.roles || r.roles.includes(user?.role.toUpperCase()))
+                    .map((r) => (
+                        <Link to={r.route} key={r.key}>
+                            <MDTypography
+                                component="span"
+                                variant="button"
+                                fontWeight="regular"
+                                textTransform="capitalize"
+                                color={light ? "white" : "dark"}
+                                opacity={light ? 0.8 : 0.5}
+                                sx={{ lineHeight: 0 }}
+                            >{r.name}</MDTypography>
+                        </Link>
+                    ))}
                 <MDTypography
                     variant="button"
                     fontWeight="regular"
@@ -72,7 +76,7 @@ function Breadcrumbs({ icon, title, route, light }) {
                     {title.replace('-', ' ')}
                 </MDTypography>
             </MuiBreadcrumbs>
-        </MDBox>
+        </MDBox >
     );
 }
 
@@ -86,7 +90,8 @@ Breadcrumbs.propTypes = {
     icon: PropTypes.node.isRequired,
     title: PropTypes.string.isRequired,
     route: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
-    light: PropTypes.bool
+    light: PropTypes.bool,
+    requiresAuth: PropTypes.bool,
 };
 
 export default Breadcrumbs;

@@ -75,6 +75,10 @@ function CardTable({
         event.currentTarget.style.transform = 'scale(1)'
     }
 
+    const handleDragStart = (e, card) => {
+        e.dataTransfer.setData("cardId", card._id); // id của ygoprodeck
+    };
+
     return (
         <div style={{
             display: 'flex',
@@ -120,6 +124,8 @@ function CardTable({
                                 }}
                                 onMouseMove={(e) => handleMouseEnter(card, e)}
                                 onMouseLeave={(e) => handleMouseLeave(e)}
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, card)}
                             >
                                 <LazyImage src={`${URL_IMAGE}${card._id}.jpg`} alt={card.name} style={{ width: '70px', height: 'auto' }} />
                             </div>

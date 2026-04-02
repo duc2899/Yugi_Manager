@@ -47,7 +47,10 @@ export default styled(Select)(({ theme, ownerState }) => {
         "& .MuiSelect-select": {
             padding: pxToRem(12),
             color: text.main,
-            backgroundColor: background.card,
+            backgroundColor:  transparent.main,
+            display: "flex !important",
+            alignItems: "center",
+            gap: pxToRem(10),
         },
 
         "& .MuiOutlinedInput-notchedOutline": {

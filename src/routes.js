@@ -8,6 +8,7 @@ import SignIn from 'layouts/authentication/sign-in';
 // @mui icons
 import Icon from '@mui/material/Icon';
 import AccountsAdmin from 'layouts/userAdmin';
+import Forbidden from 'layouts/frobidden';
 
 const routes = [
     {
@@ -17,7 +18,8 @@ const routes = [
         icon: <Icon fontSize="small">dashboard</Icon>,
         route: '/dashboard',
         component: <Dashboard />,
-        requiresAuth: true
+        requiresAuth: true,
+        roles: ["ADMIN", "NORMAL"]
     },
     {
         type: 'collapse',
@@ -26,7 +28,9 @@ const routes = [
         icon: <Icon fontSize="small">table_view</Icon>,
         route: '/cards',
         component: <Cards />,
-        requiresAuth: true
+        requiresAuth: true,
+        roles: ["ADMIN", "NORMAL"]
+
     },
     {
         type: 'collapse',
@@ -35,7 +39,8 @@ const routes = [
         icon: <Icon fontSize="small">receipt_long</Icon>,
         route: '/tournaments',
         component: <Tournaments />,
-        requiresAuth: true
+        requiresAuth: true,
+        roles: ["ADMIN", "NORMAL"]
     },
     {
         type: 'collapse',
@@ -44,28 +49,37 @@ const routes = [
         icon: <Icon fontSize="small">person</Icon>,
         route: '/users',
         component: <Users />,
-        requiresAuth: true
+        requiresAuth: true,
+        roles: ["ADMIN", "NORMAL"]
     },
     {
         type: 'collapse',
         name: 'Người dùng',
         key: 'users-admin',
-        icon: <Icon fontSize="small">person</Icon>,
+        icon: <Icon fontSize="small">manage_accounts</Icon>,
         route: '/users-admin',
         component: <AccountsAdmin />,
-        requiresAuth: true
+        requiresAuth: true,
+        roles: ["ADMIN"]
     },
     {
         route: '/authentication/sign-in',
         component: <SignIn />,
-        requiresAuth: false
+        requiresAuth: false,
+
     },
     {
         route: '/tournaments/:id',
         name: 'Tournaments',
         key: 'tournaments',
         component: <DetailTournament />,
-        requiresAuth: true
+        requiresAuth: true,
+        roles: ["ADMIN", "NORMAL"]
+    },
+    {
+        route: "/403",
+        component: <Forbidden />,
+        requiresAuth: false,
     }
 ];
 

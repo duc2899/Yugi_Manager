@@ -15,6 +15,34 @@ import field from 'assets/images/spell/field.png';
 import ritual from 'assets/images/spell/ritual.png';
 import quickPlay from 'assets/images/spell/quickPlay.png';
 
+import aqua from 'assets/images/monsterType/aqua.png';
+import beast from 'assets/images/monsterType/beast.png';
+import beastWarrior from 'assets/images/monsterType/beast_warrior.png';
+import creatorGod from 'assets/images/monsterType/creator_god.png';
+import cyberse from 'assets/images/monsterType/cyberse.png';
+import dinosaur from 'assets/images/monsterType/dinosaur.png';
+import divineBeast from 'assets/images/monsterType/divine_beast.png';
+import dragon from 'assets/images/monsterType/dragon.png';
+import fairy from 'assets/images/monsterType/fairy.png';
+import fiend from 'assets/images/monsterType/fiend.png';
+import fish from 'assets/images/monsterType/fish.png';
+import insect from 'assets/images/monsterType/insect.png';
+import machine from 'assets/images/monsterType/machine.png';
+import plant from 'assets/images/monsterType/plant.png';
+import psychic from 'assets/images/monsterType/psychic.png';
+import pyro from 'assets/images/monsterType/pyro.png';
+import reptile from 'assets/images/monsterType/reptile.png';
+import rock from 'assets/images/monsterType/rock.png';
+import seaSerpent from 'assets/images/monsterType/sea_serpent.png';
+import spellcaster from 'assets/images/monsterType/spell_caster.png';
+import thunder from 'assets/images/monsterType/thunder.png';
+import warrior from 'assets/images/monsterType/warrior.png';
+import wingedBeast from 'assets/images/monsterType/winged_beast.png';
+import wyrm from 'assets/images/monsterType/wyrm.png';
+import zombie from 'assets/images/monsterType/zombie.png';
+
+
+
 export const TYPE_SPELLS = [
     { key: "NORMAL", name: "Normal", icon: normal },
     { key: "FIELD", name: "Field", icon: field },
@@ -49,31 +77,31 @@ export const TYPE_CATEGORIES_MONSTERS = [
 ];
 
 const TYPE_MONSTERS = [
-    { key: "AQUA", name: "Aqua" },
-    { key: "BEAST", name: "Beast" },
-    { key: "BEAST-WARRIOR", name: "Beast-Warrior" },
-    { key: "CREATOR GOD", name: "Creator God" },
-    { key: "CYBERSE", name: "Cyberse" },
-    { key: "DINOSAUR", name: "Dinosaur" },
-    { key: "DIVINE-BEAST", name: "DIVINE-BEAST" },
-    { key: "DRAGON", name: "Dragon" },
-    { key: "FAIRY", name: "Fairy" },
-    { key: "FIEND", name: "Fiend" },
-    { key: "FISH", name: "Fish" },
-    { key: "INSECT", name: "Insect" },
-    { key: "MACHINE", name: "Machine" },
-    { key: "PLANT", name: "Plant" },
-    { key: "PSYCHIC", name: "Psychic" },
-    { key: "PYRO", name: "Pyro" },
-    { key: "REPTILE", name: "Reptile" },
-    { key: "ROCK", name: "Rock" },
-    { key: "SEA SERPENT", name: "Sea Serpent" },
-    { key: "SPELLCASTER", name: "Spellcaster" },
-    { key: "THUNDER", name: "Thunder" },
-    { key: "WARRIOR", name: "Warrior" },
-    { key: "WINGED BEAST", name: "Winged Beast" },
-    { key: "WYRM", name: "Wyrm" },
-    { key: "ZOMBIE", name: "Zombie" }
+    { key: "AQUA", name: "Aqua", icon: aqua },
+    { key: "BEAST", name: "Beast", icon: beast },
+    { key: "BEAST-WARRIOR", name: "Beast-Warrior", icon: beastWarrior },
+    { key: "CREATOR GOD", name: "Creator God", icon: creatorGod },
+    { key: "CYBERSE", name: "Cyberse", icon: cyberse },
+    { key: "DINOSAUR", name: "Dinosaur", icon: dinosaur },
+    { key: "DIVINE-BEAST", name: "DIVINE-BEAST", icon: divineBeast },
+    { key: "DRAGON", name: "Dragon", icon: dragon },
+    { key: "FAIRY", name: "Fairy", icon: fairy },
+    { key: "FIEND", name: "Fiend", icon: fiend },
+    { key: "FISH", name: "Fish", icon: fish },
+    { key: "INSECT", name: "Insect", icon: insect },
+    { key: "MACHINE", name: "Machine", icon: machine },
+    { key: "PLANT", name: "Plant", icon: plant },
+    { key: "PSYCHIC", name: "Psychic", icon: psychic },
+    { key: "PYRO", name: "Pyro", icon: pyro },
+    { key: "REPTILE", name: "Reptile", icon: reptile },
+    { key: "ROCK", name: "Rock", icon: rock },
+    { key: "SEA SERPENT", name: "Sea Serpent", icon: seaSerpent },
+    { key: "SPELLCASTER", name: "Spellcaster", icon: spellcaster },
+    { key: "THUNDER", name: "Thunder", icon: thunder },
+    { key: "WARRIOR", name: "Warrior", icon: warrior },
+    { key: "WINGED BEAST", name: "Winged Beast", icon: wingedBeast },
+    { key: "WYRM", name: "Wyrm", icon: wyrm },
+    { key: "ZOMBIE", name: "Zombie", icon: zombie }
 ];
 
 const TYPE_ATTRIBUTES = [

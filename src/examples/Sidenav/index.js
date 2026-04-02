@@ -31,7 +31,7 @@ import {
     setWhiteSidenav
 } from 'context';
 
-function Sidenav({ color, brand, brandName, routes, ...rest }) {
+function Sidenav({ color, brand, brandName, routes, role, ...rest }) {
     const [controller, dispatch] = useMaterialUIController();
     const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } =
         controller;
@@ -76,17 +76,26 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
 
     // Render all the routes from the routes.js (All the visible items on the Sidenav)
     const renderRoutes = routes.map(
-        ({ type, name, icon, title, noCollapse, key, href, route }) => {
+        ({ type, name, icon, title, noCollapse, key, href, route, roles }) => {
             let returnValue;
 
-            if (type === 'collapse') {
+            // ===== ROLE CHECK =====
+            if (roles && roles.length > 0) {
+
+                if (!role || !roles.includes(role)) {
+                    return null; // ẩn menu
+                }
+            }
+
+            if (type === "collapse") {
                 returnValue = href ? (
                     <Link
                         href={href}
                         key={key}
                         target="_blank"
                         rel="noreferrer"
-                        sx={{ textDecoration: 'none' }}>
+                        sx={{ textDecoration: "none" }}
+                    >
                         <SidenavCollapse
                             name={name}
                             icon={icon}
@@ -103,7 +112,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
                         />
                     </NavLink>
                 );
-            } else if (type === 'title') {
+            } else if (type === "title") {
                 returnValue = (
                     <MDTypography
                         key={key}
@@ -115,18 +124,17 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
                         pl={3}
                         mt={2}
                         mb={1}
-                        ml={1}>
+                        ml={1}
+                    >
                         {title}
                     </MDTypography>
                 );
-            } else if (type === 'divider') {
+            } else if (type === "divider") {
                 returnValue = (
                     <Divider
                         key={key}
                         light={
-                            (!darkMode &&
-                                !whiteSidenav &&
-                                !transparentSidenav) ||
+                            (!darkMode && !whiteSidenav && !transparentSidenav) ||
                             (darkMode && !transparentSidenav && whiteSidenav)
                         }
                     />

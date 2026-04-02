@@ -28,6 +28,8 @@ import { useAuth } from 'context/AuthContext';
 import MDAvatar from 'components/MDAvatar';
 import ModalConfirm from './ModalConfirm';
 import { useAlert } from 'context/AlertContext';
+import ModalRegister from './ModalRegister';
+import authAPI from 'api/authAPI';
 
 function AccountsAdmin() {
     const { user } = useAuth();
@@ -43,9 +45,19 @@ function AccountsAdmin() {
         totalPages: 1,
     });
 
+
     const [openConfirm, setOpenConfirm] = useState({
         isOpen: false,
         user: null
+    });
+
+    const [openRegister, setOpenRegister] = useState({
+        isOpen: false,
+        data: {
+            fullName: "",
+            username: "",
+            password: "",
+        }
     });
 
     const fetchData = async () => {
@@ -87,6 +99,21 @@ function AccountsAdmin() {
         }
     }
 
+    const handelRegister = async (data) => {
+        try {            
+            const res = await authAPI.register(data);
+            if (res.success) {
+                showAlert("Tạo tài khoản thành công!")
+                setOpenRegister({ isOpen: false, data: { fullName: "", username: "", password: "" } })
+                fetchData();
+                return
+            }
+            showAlert(res.message, "error")
+        } catch (error) {
+            showAlert(error.message, "error")
+        }
+
+    }
 
     const rows = users.map((u) => ({
         _id: (
@@ -156,14 +183,14 @@ function AccountsAdmin() {
                     color="info"
                     ml={1}
                     sx={{ mr: 1 }}
-                    // onClick={() => setModel({ visible: true, isEdit: false, user: user })}
+                // onClick={() => setModel({ visible: true, isEdit: false, user: user })}
                 >
                     <InfoIcon />
                 </MDButton>
                 <MDButton
                     variant="gradient"
                     color="success"
-                    // onClick={() => setModel({ visible: true, isEdit: true, user: user })}
+                // onClick={() => setModel({ visible: true, isEdit: true, user: user })}
                 >
                     <EditIcon />
                 </MDButton>
@@ -245,31 +272,49 @@ function AccountsAdmin() {
                                     display: 'flex',
                                     flexDirection: { xs: 'column', sm: 'row' },
                                     gap: 2,
+                                    justifyContent: 'space-between',
                                     width: '100%', // Luôn chiếm full width cha
                                 }}
                             >
                                 {/* Search Input - Full width trên mobile */}
-                                <TextField
-                                    fullWidth
-                                    label="Tìm kiếm tên hoặc Code"
-                                    size="small"
-                                    value={textSearch}
-                                    onChange={handleSearchText}
+                                <MDBox
                                     sx={{
-                                        width: { xs: '100%', sm: 'auto' },
-                                        minWidth: { sm: '200px' },
+                                        display: 'flex',
+                                        flexDirection: { xs: 'column', sm: 'row' },
+                                        gap: 2,
                                     }}
-                                />
+                                >
+                                    <TextField
+                                        fullWidth
+                                        label="Tìm kiếm tên hoặc Code"
+                                        size="small"
+                                        value={textSearch}
+                                        onChange={handleSearchText}
+                                        sx={{
+                                            width: { xs: '100%', sm: 'auto' },
+                                            minWidth: { sm: '200px' },
+                                        }}
+                                    />
 
-                                {isSearching &&
-                                    <MDBox sx={{
-                                        width: { xs: '100%', sm: 'auto' },
-                                        minWidth: { sm: '200px' },
-                                        flexGrow: { xs: 1, sm: 0 }
-                                    }}>
-                                        <MDButton variant="gradient" color="error" size="small" onClick={handelResetFillter} fullWidth>Reset</MDButton>
-                                    </MDBox>
-                                }
+                                    {isSearching &&
+                                        <MDBox sx={{
+                                            width: { xs: '100%', sm: 'auto' },
+                                            minWidth: { sm: '200px' },
+                                            flexGrow: { xs: 1, sm: 0 }
+                                        }}>
+                                            <MDButton variant="gradient" color="error" size="small" onClick={handelResetFillter} fullWidth>Reset</MDButton>
+                                        </MDBox>
+                                    }
+                                </MDBox>
+                                <MDButton variant="gradient" color="primary" size="small" onClick={() => setOpenRegister({
+                                    isOpen: true, data: {
+                                        fullName: "",
+                                        username: "",
+                                        password: "",
+                                    }
+                                })}>
+                                    Tạo Tài khoản
+                                </MDButton>
                             </MDBox>
                             <MDBox
                                 pt={3}
@@ -303,38 +348,8 @@ function AccountsAdmin() {
                 </MDBox>
             </MDBox>
             <Footer />
-            {/* {model.visible &&
-                <DetailUser
-                    visible={model.visible}
-                    isEdit={model.isEdit}
-                    user={{
-                        ...model.user,
-                        onUpdate: (updatedUser) => {
-                            // Cập nhật cả model.user
-                            setModel(prev => ({
-                                ...prev,
-                                user: {
-                                    ...prev.user,
-                                    ...updatedUser
-                                }
-                            }));
-
-                            // Cập nhật danh sách users
-                            setUsers((prevUsers) =>
-                                prevUsers.map((u) =>
-                                    u._id === updatedUser._id ? { ...u, ...updatedUser } : u
-                                )
-                            );
-                        }
-                    }}
-                    onClose={() => setModel({
-                        visible: false,
-                        isEdit: false,
-                        user: null
-                    })}
-                />
-            } */}
             <ModalConfirm open={openConfirm} setOpen={setOpenConfirm} handleBanUnban={handelBanUnBan} />
+            <ModalRegister open={openRegister} setOpen={setOpenRegister} handelRegister={handelRegister} />
         </DashboardLayout>
     );
 }

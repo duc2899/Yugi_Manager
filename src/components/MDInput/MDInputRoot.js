@@ -25,7 +25,7 @@ export default styled(TextField)(({ theme, ownerState }) => {
         grey,
         transparent,
         error: colorError,
-        success: colorSuccess
+        success: colorSuccess,
     } = palette;
     const { pxToRem } = functions;
 
@@ -68,9 +68,12 @@ export default styled(TextField)(({ theme, ownerState }) => {
     });
 
     return {
-        backgroundColor: disabled
-            ? `${grey[200]} !important`
-            : transparent.main,
+        backgroundColor: transparent.main,
+
+        '& .MuiFormHelperText-root': {
+            color: colorError.main
+        },
+
 
         // ===== HIDE ARROW NUMBER INPUT =====
         "& input[type=number]": {
