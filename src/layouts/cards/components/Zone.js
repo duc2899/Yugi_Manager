@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 const Zone = ({
   title = "Zone",
@@ -6,6 +6,9 @@ const Zone = ({
   onDropCard,
   renderCard,
   height = 160,
+  validateDrop = () => true, // hàm kiểm tra xem card có hợp lệ để drop vào zone này không
+  allowTypes = [],
+  deckLimit = 0
 }) => {
   const handleDragOver = (e) => {
     e.preventDefault(); // bắt buộc để drop được
@@ -14,11 +17,45 @@ const Zone = ({
   const handleDrop = (e) => {
     e.preventDefault();
 
-    const cardId = e.dataTransfer.getData("cardId");
-    if (!cardId) return;
+    const cardData = e.dataTransfer.getData("card");
+    if (!cardData) return;
 
-    if (onDropCard) onDropCard(cardId);
+    const card = JSON.parse(cardData);
+    
+    if (!validateDrop(card)) {
+      return;
+    }
+    if (onDropCard) onDropCard(card);
+
   };
+
+  // ===== COUNT BY allowTypes =====
+  const countByAllowTypes = useMemo(() => {
+    const counter = {};
+
+    allowTypes.forEach((t) => {
+      counter[t] = 0;
+    });
+    
+    cards.forEach((card) => {
+      if (!card) return;
+
+      // ưu tiên match type
+      if (counter[card.type] !== undefined) {
+        counter[card.type]++;
+        return;
+      }
+
+      // nếu không match type thì match category
+      if (counter[card.category] !== undefined) {
+        counter[card.category]++;
+        return;
+      }
+    });
+
+    return counter;
+  }, [cards, allowTypes]);
+
 
   return (
     <div
@@ -34,7 +71,7 @@ const Zone = ({
       {/* HEADER */}
       <div
         style={{
-          padding: "10px 14px",
+          padding: "5px 8px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -42,13 +79,27 @@ const Zone = ({
           borderBottom: "1px solid rgba(255,255,255,0.12)",
         }}
       >
-        <span style={{ fontWeight: "bold", color: "white", fontSize: "14px" }}>
-          {title}: {cards.length}
+        <span style={{ fontWeight: "bold", color: `${cards.length >= deckLimit ? "springgreen" : "white"}`, fontSize: "14px" }}>
+          {title}: {cards.length} / {deckLimit > 0 ? deckLimit : "∞"}
         </span>
+        <div>
+          {allowTypes.map((type) => (
+            <span
+              key={type}
+              style={{
+                fontSize: "12px",
+                color: "rgb(255, 255, 255)",
+                background: "rgba(255,255,255,0.1)",
+                padding: "2px 6px",
+                borderRadius: "4px",
+                marginLeft: "6px",
+              }}
+            >
+              {type}: <span>{countByAllowTypes[type] || 0}</span>
+            </span>
 
-        {/* <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "13px" }}>
-
-        </span> */}
+          ))}
+        </div>
       </div>
 
       {/* BODY */}
@@ -66,8 +117,8 @@ const Zone = ({
         }}
       >
         {cards.length > 0 ? (
-          cards.map((cardId, index) => (
-            <div key={`${cardId}-${index}`}>{renderCard(cardId)}</div>
+          cards.map((card, index) => (
+            <div key={`${card._id}-${index}`}>{renderCard(card._id)}</div>
           ))
         ) : (
           <div

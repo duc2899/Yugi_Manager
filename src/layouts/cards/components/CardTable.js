@@ -6,6 +6,7 @@ import LazyImage from "components/common/LazyImage";
 import { URL_IMAGE } from "config/constant";
 import { useMaterialUIController } from "context";
 import CardHover from "./CardHover";
+import { CARD_TYPE } from "config/card";
 
 function CardTable({
     cards,
@@ -76,8 +77,20 @@ function CardTable({
     }
 
     const handleDragStart = (e, card) => {
-        e.dataTransfer.setData("cardId", card._id); // id của ygoprodeck
+        const payload = {
+            _id: card._id,
+            type: card.type,
+            category:
+                card.type === CARD_TYPE.MONSTER
+                    ? (card.monsterCategories?.find((x) =>
+                        ["FUSION", "SYNCHRO", "XYZ", "LINK"].includes(x)
+                    ) || "")
+                    : "",
+        };
+
+        e.dataTransfer.setData("card", JSON.stringify(payload));
     };
+
 
     return (
         <div style={{

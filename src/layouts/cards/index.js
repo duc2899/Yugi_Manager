@@ -7,16 +7,23 @@ import Footer from "examples/Footer";
 import Fillter from "./components/CardFilter";
 import CardTable from "./components/CardTable";
 import cardApi from "../../api/cardAPI";
-import { buildParams } from "helpers/card";
+import { buildParams, validateMainDeck, validateExtraDeck, validateSideDeck } from "helpers/card";
 import { TYPE_ATTRIBUTES, CARD_TYPES } from "config/card";
 import Zone from "./components/Zone";
+import { URL_IMAGE } from "config/constant";
+import { CARD_TYPE } from "config/card";
+import { DECK_LIMIT } from "config/card";
 
 function Cards() {
   const [cards, setCards] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [mainDeck, setMainDeck] = useState([]);
+  const [deck, setDeck] = useState({
+    mainDeck: [],
+    extraDeck: [],
+    sideDeck: [],
+  });
 
   const [filter, setFilter] = useState({
     monsterType: null,
@@ -72,30 +79,61 @@ function Cards() {
     fetchCards(nextPage);
   };
 
-  const handleDropToMainDeck = (cardId) => {
-    setMainDeck((prev) => [...prev, cardId]);
+  const handleDropToDeck = (deckType) => (cardId) => {
+    setDeck((prev) => ({
+      ...prev,
+      [deckType]: [...prev[deckType], cardId]
+    }));
   };
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox mb={2} />
       <Fillter filter={filter} setFilter={setFilter} optionsCategory={CARD_TYPES} optionsAttribute={TYPE_ATTRIBUTES} />
       <MDBox sx={{ display: "flex", gap: 2, height: "100vh", mb: 4 }}>
         <MDBox sx={{ flex: "0 0 75%", height: "100%" }}>
           <Zone title="Main Deck"
-            cards={mainDeck}
-            onDropCard={handleDropToMainDeck}
+            cards={deck.mainDeck}
+            onDropCard={handleDropToDeck('mainDeck')}
             renderCard={(cardId) => (
               <img
-                src={`https://images.ygoprodeck.com/images/cards_small/${cardId}.jpg`}
+                src={`${URL_IMAGE}${cardId}.jpg`}
                 style={{ width: "55px", borderRadius: "6px" }}
                 alt="card"
               />
             )}
-          ></Zone>
-          <Zone title="Extra Deck"></Zone>
-          <Zone title="Side Deck"></Zone>
+            validateDrop={(card) => validateMainDeck(card, deck)}
+            allowTypes={[CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP]}
+            deckLimit={DECK_LIMIT.MAIN}
+          />
+          <Zone title="Extra Deck"
+            cards={deck.extraDeck}
+            onDropCard={handleDropToDeck('extraDeck')}
+            renderCard={(cardId) => (
+              <img
+                src={`${URL_IMAGE}${cardId}.jpg`}
+                style={{ width: "55px", borderRadius: "6px" }}
+                alt="card"
+              />
+            )}
+            validateDrop={(card) => validateExtraDeck(card, deck)}
+            allowTypes={["FUSION", "SYNCHRO", "XYZ", "LINK"]}
+            deckLimit={DECK_LIMIT.EXTRA}
+          />
+          <Zone title="Side Deck"
+            cards={deck.sideDeck}
+            onDropCard={handleDropToDeck('sideDeck')}
+            renderCard={(cardId) => (
+              <img
+                src={`${URL_IMAGE}${cardId}.jpg`}
+                style={{ width: "55px", borderRadius: "6px" }}
+                alt="card"
+              />
+            )}
+            validateDrop={(card) => validateSideDeck(card, deck)}
+            allowTypes={[CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP]}
+            deckLimit={DECK_LIMIT.SIDE}
+          />
         </MDBox>
         <MDBox sx={{ flex: "0 0 25%", maxHeight: "100%" }}>
           <CardTable

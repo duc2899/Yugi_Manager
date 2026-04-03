@@ -1,9 +1,12 @@
+import { DECK_LIMIT } from "config/card";
+import { CARD_TYPE } from "config/card";
+
 const buildParams = (pageNumber, filter) => {
     const params = {
         page: pageNumber,
         limit: 90,
     };
-    
+
     Object.entries(filter).forEach(([key, value]) => {
         if (!value) return;
 
@@ -21,19 +24,81 @@ const buildParams = (pageNumber, filter) => {
     return params;
 };
 
-const hasValue = (val) => {
-    if (Array.isArray(val)) return val.length > 0;
-    return val !== null && val !== undefined;
-};
+const validateMainDeck = (card, deck) => {
+    if (!card) {
+        alert("Card không hợp lệ!");
+        return false;
+    }
 
-const resetFields = (filter, fields) => {
-    const newFilter = { ...filter };
+    if (deck.mainDeck.length >= DECK_LIMIT.MAIN) {
+        alert(`Main Deck tối đa ${DECK_LIMIT.MAIN} lá!`);
+        return false;
+    }
 
-    fields.forEach((f) => {
-        newFilter[f] = Array.isArray(filter[f]) ? [] : null;
-    });
+    if (card.type === CARD_TYPE.SPELL || card.type === CARD_TYPE.TRAP) {
+        return true;
+    }
 
-    return newFilter;
-};
+    if (card.type === CARD_TYPE.MONSTER) {
+        const extraTypes = ["FUSION", "SYNCHRO", "XYZ", "LINK"];
 
-export { buildParams, hasValue, resetFields }
+        if (extraTypes.includes(card.category)) {
+            alert("Fusion/Synchro/Xyz/Link chỉ được bỏ vào Extra Deck!");
+            return false;
+        }
+
+        return true;
+    }
+
+    alert("Loại card này không được phép vào Main Deck!");
+    return false;
+}
+
+const validateExtraDeck = (card, deck) => {
+    if (!card) {
+        alert("Card không hợp lệ!");
+        return false;
+    }
+
+    if (deck.extraDeck.length >= DECK_LIMIT.EXTRA) {
+        alert(`Extra Deck tối đa ${DECK_LIMIT.EXTRA} lá!`);
+        return false;
+    }
+
+    if (card.type !== CARD_TYPE.MONSTER) {
+        alert("Extra Deck chỉ nhận Monster!");
+        return false;
+    }
+
+    const extraTypes = ["FUSION", "SYNCHRO", "XYZ", "LINK"];
+
+    if (!extraTypes.includes(card.category)) {
+        alert("Extra Deck chỉ nhận Fusion/Synchro/Xyz/Link!");
+        return false;
+    }
+
+    return true;
+}
+
+const validateSideDeck = (card, deck) => {
+    if (!card) {
+        alert("Card không hợp lệ!");
+        return false;
+    }
+
+    if (deck.sideDeck.length >= DECK_LIMIT.SIDE) {
+        alert(`Side Deck tối đa ${DECK_LIMIT.SIDE} lá!`);
+        return false;
+    }
+
+    if (![CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP].includes(card.type)) {
+        alert("Side Deck chỉ nhận Monster/Spell/Trap!");
+        return false;
+    }
+
+    return true;
+}
+
+
+
+export { buildParams, validateMainDeck, validateExtraDeck, validateSideDeck }
