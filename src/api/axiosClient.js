@@ -13,8 +13,10 @@ export const ygoproClient = axios.create({
 /**
  * Local API
  */
+console.log(process.env.REACT_APP_URL_API_YUGI);
+
 export const yugiClient = axios.create({
-    baseURL: process.env.URL_API_YUGI,
+    baseURL: process.env.REACT_APP_URL_API_YUGI,
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
