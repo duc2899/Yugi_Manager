@@ -95,6 +95,7 @@ export const AuthProvider = ({ children }) => {
     // Logout function - gọi API logout để BE xóa cookie
     const logout = async () => {
         try {
+            localStorage.removeItem("access_token");
             await authAPI.logout();
         } finally {
             dispatch({ type: 'LOGOUT' });

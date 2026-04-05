@@ -50,6 +50,7 @@ function Basic() {
     const onSubmit = async data => {
         const res = await login(data);
         if (res.status) {
+            localStorage.setItem("access_token", res.data.token);
             showAlert(res.message, "success")
             return
         }
