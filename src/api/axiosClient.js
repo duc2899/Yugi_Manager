@@ -14,7 +14,7 @@ export const ygoproClient = axios.create({
  * Local API
  */
 export const yugiClient = axios.create({
-    baseURL: "http://localhost:5000/api/v1",
+    baseURL: process.env.URL_API_YUGI,
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
