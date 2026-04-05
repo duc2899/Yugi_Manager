@@ -23,7 +23,7 @@ export const yugiClient = axios.create({
 
 // Interceptors để xử lý request/response chung
 yugiClient.interceptors.request.use(config => {
-    const token = Cookies.get('access_token');
+    const token = localStorage.getItem("access_token");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
