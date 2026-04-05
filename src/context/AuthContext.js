@@ -72,7 +72,8 @@ export const AuthProvider = ({ children }) => {
     const login = async (credentials) => {
         try {
             // Gọi API login, BE sẽ set cookie tự động
-            await authAPI.login(credentials);
+            const res = await authAPI.login(credentials);
+            localStorage.setItem("access_token", res.data.token);
 
             // Sau khi login thành công, lấy thông tin user
             const user = await authAPI.getProfile();
