@@ -13,6 +13,8 @@ import Zone from "./components/Zone";
 import { URL_IMAGE } from "config/constant";
 import { CARD_TYPE } from "config/card";
 import { DECK_LIMIT } from "config/card";
+import { removeCardFromDeck } from "helpers/card";
+import { addCardToDeck } from "helpers/card";
 
 function Cards() {
   const [cards, setCards] = useState([]);
@@ -78,12 +80,53 @@ function Cards() {
     setPage(nextPage);
     fetchCards(nextPage);
   };
+  
+  const handleDragStartFromDeck = (e, card, fromDeck) => {
+    const payload = {
+      ...card,
+      source: fromDeck, // "MAIN" | "EXTRA" | "SIDE"
+    };
 
-  const handleDropToDeck = (deckType) => (cardId) => {
-    setDeck((prev) => ({
-      ...prev,
-      [deckType]: [...prev[deckType], cardId]
-    }));
+    e.dataTransfer.setData("card", JSON.stringify(payload));
+  };
+
+  const handleDropCard = (card, toZone) => {
+    setDeck((prev) => {
+      // drop vào chính deck => ignore
+      if (card.source === toZone) return prev;
+      const newDeck = {
+        mainDeck: [...prev.mainDeck],
+        extraDeck: [...prev.extraDeck],
+        sideDeck: [...prev.sideDeck],
+      };
+
+      // ====== DROP VÀO POOL => remove khỏi deck ======
+      if (toZone === "POOL") {
+        if (card.source !== "POOL") {
+          removeCardFromDeck(newDeck, card._id, card.source);
+        }
+        return newDeck;
+      }
+
+      // ====== DROP VÀO DECK ======
+      // check rule trước (validateDrop)
+      const ok =
+        (toZone === "MAIN" && validateMainDeck(card, newDeck)) ||
+        (toZone === "EXTRA" && validateExtraDeck(card, newDeck)) ||
+        (toZone === "SIDE" && validateSideDeck(card, newDeck));
+
+      if (!ok) return prev;
+
+      // nếu kéo từ deck khác -> remove khỏi deck cũ
+      if (card.source !== "POOL") {
+        removeCardFromDeck(newDeck, card._id, card.source);
+      }
+
+      // add vào deck mới
+      addCardToDeck(newDeck, card, toZone);
+
+      return newDeck;
+    });
   };
 
   return (
@@ -92,13 +135,15 @@ function Cards() {
       <Fillter filter={filter} setFilter={setFilter} optionsCategory={CARD_TYPES} optionsAttribute={TYPE_ATTRIBUTES} />
       <MDBox sx={{ display: "flex", gap: 2, height: "100vh", mb: 4 }}>
         <MDBox sx={{ flex: "0 0 75%", height: "100%" }}>
-          <Zone title="Main Deck"
+          <Zone
+            title="Main Deck"
             cards={deck.mainDeck}
-            onDropCard={handleDropToDeck('mainDeck')}
-            renderCard={(cardId) => (
+            onDropCard={(card) => handleDropCard(card, "MAIN")}
+            renderCard={(card) => (
               <img
-                src={`${URL_IMAGE}${cardId}.jpg`}
+                src={`${URL_IMAGE}${card._id}.jpg`}
                 style={{ width: "55px", borderRadius: "6px" }}
+                onDragStart={(e) => handleDragStartFromDeck(e, card, "MAIN")}
                 alt="card"
               />
             )}
@@ -106,13 +151,15 @@ function Cards() {
             allowTypes={[CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP]}
             deckLimit={DECK_LIMIT.MAIN}
           />
-          <Zone title="Extra Deck"
+          <Zone
+            title="Extra Deck"
             cards={deck.extraDeck}
-            onDropCard={handleDropToDeck('extraDeck')}
-            renderCard={(cardId) => (
+            onDropCard={(card) => handleDropCard(card, "EXTRA")}
+            renderCard={(card) => (
               <img
-                src={`${URL_IMAGE}${cardId}.jpg`}
+                src={`${URL_IMAGE}${card._id}.jpg`}
                 style={{ width: "55px", borderRadius: "6px" }}
+                onDragStart={(e) => handleDragStartFromDeck(e, card, "EXTRA")}
                 alt="card"
               />
             )}
@@ -120,12 +167,14 @@ function Cards() {
             allowTypes={["FUSION", "SYNCHRO", "XYZ", "LINK"]}
             deckLimit={DECK_LIMIT.EXTRA}
           />
-          <Zone title="Side Deck"
+          <Zone
+            title="Side Deck"
             cards={deck.sideDeck}
-            onDropCard={handleDropToDeck('sideDeck')}
-            renderCard={(cardId) => (
+            onDropCard={(card) => handleDropCard(card, "SIDE")}
+            renderCard={(card) => (
               <img
-                src={`${URL_IMAGE}${cardId}.jpg`}
+                src={`${URL_IMAGE}${card._id}.jpg`}
+                onDragStart={(e) => handleDragStartFromDeck(e, card, "SIDE")}
                 style={{ width: "55px", borderRadius: "6px" }}
                 alt="card"
               />
@@ -140,6 +189,7 @@ function Cards() {
             cards={cards}
             loading={loading}
             hasMore={hasMore}
+            onDropCard={(card) => handleDropCard(card, "POOL")}
             onLoadMore={handleLoadMore}
           />
         </MDBox>

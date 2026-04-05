@@ -99,6 +99,24 @@ const validateSideDeck = (card, deck) => {
     return true;
 }
 
+const removeCardFromDeck = (deck, cardId, from) => {
+    const removeOnce = (arr) => {
+        const index = arr.findIndex((c) => c._id === cardId);
+        if (index !== -1) arr.splice(index, 1); // chỉ xoá 1 lá
+    };
+
+    if (from === "MAIN") removeOnce(deck.mainDeck);
+    if (from === "EXTRA") removeOnce(deck.extraDeck);
+    if (from === "SIDE") removeOnce(deck.sideDeck);
+};
+
+const addCardToDeck = (deck, card, toZone) => {
+    if (toZone === "MAIN") deck.mainDeck.push(card);
+    if (toZone === "EXTRA") deck.extraDeck.push(card);
+    if (toZone === "SIDE") deck.sideDeck.push(card);
+};
 
 
-export { buildParams, validateMainDeck, validateExtraDeck, validateSideDeck }
+
+
+export { buildParams, validateMainDeck, validateExtraDeck, validateSideDeck, removeCardFromDeck, addCardToDeck }

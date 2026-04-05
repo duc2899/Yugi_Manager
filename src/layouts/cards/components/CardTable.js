@@ -13,6 +13,7 @@ function CardTable({
     loading,
     hasMore,
     onLoadMore,
+    onDropCard,
 }) {
     const [controller] = useMaterialUIController();
     const {
@@ -24,7 +25,6 @@ function CardTable({
 
     const [hoverCard, setHoverCard] = useState(null);
     const [pos, setPos] = useState({ x: 0, y: 0 });
-
 
     const observerRef = useRef(null);
     const bottomRef = useRef(null);
@@ -86,18 +86,31 @@ function CardTable({
                         ["FUSION", "SYNCHRO", "XYZ", "LINK"].includes(x)
                     ) || "")
                     : "",
+            source: "POOL"
         };
 
         e.dataTransfer.setData("card", JSON.stringify(payload));
     };
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+
+        const cardData = e.dataTransfer.getData("card");
+        if (!cardData) return;
+
+        const card = JSON.parse(cardData);
+        if (onDropCard) onDropCard(card);
+
+    };
 
     return (
         <div style={{
             display: 'flex',
             flexDirection: 'column',
             height: '85%', // hoặc height cố định, ví dụ 400px
-        }}>
+        }}
+
+        >
             <div
                 style={{
                     padding: '8px 12px',
@@ -118,6 +131,9 @@ function CardTable({
             {
                 cards.length > 0 ? (
                     <div
+                        draggable
+                        onDrop={handleDrop}
+                        onDragOver={(e) => e.preventDefault()}
                         style={{
                             display: 'flex',
                             flexWrap: 'wrap',
@@ -125,6 +141,7 @@ function CardTable({
                             flex: 1,
                             minHeight: 0,
                             paddingBottom: "150px"
+
                         }}
                     >
                         {cards.map((card) => (
@@ -137,7 +154,6 @@ function CardTable({
                                 }}
                                 onMouseMove={(e) => handleMouseEnter(card, e)}
                                 onMouseLeave={(e) => handleMouseLeave(e)}
-                                draggable
                                 onDragStart={(e) => handleDragStart(e, card)}
                             >
                                 <LazyImage src={`${URL_IMAGE}${card._id}.jpg`} alt={card.name} style={{ width: '70px', height: 'auto' }} />

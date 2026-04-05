@@ -24,14 +24,13 @@ const CreateTournaments = ({ open, handleClose, fectchData }) => {
     dayjs.extend(utc);
 
     const { showAlert } = useAlert();
-    const [isLoading, setIsLoading] = useState(false);
     const [cardBanList, setCardBanList] = useState([]);
     const [inputCardBan, setInputCardBan] = useState('');
     const {
         register,
         handleSubmit,
         control,
-        formState: { errors },
+        formState: { errors, isSubmitting },
         reset,
     } = useForm({
         resolver: yupResolver(createTournamentSchema),
@@ -46,7 +45,6 @@ const CreateTournaments = ({ open, handleClose, fectchData }) => {
     });
 
     const onSubmit = async (data) => {
-        setIsLoading(true);
         const payload = {
             ...data,
             roundStartedTime: dayjs(data.roundStartedTime).utc().format('DD-MM-YYYY HH:mm'),
@@ -58,12 +56,9 @@ const CreateTournaments = ({ open, handleClose, fectchData }) => {
                 data: payload
             });
         } catch (error) {
-            setIsLoading(false);
             showAlert("Lỗi không tạo được tournament", "error");
             return;
         }
-
-        setIsLoading(false);
 
         reset();
         showAlert("Tạo giải đấu thành công", "success");
@@ -235,7 +230,7 @@ const CreateTournaments = ({ open, handleClose, fectchData }) => {
             </DialogContent>
             <DialogActions>
                 <MDButton onClick={handleClose} color="error" >Hủy</MDButton>
-                <MDButton autoFocus color="success" onClick={handleSubmit(onSubmit)} loading={isLoading}>
+                <MDButton autoFocus color="success" onClick={handleSubmit(onSubmit)} loading={isSubmitting}>
                     Tạo
                 </MDButton>
             </DialogActions>

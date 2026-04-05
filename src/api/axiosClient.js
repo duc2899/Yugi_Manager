@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 /**
  * YGOPRO API
  */
@@ -10,10 +9,6 @@ export const ygoproClient = axios.create({
     },
 });
 
-/**
- * Local API
- */
-console.log(process.env.REACT_APP_URL_API_YUGI);
 
 export const yugiClient = axios.create({
     baseURL: process.env.REACT_APP_URL_API_YUGI,

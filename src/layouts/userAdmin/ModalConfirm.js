@@ -1,14 +1,26 @@
-import MDBox from "components/MDBox"
-import MDButton from "components/MDButton"
-import MDDialog from "components/MDDialog"
-import MDTypography from "components/MDTypography"
-
+import { useState } from "react";
+import MDBox from "components/MDBox";
+import MDButton from "components/MDButton";
+import MDDialog from "components/MDDialog";
+import MDTypography from "components/MDTypography";
 
 const ModalConfirm = ({ open, setOpen, handleBanUnban }) => {
+    const [loading, setLoading] = useState(false);
+
+    const handleConfirm = async () => {
+        try {
+            setLoading(true);
+            await handleBanUnban(open.user);
+            setOpen({ isOpen: false, user: null });
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <MDDialog
             open={open.isOpen}
-            onClose={() => setOpen({ isOpen: false, user: null })}
+            onClose={() => !loading && setOpen({ isOpen: false, user: null })}
             title={open.user?.isDisabled ? "Gỡ ban người dùng" : "Ban người dùng"}
             content={
                 <MDBox>
@@ -30,6 +42,7 @@ const ModalConfirm = ({ open, setOpen, handleBanUnban }) => {
                     <MDButton
                         variant="outlined"
                         color="secondary"
+                        disabled={loading}
                         onClick={() => setOpen({ isOpen: false, user: null })}
                     >
                         Hủy
@@ -38,15 +51,16 @@ const ModalConfirm = ({ open, setOpen, handleBanUnban }) => {
                     <MDButton
                         color={open.user?.isDisabled ? "success" : "error"}
                         variant="gradient"
-                        onClick={handleBanUnban}
+                        loading={loading}
+                        disabled={loading}
+                        onClick={handleConfirm}
                     >
                         {open.user?.isDisabled ? "Gỡ ban" : "Ban"}
                     </MDButton>
                 </>
             }
         />
-    )
-}
+    );
+};
 
-
-export default ModalConfirm
+export default ModalConfirm;

@@ -8,7 +8,7 @@ const Zone = ({
   height = 160,
   validateDrop = () => true, // hàm kiểm tra xem card có hợp lệ để drop vào zone này không
   allowTypes = [],
-  deckLimit = 0
+  deckLimit = 0, 
 }) => {
   const handleDragOver = (e) => {
     e.preventDefault(); // bắt buộc để drop được
@@ -20,7 +20,7 @@ const Zone = ({
     const cardData = e.dataTransfer.getData("card");
     if (!cardData) return;
 
-    const card = JSON.parse(cardData);
+    const card = JSON.parse(cardData);    
     
     if (!validateDrop(card)) {
       return;
@@ -106,6 +106,7 @@ const Zone = ({
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        draggable
         style={{
           height,
           padding: "10px",
@@ -118,7 +119,7 @@ const Zone = ({
       >
         {cards.length > 0 ? (
           cards.map((card, index) => (
-            <div key={`${card._id}-${index}`}>{renderCard(card._id)}</div>
+            <div key={`${card._id}-${index}`}>{renderCard(card)}</div>
           ))
         ) : (
           <div

@@ -42,7 +42,7 @@ function Basic() {
     const {
         register,
         handleSubmit,
-        formState: { errors }
+        formState: { errors, isSubmitting }
     } = useForm({
         resolver: yupResolver(schema)
     });
@@ -155,8 +155,10 @@ function Basic() {
                                 color="info"
                                 fullWidth
                                 circular
+                                loading={isSubmitting}
+                                disabled={isSubmitting}
                             >
-                                Đăng nhập
+                               { isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập' }
                             </MDButton>
                         </MDBox>
                     </form>
