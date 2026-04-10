@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
-import LazyImage from "components/common/LazyImage";
-import { URL_IMAGE } from "config/constant";
 import { useMaterialUIController } from "context";
 import CardHover from "./CardHover";
 import { CARD_TYPE } from "config/card";
+import CardImage from "./CardImage";
 
 function CardTable({
     cards,
@@ -69,6 +68,7 @@ function CardTable({
         }
 
         setPos({ x, y });
+        e.currentTarget.style.transform = 'scale(1.1)';
     };
 
     const handleMouseLeave = (event) => {
@@ -86,7 +86,8 @@ function CardTable({
                         ["FUSION", "SYNCHRO", "XYZ", "LINK"].includes(x)
                     ) || "")
                     : "",
-            source: "POOL"
+            source: "POOL",
+            cardLimitStatus: card.cardLimitStatus,
         };
 
         e.dataTransfer.setData("card", JSON.stringify(payload));
@@ -156,7 +157,7 @@ function CardTable({
                                 onMouseLeave={(e) => handleMouseLeave(e)}
                                 onDragStart={(e) => handleDragStart(e, card)}
                             >
-                                <LazyImage src={`${URL_IMAGE}${card._id}.jpg`} alt={card.name} style={{ width: '70px', height: 'auto' }} />
+                                <CardImage card={card} />
                             </div>
                         ))}
 

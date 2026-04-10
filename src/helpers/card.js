@@ -118,5 +118,12 @@ const addCardToDeck = (deck, card, toZone) => {
 
 
 
+const countCardInAllDeck = (deck, cardId) => {
+    return [...deck.mainDeck, ...deck.extraDeck, ...deck.sideDeck].filter(
+        (c) => c._id === cardId
+    ).length;
+};
 
-export { buildParams, validateMainDeck, validateExtraDeck, validateSideDeck, removeCardFromDeck, addCardToDeck }
+
+
+export { buildParams, validateMainDeck, validateExtraDeck, validateSideDeck, removeCardFromDeck, addCardToDeck, countCardInAllDeck }

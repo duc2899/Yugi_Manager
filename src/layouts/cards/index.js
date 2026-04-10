@@ -10,11 +10,12 @@ import cardApi from "../../api/cardAPI";
 import { buildParams, validateMainDeck, validateExtraDeck, validateSideDeck } from "helpers/card";
 import { TYPE_ATTRIBUTES, CARD_TYPES } from "config/card";
 import Zone from "./components/Zone";
-import { URL_IMAGE } from "config/constant";
 import { CARD_TYPE } from "config/card";
 import { DECK_LIMIT } from "config/card";
 import { removeCardFromDeck } from "helpers/card";
 import { addCardToDeck } from "helpers/card";
+import CardImage from "./components/CardImage";
+import { countCardInAllDeck } from "helpers/card";
 
 function Cards() {
   const [cards, setCards] = useState([]);
@@ -80,7 +81,7 @@ function Cards() {
     setPage(nextPage);
     fetchCards(nextPage);
   };
-  
+
   const handleDragStartFromDeck = (e, card, fromDeck) => {
     const payload = {
       ...card,
@@ -94,6 +95,7 @@ function Cards() {
     setDeck((prev) => {
       // drop vào chính deck => ignore
       if (card.source === toZone) return prev;
+
       const newDeck = {
         mainDeck: [...prev.mainDeck],
         extraDeck: [...prev.extraDeck],
@@ -101,10 +103,8 @@ function Cards() {
       };
 
       // ====== DROP VÀO POOL => remove khỏi deck ======
-      if (toZone === "POOL") {
-        if (card.source !== "POOL") {
-          removeCardFromDeck(newDeck, card._id, card.source);
-        }
+      if (toZone === "POOL" && card.source !== "POOL") {
+        removeCardFromDeck(newDeck, card._id, card.source);
         return newDeck;
       }
 
@@ -116,6 +116,21 @@ function Cards() {
         (toZone === "SIDE" && validateSideDeck(card, newDeck));
 
       if (!ok) return prev;
+
+      // ===== CHECK LIMIT ONLY WHEN ADD FROM POOL =====
+      if (card.source === "POOL") {
+        const totalCopies = countCardInAllDeck(newDeck, card._id);
+
+        if (card.cardLimitStatus === 0) {
+          alert("Lá bài này đã bị BAN!");
+          return prev;
+        }
+
+        if (totalCopies >= card.cardLimitStatus) {
+          alert(`Lá bài này chỉ được tối đa ${card.cardLimitStatus} bản trong toàn bộ deck!`);
+          return prev;
+        }
+      }
 
       // nếu kéo từ deck khác -> remove khỏi deck cũ
       if (card.source !== "POOL") {
@@ -140,12 +155,11 @@ function Cards() {
             cards={deck.mainDeck}
             onDropCard={(card) => handleDropCard(card, "MAIN")}
             renderCard={(card) => (
-              <img
-                src={`${URL_IMAGE}${card._id}.jpg`}
-                style={{ width: "55px", borderRadius: "6px" }}
+              <div
                 onDragStart={(e) => handleDragStartFromDeck(e, card, "MAIN")}
-                alt="card"
-              />
+              >
+                <CardImage card={card} width={55} showStatus={false} />
+              </div>
             )}
             validateDrop={(card) => validateMainDeck(card, deck)}
             allowTypes={[CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP]}
@@ -156,12 +170,11 @@ function Cards() {
             cards={deck.extraDeck}
             onDropCard={(card) => handleDropCard(card, "EXTRA")}
             renderCard={(card) => (
-              <img
-                src={`${URL_IMAGE}${card._id}.jpg`}
-                style={{ width: "55px", borderRadius: "6px" }}
+              <div
                 onDragStart={(e) => handleDragStartFromDeck(e, card, "EXTRA")}
-                alt="card"
-              />
+              >
+                <CardImage card={card} width={55} showStatus={false} />
+              </div>
             )}
             validateDrop={(card) => validateExtraDeck(card, deck)}
             allowTypes={["FUSION", "SYNCHRO", "XYZ", "LINK"]}
@@ -172,12 +185,11 @@ function Cards() {
             cards={deck.sideDeck}
             onDropCard={(card) => handleDropCard(card, "SIDE")}
             renderCard={(card) => (
-              <img
-                src={`${URL_IMAGE}${card._id}.jpg`}
+              <div
                 onDragStart={(e) => handleDragStartFromDeck(e, card, "SIDE")}
-                style={{ width: "55px", borderRadius: "6px" }}
-                alt="card"
-              />
+              >
+                <CardImage card={card} width={55} showStatus={false} />
+              </div>
             )}
             validateDrop={(card) => validateSideDeck(card, deck)}
             allowTypes={[CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP]}
