@@ -8,7 +8,7 @@ const buildParams = (pageNumber, filter) => {
     };
 
     Object.entries(filter).forEach(([key, value]) => {
-        if (!value) return;
+        if (value === null || value === undefined || value === "") return;
 
         // array → join
         if (Array.isArray(value) && value.length > 0) {

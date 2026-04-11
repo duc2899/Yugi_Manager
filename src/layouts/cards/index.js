@@ -8,7 +8,6 @@ import Fillter from "./components/CardFilter";
 import CardTable from "./components/CardTable";
 import cardApi from "../../api/cardAPI";
 import { buildParams, validateMainDeck, validateExtraDeck, validateSideDeck } from "helpers/card";
-import { TYPE_ATTRIBUTES, CARD_TYPES } from "config/card";
 import Zone from "./components/Zone";
 import { CARD_TYPE } from "config/card";
 import { DECK_LIMIT } from "config/card";
@@ -16,8 +15,10 @@ import { removeCardFromDeck } from "helpers/card";
 import { addCardToDeck } from "helpers/card";
 import CardImage from "./components/CardImage";
 import { countCardInAllDeck } from "helpers/card";
+import { useAlert } from "context/AlertContext";
 
 function Cards() {
+  const { showAlert } = useAlert();
   const [cards, setCards] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -27,7 +28,6 @@ function Cards() {
     extraDeck: [],
     sideDeck: [],
   });
-
   const [filter, setFilter] = useState({
     monsterType: null,
     monsterCategory: null,
@@ -40,6 +40,7 @@ function Cards() {
     atk: null,
     def: null,
     name: null,
+    cardLimitStatus: null,
   });
 
   const fetchCards = async (pageNumber = 1, isReset = false) => {
@@ -144,10 +145,25 @@ function Cards() {
     });
   };
 
+  const handeleSetStatus = async (code, status) => {
+    try {
+      await cardApi.setCardStatus({
+        code,
+        status
+      });
+      showAlert("Cập nhật trạng thái lá bài thành công", "success");
+      // update local state
+      setCards((prev) => prev.map((card) => (card.code === code ? { ...card, cardLimitStatus: status } : card)));
+    } catch (error) {
+      showAlert(error.message, "error")
+    }
+
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Fillter filter={filter} setFilter={setFilter} optionsCategory={CARD_TYPES} optionsAttribute={TYPE_ATTRIBUTES} />
+      <Fillter filter={filter} setFilter={setFilter}/>
       <MDBox sx={{ display: "flex", gap: 2, height: "100vh", mb: 4 }}>
         <MDBox sx={{ flex: "0 0 75%", height: "100%" }}>
           <Zone
@@ -203,6 +219,7 @@ function Cards() {
             hasMore={hasMore}
             onDropCard={(card) => handleDropCard(card, "POOL")}
             onLoadMore={handleLoadMore}
+            handeleSetStatus={handeleSetStatus}
           />
         </MDBox>
       </MDBox>

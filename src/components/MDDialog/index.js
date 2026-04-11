@@ -83,7 +83,13 @@ MDDialog.propTypes = {
     content: PropTypes.node,
     actions: PropTypes.node,
 
-    maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    maxWidth: PropTypes.oneOf([
+        'xs',
+        'sm',
+        'md',
+        'lg',
+        'xl'
+    ]),
     fullWidth: PropTypes.bool,
     hideCloseIcon: PropTypes.bool,
 };

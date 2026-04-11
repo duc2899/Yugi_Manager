@@ -5,15 +5,12 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDSelectField from "components/MDSelectField";
-import { TYPE_BY_CATEGORY, CARD_TYPE, TYPE_MONSTERS } from "config/card";
+import { TYPE_BY_CATEGORY, CARD_TYPE, TYPE_MONSTERS, CARD_TYPES, TYPE_ATTRIBUTES, CARD_STATUS } from "config/card";
 import useDebouncedFilterInputs from "hooks/useDebouncedFilterInputs";
 
 export default function CardFilterBar({
     filter,
     setFilter,
-    optionsCategory = [],
-    optionsAttribute = [],
-    optionsLimit = [],
 }) {
 
     const { inputs, handleChangeDebounced } = useDebouncedFilterInputs(filter, setFilter, 600);
@@ -52,7 +49,7 @@ export default function CardFilterBar({
                 [field]: value,
             };
 
-            if(field === ""){
+            if (field === "") {
                 next.monsterType = null;
                 next.monsterCategory = null;
                 next.monsterAttribute = null;
@@ -80,6 +77,10 @@ export default function CardFilterBar({
 
             if (field === "category" && value !== CARD_TYPE.TRAP) {
                 next.trapType = null;
+            }
+
+            if (field === "cardLimitStatus") {
+                next.cardLimitStatus = value;
             }
 
             return next;
@@ -127,7 +128,7 @@ export default function CardFilterBar({
                             <MDBox sx={inputBoxStyle}>
                                 <MDSelectField value={filter.category} onChange={handleChange("category")} MenuProps={menuProps}>
                                     <MenuItem value="">(All)</MenuItem>
-                                    {optionsCategory.map((item) => (
+                                    {CARD_TYPES.map((item) => (
                                         <MenuItem key={item.key} value={item.key}>
                                             {item.name}
                                         </MenuItem>
@@ -181,7 +182,7 @@ export default function CardFilterBar({
                                 >
                                     <MenuItem value="">(All)</MenuItem>
 
-                                    {optionsAttribute.map((item) => (
+                                    {TYPE_ATTRIBUTES.map((item) => (
                                         <MenuItem
                                             key={item.key}
                                             value={item.key}
@@ -244,11 +245,11 @@ export default function CardFilterBar({
                             </MDTypography>
 
                             <MDBox sx={inputBoxStyle}>
-                                <MDSelectField value={filter.limit} MenuProps={menuProps}>
+                                <MDSelectField value={filter.cardLimitStatus} MenuProps={menuProps} onChange={handleChange("cardLimitStatus")}>
                                     <MenuItem value="">(All)</MenuItem>
-                                    {optionsLimit.map((item) => (
+                                    {CARD_STATUS.map((item) => (
                                         <MenuItem key={item.value} value={item.value}>
-                                            {item.label}
+                                            {item.name}
                                         </MenuItem>
                                     ))}
                                 </MDSelectField>

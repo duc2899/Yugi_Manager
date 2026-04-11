@@ -148,6 +148,13 @@ const CARD_TYPES = [
     { key: "TRAP", name: "Trap" },
 ];
 
+const CARD_STATUS = [
+    { name: "Ban", value: 0 },
+    { name: "Limited", value: 1 },
+    { name: "Semi-Limited", value: 2 },
+    { name: "Default", value: 3 },
+]
+
 const CARD_TYPE = {
     MONSTER: "MONSTER",
     SPELL: "SPELL",
@@ -191,4 +198,4 @@ const DECK_LIMIT = {
     SIDE: 15,
 };
 
-export { CARD_TYPES, CARD_TYPE, TYPE_ATTRIBUTES, TYPE_MONSTERS, ATTRIBUTE_ICONS, SPELL_ICONS, TRAP_ICONS, TYPE_BY_CATEGORY, DECK_LIMIT };
+export { CARD_TYPES, CARD_TYPE, TYPE_ATTRIBUTES, TYPE_MONSTERS, ATTRIBUTE_ICONS, SPELL_ICONS, TRAP_ICONS, TYPE_BY_CATEGORY, DECK_LIMIT, CARD_STATUS };

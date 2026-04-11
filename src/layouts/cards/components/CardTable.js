@@ -6,6 +6,7 @@ import { useMaterialUIController } from "context";
 import CardHover from "./CardHover";
 import { CARD_TYPE } from "config/card";
 import CardImage from "./CardImage";
+import CardSetStatus from "./CardSetStatus";
 
 function CardTable({
     cards,
@@ -13,6 +14,7 @@ function CardTable({
     hasMore,
     onLoadMore,
     onDropCard,
+    handeleSetStatus
 }) {
     const [controller] = useMaterialUIController();
     const {
@@ -27,6 +29,10 @@ function CardTable({
 
     const observerRef = useRef(null);
     const bottomRef = useRef(null);
+    const [cardSetStatusOpen, setCardSetStatusOpen] = useState({
+        isOpen: false,
+        card: null,
+    });
 
     useEffect(() => {
         if (!hasMore) return;
@@ -132,7 +138,6 @@ function CardTable({
             {
                 cards.length > 0 ? (
                     <div
-                        draggable
                         onDrop={handleDrop}
                         onDragOver={(e) => e.preventDefault()}
                         style={{
@@ -148,14 +153,16 @@ function CardTable({
                         {cards.map((card) => (
                             <div
                                 key={card._id}
+                                draggable
                                 style={{
                                     margin: '10px',
                                     cursor: 'pointer',
                                     transition: 'transform 0.2s',
                                 }}
-                                onMouseMove={(e) => handleMouseEnter(card, e)}
+                                onMouseEnter={(e) => handleMouseEnter(card, e)}
                                 onMouseLeave={(e) => handleMouseLeave(e)}
                                 onDragStart={(e) => handleDragStart(e, card)}
+                                onClick={() => setCardSetStatusOpen({ isOpen: true, card })}
                             >
                                 <CardImage card={card} />
                             </div>
@@ -176,7 +183,14 @@ function CardTable({
                         </div>
                     )
             }
-
+            {cardSetStatusOpen.isOpen && (
+                <CardSetStatus
+                    open={cardSetStatusOpen}
+                    setOpen={setCardSetStatusOpen}
+                    lang={lang}
+                    handleSetStatus={handeleSetStatus}
+                />
+            )}
             {hoverCard && <CardHover hoverCard={hoverCard} lang={lang} pos={pos}></CardHover>}
         </div >
     );
