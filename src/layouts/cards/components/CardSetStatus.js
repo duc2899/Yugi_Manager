@@ -57,6 +57,10 @@ const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
                             overflowY: "scroll",
                             textOverflow: "ellipsis",
                             height: 120,
+                            width: "100%",
+                            padding: 1,
+                            border: "1px solid rgba(255,255,255,0.2)",
+                            borderRadius: 1,
                         }}>
                             <MDTypography fontWeight="medium" variant="caption">
                                 {lang === "en" ? open.card.desc : open.card.descVN}
@@ -65,13 +69,15 @@ const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
                     </MDBox>
 
                     <MDBox sx={{ marginTop: 3 }}>
-
                         <RadioGroup
                             row
                             aria-labelledby="demo-row-radio-buttons-group-label"
                             name="row-radio-buttons-group"
                             value={selectedStatus}
                             onChange={(e) => setSelectedStatus(Number(e.target.value))}
+                            sx={{
+                                justifyContent: "center",
+                            }}
                         >
                             {
                                 StatusChoosen.map((status) => (

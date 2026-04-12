@@ -118,9 +118,9 @@ const addCardToDeck = (deck, card, toZone) => {
 
 
 
-const countCardInAllDeck = (deck, cardId) => {
+const countCardInAllDeck = (deck, name) => {
     return [...deck.mainDeck, ...deck.extraDeck, ...deck.sideDeck].filter(
-        (c) => c._id === cardId
+        (c) => c.name === name
     ).length;
 };
 

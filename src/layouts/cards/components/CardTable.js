@@ -7,6 +7,7 @@ import CardHover from "./CardHover";
 import { CARD_TYPE } from "config/card";
 import CardImage from "./CardImage";
 import CardSetStatus from "./CardSetStatus";
+import { CircularProgress } from "@mui/material";
 
 function CardTable({
     cards,
@@ -93,6 +94,7 @@ function CardTable({
                     ) || "")
                     : "",
             source: "POOL",
+            name: card.name,
             cardLimitStatus: card.cardLimitStatus,
         };
 
@@ -135,54 +137,83 @@ function CardTable({
                     <MDTypography variant="h6" sx={{ margin: 0 }}>Total Cards: {cards.length}</MDTypography>
                 </MDBox>
             </div>
-            {
-                cards.length > 0 ? (
+            <div
+                onDrop={handleDrop}
+                onDragOver={(e) => e.preventDefault()}
+                style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    overflowY: "auto",
+                    flex: 1,
+                    minHeight: 0,
+                    paddingBottom: "150px",
+                    position: "relative",
+                }}
+            >
+                {/* LOADING OVERLAY */}
+                {loading && (
                     <div
-                        onDrop={handleDrop}
-                        onDragOver={(e) => e.preventDefault()}
                         style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            overflowY: 'auto',
-                            flex: 1,
-                            minHeight: 0,
-                            paddingBottom: "150px"
-
+                            position: "absolute",
+                            inset: 0,
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            zIndex: 10,
                         }}
                     >
-                        {cards.map((card) => (
-                            <div
-                                key={card._id}
-                                draggable
-                                style={{
-                                    margin: '10px',
-                                    cursor: 'pointer',
-                                    transition: 'transform 0.2s',
-                                }}
-                                onMouseEnter={(e) => handleMouseEnter(card, e)}
-                                onMouseLeave={(e) => handleMouseLeave(e)}
-                                onDragStart={(e) => handleDragStart(e, card)}
-                                onClick={() => setCardSetStatusOpen({ isOpen: true, card })}
-                            >
-                                <CardImage card={card} />
-                            </div>
-                        ))}
-
-                        {loading && (
-                            <div style={{ width: '100%', textAlign: 'center', padding: 20 }}>
-                                Loading...
-                            </div>
-                        )}
-
-                        <div ref={bottomRef} style={{ height: 20 }} />
+                        <CircularProgress
+                            size={50}
+                            thickness={3}
+                            sx={{
+                                color: "primary.main",
+                                "& .MuiCircularProgress-circle": {
+                                    strokeLinecap: "round",
+                                },
+                            }}
+                        />
                     </div>
-                )
-                    : (
-                        <div style={{ textAlign: 'center', padding: 50 }}>
-                            {loading ? "Loading..." : "Không tìm thấy thẻ nào."}
-                        </div>
-                    )
-            }
+                )}
+
+                {/* EMPTY */}
+                {!loading && cards.length === 0 && (
+                    <div
+                        style={{
+                            width: "100%",
+                            height: "250px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            fontSize: "15px",
+                            color: "rgba(255,255,255,0.7)",
+                            fontStyle: "italic",
+                        }}
+                    >
+                        Không tìm thấy thẻ nào.
+                    </div>
+                )}
+
+                {/* CARDS */}
+                {cards.map((card) => (
+                    <div
+                        key={card._id}
+                        draggable
+                        style={{
+                            margin: "10px",
+                            cursor: "pointer",
+                            transition: "transform 0.2s",
+                        }}
+                        onMouseEnter={(e) => handleMouseEnter(card, e)}
+                        onMouseLeave={(e) => handleMouseLeave(e)}
+                        onDragStart={(e) => handleDragStart(e, card)}
+                        onClick={() => setCardSetStatusOpen({ isOpen: true, card })}
+                    >
+                        <CardImage card={card} />
+                    </div>
+                ))}
+
+                <div ref={bottomRef} style={{ height: 20, width: "100%" }} />
+            </div>
             {cardSetStatusOpen.isOpen && (
                 <CardSetStatus
                     open={cardSetStatusOpen}

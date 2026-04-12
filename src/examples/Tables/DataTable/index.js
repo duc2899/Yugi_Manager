@@ -29,6 +29,7 @@ import MDPagination from 'components/MDPagination';
 // Material Dashboard 2 React example components
 import DataTableHeadCell from 'examples/Tables/DataTable/DataTableHeadCell';
 import DataTableBodyCell from 'examples/Tables/DataTable/DataTableBodyCell';
+import { CircularProgress, TableCell } from '@mui/material';
 
 function DataTable({
     entriesPerPage,
@@ -37,7 +38,8 @@ function DataTable({
     table,
     pagination,
     isSorted,
-    noEndBorder
+    noEndBorder,
+    loading
 }) {
     const defaultValue = entriesPerPage.defaultValue
         ? entriesPerPage.defaultValue
@@ -206,29 +208,67 @@ function DataTable({
                     ))}
                 </MDBox>
                 <TableBody {...getTableBodyProps()}>
-                    {page.map((row, key) => {
-                        prepareRow(row);
-                        return (
-                            <TableRow key={key} {...row.getRowProps()}>
-                                {row.cells.map((cell, idx) => (
-                                    <DataTableBodyCell
-                                        key={idx}
-                                        noBorder={
-                                            noEndBorder &&
-                                            rows.length - 1 === key
-                                        }
-                                        align={
-                                            cell.column.align
-                                                ? cell.column.align
-                                                : 'left'
-                                        }
-                                        {...cell.getCellProps()}>
-                                        {cell.render('Cell')}
-                                    </DataTableBodyCell>
-                                ))}
-                            </TableRow>
-                        );
-                    })}
+                    {loading ? (
+                        // loading row
+                        <TableRow>
+                            <TableCell colSpan={columns.length} style={{ padding: 0, borderBottom: "none" }}>
+                                <MDBox
+                                    display="flex"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                    height="250px"
+                                    width="100%"
+                                >
+                                    <CircularProgress
+                                        size={50}
+                                        thickness={3}
+                                        sx={{
+                                            color: "primary.main",
+                                            "& .MuiCircularProgress-circle": {
+                                                strokeLinecap: "round",
+                                            },
+                                        }}
+                                    />
+                                </MDBox>
+                            </TableCell>
+                        </TableRow>
+                    ) : page.length === 0 ? (
+                        // no data row
+                        <TableRow>
+                            <TableCell colSpan={columns.length} style={{ borderBottom: "none" }}>
+                                <MDBox
+                                    display="flex"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                    height="150px"
+                                    width="100%"
+                                >
+                                    <MDTypography variant="button" color="secondary">
+                                        No data found
+                                    </MDTypography>
+                                </MDBox>
+                            </TableCell>
+                        </TableRow>
+                    ) : (
+                        // render data
+                        page.map((row, key) => {
+                            prepareRow(row);
+                            return (
+                                <TableRow key={key} {...row.getRowProps()}>
+                                    {row.cells.map((cell, idx) => (
+                                        <DataTableBodyCell
+                                            key={idx}
+                                            noBorder={noEndBorder && rows.length - 1 === key}
+                                            align={cell.column.align ? cell.column.align : "left"}
+                                            {...cell.getCellProps()}
+                                        >
+                                            {cell.render("Cell")}
+                                        </DataTableBodyCell>
+                                    ))}
+                                </TableRow>
+                            );
+                        })
+                    )}
                 </TableBody>
             </Table>
 
@@ -301,7 +341,8 @@ DataTable.defaultProps = {
     showTotalEntries: true,
     pagination: { variant: 'gradient', color: 'info' },
     isSorted: true,
-    noEndBorder: false
+    noEndBorder: false,
+    loading: false
 };
 
 // Typechecking props for the DataTable
@@ -330,7 +371,8 @@ DataTable.propTypes = {
         ])
     }),
     isSorted: PropTypes.bool,
-    noEndBorder: PropTypes.bool
+    noEndBorder: PropTypes.bool,
+    loading: PropTypes.bool
 };
 
 export default DataTable;

@@ -36,6 +36,7 @@ function AccountsAdmin() {
     const { showAlert } = useAlert();
 
     const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [textSearch, setTextSearch] = useState("")
     const [debouncedSearchText] = useDebounce(textSearch, 500);
     const [pagination, setPagination] = useState({
@@ -61,6 +62,7 @@ function AccountsAdmin() {
     });
 
     const fetchData = async () => {
+        setLoading(true);
         try {
             const params = {
                 page: pagination.page,
@@ -76,6 +78,8 @@ function AccountsAdmin() {
             setPagination(response.data.pagination);
         } catch (error) {
             console.error("Error fetching tournaments:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -100,7 +104,7 @@ function AccountsAdmin() {
     }
 
     const handelRegister = async (data) => {
-        try {            
+        try {
             const res = await authAPI.register(data);
             if (res.success) {
                 showAlert("Tạo tài khoản thành công!")
@@ -329,7 +333,7 @@ function AccountsAdmin() {
                                     entriesPerPage={false}
                                     showTotalEntries={false}
                                     noEndBorder
-
+                                    loading={loading}
                                 />
                             </MDBox>
                         </Card>

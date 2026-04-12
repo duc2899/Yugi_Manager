@@ -120,7 +120,7 @@ function Cards() {
 
       // ===== CHECK LIMIT ONLY WHEN ADD FROM POOL =====
       if (card.source === "POOL") {
-        const totalCopies = countCardInAllDeck(newDeck, card._id);
+        const totalCopies = countCardInAllDeck(newDeck, card.name);
 
         if (card.cardLimitStatus === 0) {
           alert("Lá bài này đã bị BAN!");

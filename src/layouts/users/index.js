@@ -29,6 +29,7 @@ import { useDebounce } from 'use-debounce';
 
 function Tables() {
     const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [textSearch, setTextSearch] = useState("")
     const [debouncedSearchText] = useDebounce(textSearch, 500);
     const [pagination, setPagination] = useState({
@@ -44,6 +45,7 @@ function Tables() {
     });
 
     const fetchData = async () => {
+        setLoading(true);
         try {
             const params = {
                 page: pagination.page,
@@ -59,6 +61,8 @@ function Tables() {
             setPagination(response.data.pagination);
         } catch (error) {
             console.error("Error fetching tournaments:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -66,8 +70,6 @@ function Tables() {
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pagination.page, pagination.limit, debouncedSearchText]);
-
-
 
 
     const rows = users.map((user) => ({
@@ -240,7 +242,7 @@ function Tables() {
                                     entriesPerPage={false}
                                     showTotalEntries={false}
                                     noEndBorder
-
+                                    loading={loading}
                                 />
                             </MDBox>
                         </Card>

@@ -1,4 +1,4 @@
-import { Chip, Stack } from "@mui/material";
+import { Chip, CircularProgress, Stack } from "@mui/material";
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -12,7 +12,7 @@ import { formatTimestampVN } from "utils";
 import { getStatusInfo } from "utils";
 
 
-const TournamentTable = ({ data, pagination, setPagination }) => {
+const TournamentTable = ({ data, pagination, setPagination, loading }) => {
     const navigate = useNavigate();
 
     // Generate pagination items
@@ -37,7 +37,28 @@ const TournamentTable = ({ data, pagination, setPagination }) => {
     return (
         <>
             {
-                data.length === 0 ? (
+                loading ? (
+                    <MDBox sx={{
+                        borderRadius: '8px',
+                        p: 6,
+                        textAlign: 'center',
+                        height: 'fit-content',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}>
+                        <CircularProgress
+                            size={50}
+                            thickness={3}
+                            sx={{
+                                color: "primary.main",
+                                "& .MuiCircularProgress-circle": {
+                                    strokeLinecap: "round",
+                                },
+                            }}
+                        />
+                    </MDBox>
+                ) : data.length === 0 ? (
                     <MDBox sx={{
                         backgroundColor: '#fff',
                         borderRadius: '8px',
@@ -63,7 +84,6 @@ const TournamentTable = ({ data, pagination, setPagination }) => {
                         <MDBox
                             key={tournamentsDataItem._id}
                             sx={{
-                                backgroundColor: '#fff',
                                 borderRadius: '8px',
                                 boxShadow: '0 2px 14px 0 rgba(32, 40, 45, 0.08)',
                                 p: 2,

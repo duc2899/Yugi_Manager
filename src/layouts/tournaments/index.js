@@ -12,6 +12,7 @@ import tournamentAPI from 'api/tournamentsAPI';
 
 function Tournaments() {
 
+    const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState({
         status: "ALL",
         type: "ALL",
@@ -32,6 +33,7 @@ function Tournaments() {
     };
 
     const fetchData = async () => {
+        setLoading(true);
         try {
             const params = {
                 page: pagination.page,
@@ -56,6 +58,8 @@ function Tournaments() {
             setPagination(response.data.pagination);
         } catch (error) {
             console.error("Error fetching tournaments:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -70,7 +74,7 @@ function Tournaments() {
             <DashboardNavbar />
 
             <TournamentFilter setFilter={setFilter} filter={filter} setOpen={setOpen}></TournamentFilter>
-            <TournamentTable data={data} pagination={pagination} setPagination={setPagination}></TournamentTable>
+            <TournamentTable data={data} pagination={pagination} setPagination={setPagination} loading={loading}></TournamentTable>
 
             <Footer />
             <CreateTournaments open={open} handleClose={handleClose} fectchData={fetchData} />
