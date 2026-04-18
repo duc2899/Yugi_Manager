@@ -7,15 +7,18 @@ import Footer from "examples/Footer";
 import Fillter from "./components/CardFilter";
 import CardTable from "./components/CardTable";
 import cardApi from "../../api/cardAPI";
-import { buildParams, validateMainDeck, validateExtraDeck, validateSideDeck } from "helpers/card";
 import Zone from "./components/Zone";
 import { CARD_TYPE } from "config/card";
 import { DECK_LIMIT } from "config/card";
-import { removeCardFromDeck } from "helpers/card";
-import { addCardToDeck } from "helpers/card";
 import CardImage from "./components/CardImage";
-import { countCardInAllDeck } from "helpers/card";
 import { useAlert } from "context/AlertContext";
+import { removeCardFromDeck } from "helpers/card";
+import { validateDeck } from "helpers/card";
+import { addCardToDeck } from "helpers/card";
+import { countCardInAllDeck } from "helpers/card";
+import { buildParams } from "helpers/card";
+import { useApi } from "hooks/useApi";
+import adminAPI from "api/adminAPI";
 
 function Cards() {
   const { showAlert } = useAlert();
@@ -23,11 +26,14 @@ function Cards() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectDeck, setSelectDeck] = useState("")
+
   const [deck, setDeck] = useState({
     mainDeck: [],
     extraDeck: [],
     sideDeck: [],
   });
+
   const [filter, setFilter] = useState({
     monsterType: null,
     monsterCategory: null,
@@ -42,6 +48,9 @@ function Cards() {
     name: null,
     cardLimitStatus: null,
   });
+
+  console.log(deck);
+
 
   const fetchCards = async (pageNumber = 1, isReset = false) => {
     if (loading) return;
@@ -68,6 +77,29 @@ function Cards() {
     }
   };
 
+  const { data: dataDetailDeck } = useApi(() => adminAPI.getDetailDeck(selectDeck), [selectDeck], {
+    auto: !!selectDeck,
+    defaultData: [],
+  });
+
+  useEffect(() => {
+    if (!dataDetailDeck.data?._id) return;
+
+    setDeck({
+      mainDeck: Array.isArray(dataDetailDeck.data.mainDeckCards)
+        ? dataDetailDeck.data.mainDeckCards
+        : [],
+      extraDeck: Array.isArray(dataDetailDeck.data.extraDeckCards)
+        ? dataDetailDeck.data.extraDeckCards
+        : [],
+      sideDeck: Array.isArray(dataDetailDeck.data.sideDeckCards)
+        ? dataDetailDeck.data.sideDeckCards
+        : [],
+    });
+  }, [dataDetailDeck]);
+
+
+
   // khi filter/search thay đổi → reset
   useEffect(() => {
     setCards([]);
@@ -84,6 +116,10 @@ function Cards() {
   };
 
   const handleDragStartFromDeck = (e, card, fromDeck) => {
+    console.log(card);
+    console.log(fromDeck);
+    
+    
     const payload = {
       ...card,
       source: fromDeck, // "MAIN" | "EXTRA" | "SIDE"
@@ -112,9 +148,9 @@ function Cards() {
       // ====== DROP VÀO DECK ======
       // check rule trước (validateDrop)
       const ok =
-        (toZone === "MAIN" && validateMainDeck(card, newDeck)) ||
-        (toZone === "EXTRA" && validateExtraDeck(card, newDeck)) ||
-        (toZone === "SIDE" && validateSideDeck(card, newDeck));
+        (toZone === "MAIN" && validateDeck(card, newDeck, "MAIN")) ||
+        (toZone === "EXTRA" && validateDeck(card, newDeck, "EXTRA")) ||
+        (toZone === "SIDE" && validateDeck(card, newDeck, "SIDE"));
 
       if (!ok) return prev;
 
@@ -163,7 +199,7 @@ function Cards() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Fillter filter={filter} setFilter={setFilter}/>
+      <Fillter filter={filter} setFilter={setFilter} setSelectDeck={setSelectDeck} />
       <MDBox sx={{ display: "flex", gap: 2, height: "100vh", mb: 4 }}>
         <MDBox sx={{ flex: "0 0 75%", height: "100%" }}>
           <Zone
@@ -172,12 +208,34 @@ function Cards() {
             onDropCard={(card) => handleDropCard(card, "MAIN")}
             renderCard={(card) => (
               <div
+                style={{ position: "relative", width: "55px" }}
                 onDragStart={(e) => handleDragStartFromDeck(e, card, "MAIN")}
               >
                 <CardImage card={card} width={55} showStatus={false} />
+
+                {/* Quantity */}
+                {card.number > 1 && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "3px",
+                      right: "3px",
+                      background: "rgba(0,0,0,0.75)",
+                      border: "1px solid rgba(255,255,255,0.3)",
+                      color: "white",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                      padding: "1px 5px",
+                      borderRadius: "6px",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    x{card.number}
+                  </div>
+                )}
               </div>
             )}
-            validateDrop={(card) => validateMainDeck(card, deck)}
+            validateDrop={(card) => validateDeck(card, deck, "MAIN")}
             allowTypes={[CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP]}
             deckLimit={DECK_LIMIT.MAIN}
           />
@@ -187,12 +245,35 @@ function Cards() {
             onDropCard={(card) => handleDropCard(card, "EXTRA")}
             renderCard={(card) => (
               <div
+                style={{ position: "relative", width: "55px" }}
+                draggable
                 onDragStart={(e) => handleDragStartFromDeck(e, card, "EXTRA")}
               >
                 <CardImage card={card} width={55} showStatus={false} />
+
+                {/* Quantity */}
+                {card.number > 1 && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "3px",
+                      right: "3px",
+                      background: "rgba(0,0,0,0.75)",
+                      border: "1px solid rgba(255,255,255,0.3)",
+                      color: "white",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                      padding: "1px 5px",
+                      borderRadius: "6px",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    x{card.number}
+                  </div>
+                )}
               </div>
             )}
-            validateDrop={(card) => validateExtraDeck(card, deck)}
+            validateDrop={(card) => validateDeck(card, deck, "EXTRA")}
             allowTypes={["FUSION", "SYNCHRO", "XYZ", "LINK"]}
             deckLimit={DECK_LIMIT.EXTRA}
           />
@@ -202,12 +283,34 @@ function Cards() {
             onDropCard={(card) => handleDropCard(card, "SIDE")}
             renderCard={(card) => (
               <div
+                style={{ position: "relative", width: "55px" }}
                 onDragStart={(e) => handleDragStartFromDeck(e, card, "SIDE")}
               >
                 <CardImage card={card} width={55} showStatus={false} />
+
+                {/* Quantity */}
+                {card.number > 1 && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "3px",
+                      right: "3px",
+                      background: "rgba(0,0,0,0.75)",
+                      border: "1px solid rgba(255,255,255,0.3)",
+                      color: "white",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                      padding: "1px 5px",
+                      borderRadius: "6px",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    x{card.number}
+                  </div>
+                )}
               </div>
             )}
-            validateDrop={(card) => validateSideDeck(card, deck)}
+            validateDrop={(card) => validateDeck(card, deck, "SIDE")}
             allowTypes={[CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP]}
             deckLimit={DECK_LIMIT.SIDE}
           />

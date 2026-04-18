@@ -96,6 +96,7 @@ function CardTable({
             source: "POOL",
             name: card.name,
             cardLimitStatus: card.cardLimitStatus,
+            number: 1
         };
 
         e.dataTransfer.setData("card", JSON.stringify(payload));

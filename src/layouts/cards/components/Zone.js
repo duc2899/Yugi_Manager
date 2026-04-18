@@ -8,7 +8,7 @@ const Zone = ({
   height = 160,
   validateDrop = () => true, // hàm kiểm tra xem card có hợp lệ để drop vào zone này không
   allowTypes = [],
-  deckLimit = 0, 
+  deckLimit = 0,
 }) => {
   const handleDragOver = (e) => {
     e.preventDefault(); // bắt buộc để drop được
@@ -20,8 +20,8 @@ const Zone = ({
     const cardData = e.dataTransfer.getData("card");
     if (!cardData) return;
 
-    const card = JSON.parse(cardData);    
-    
+    const card = JSON.parse(cardData);
+
     if (!validateDrop(card)) {
       return;
     }
@@ -36,7 +36,7 @@ const Zone = ({
     allowTypes.forEach((t) => {
       counter[t] = 0;
     });
-    
+
     cards.forEach((card) => {
       if (!card) return;
 
@@ -56,6 +56,7 @@ const Zone = ({
     return counter;
   }, [cards, allowTypes]);
 
+  const totalCards = cards.reduce((sum, card) => sum + (card.quantity || 1), 0);
 
   return (
     <div
@@ -65,7 +66,8 @@ const Zone = ({
         border: "1px solid rgba(255,255,255,0.15)",
         background: "rgba(43, 43, 43, 0.35)",
         overflow: "hidden",
-        marginTop: "10px",
+        marginTop: "5px",
+        height: "200px"
       }}
     >
       {/* HEADER */}
@@ -79,8 +81,14 @@ const Zone = ({
           borderBottom: "1px solid rgba(255,255,255,0.12)",
         }}
       >
-        <span style={{ fontWeight: "bold", color: `${cards.length >= deckLimit ? "springgreen" : "white"}`, fontSize: "14px" }}>
-          {title}: {cards.length} / {deckLimit > 0 ? deckLimit : "∞"}
+        <span
+          style={{
+            fontWeight: "bold",
+            color: `${totalCards >= deckLimit ? "springgreen" : "white"}`,
+            fontSize: "14px",
+          }}
+        >
+          {title}: {totalCards} / {deckLimit > 0 ? deckLimit : "∞"}
         </span>
         <div>
           {allowTypes.map((type) => (
@@ -119,7 +127,7 @@ const Zone = ({
       >
         {cards.length > 0 ? (
           cards.map((card, index) => (
-            <div key={`${card._id}-${index}`}>{renderCard(card)}</div>
+            <div key={`${card._id}-${index}`} >{renderCard(card)}</div>
           ))
         ) : (
           <div

@@ -1,3 +1,4 @@
+
 import Grid from "@mui/material/Grid";
 import MenuItem from "@mui/material/MenuItem";
 
@@ -7,13 +8,23 @@ import MDInput from "components/MDInput";
 import MDSelectField from "components/MDSelectField";
 import { TYPE_BY_CATEGORY, CARD_TYPE, TYPE_MONSTERS, CARD_TYPES, TYPE_ATTRIBUTES, CARD_STATUS } from "config/card";
 import useDebouncedFilterInputs from "hooks/useDebouncedFilterInputs";
+import { useApi } from "hooks/useApi";
+import adminAPI from "api/adminAPI";
+import MDButton from "components/MDButton";
 
 export default function CardFilterBar({
     filter,
     setFilter,
+    setSelectDeck
 }) {
 
     const { inputs, handleChangeDebounced } = useDebouncedFilterInputs(filter, setFilter, 600);
+    const { data: dataDeck } = useApi(adminAPI.getAllDeck, [], {
+        auto: true,
+        defaultData: [],
+    });
+
+
 
     const getOptionsTypeByCategory = (category) => {
         switch (category) {
@@ -315,6 +326,24 @@ export default function CardFilterBar({
                                 onChange={handleChangeDebounced("name")}
                                 placeholder="Tên"
                             />
+                        </MDBox>
+                        <MDBox display="flex" alignItems="center" gap={1}>
+                            <MDBox display="flex" alignItems="center" gap={1}>
+                                <MDTypography variant="button" fontWeight="bold" sx={{ width: 70 }}>
+                                    Deck:
+                                </MDTypography>
+
+                                <MDBox sx={inputBoxStyle}>
+                                    <MDSelectField MenuProps={menuProps} onChange={(e) => setSelectDeck(e.target.value)}>
+                                        {dataDeck?.data?.map((item) => (
+                                            <MenuItem key={item._id} value={item._id}>
+                                                {item.name}
+                                            </MenuItem>
+                                        ))}
+                                    </MDSelectField>
+                                </MDBox>
+                            </MDBox>
+                            <MDButton color="primary" size="small">Save</MDButton>
                         </MDBox>
                     </MDBox>
                 </Grid>

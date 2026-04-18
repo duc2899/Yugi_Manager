@@ -32,7 +32,24 @@ const adminAPI = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
-    }
+    },
+
+    getAllDeck: async () => {
+        try {
+            const response = await yugiClient.get("/admin/get-decks");
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+    getDetailDeck: async (id) => {
+        try {
+            const response = await yugiClient.get(`/admin/get-deck/${id}`);
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
 }
 
 export default adminAPI;
