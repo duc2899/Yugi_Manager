@@ -56,7 +56,7 @@ const Zone = ({
     return counter;
   }, [cards, allowTypes]);
 
-  const totalCards = cards.reduce((sum, card) => sum + (card.quantity || 1), 0);
+  const totalCards = cards.reduce((sum, card) => sum + (card.number || 1), 0);
 
   return (
     <div
