@@ -12,6 +12,7 @@ const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
 
     const [loading, setLoading] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState(open.card?.cardLimitStatus);
+    const [selectActivateStatus, setSelectActivateStatus] = useState(open.card?.activeStatus)
     const StatusChoosen = [
         {
             name: "Banned",
@@ -45,7 +46,7 @@ const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
     const handleConfirm = async () => {
         try {
             setLoading(true);
-            await handleSetStatus(open.card.code, selectedStatus);
+            await handleSetStatus(open.card.code, selectedStatus, selectActivateStatus);
             setOpen({ isOpen: false, card: null });
         } finally {
             setLoading(false);
@@ -125,7 +126,7 @@ const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
 
                     <MDBox sx={{ marginTop: 3 }}>
                         <MDBox sx={inputBoxStyle}>
-                            <MDSelectField MenuProps={menuProps} value={1} fullWidth>
+                            <MDSelectField MenuProps={menuProps} value={selectActivateStatus} onChange={(e) => setSelectActivateStatus(e.target.value)} fullWidth>
                                 {STATUS_ACTIVATE.map((item) => (
                                     <MenuItem key={item.key} value={item.key}>
                                         {item.name}
@@ -142,7 +143,6 @@ const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
                         variant="outlined"
                         color="secondary"
                         onClick={() => setOpen({ isOpen: false, card: null })}
-
                     >
                         Hủy
                     </MDButton>

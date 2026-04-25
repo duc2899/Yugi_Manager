@@ -69,6 +69,7 @@ function CardTable({
             source: "POOL",
             name: card.name,
             cardLimitStatus: card.cardLimitStatus,
+            activeStatus: card.activeStatus,
             number: 1,
             data: card
         };

@@ -11,7 +11,6 @@ export const useCardHover = ({
 
     const onMouseEnter = useCallback(
         (card, e) => {
-            console.log(card);
             
             setHoverCard(card);
 

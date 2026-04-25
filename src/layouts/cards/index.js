@@ -182,9 +182,12 @@ const Cards = () => {
       // ===== CHECK LIMIT ONLY WHEN ADD FROM POOL =====
       if (card.source === "POOL") {
         const totalCopies = countCardInAllDeck(newDeck, card.name);
-
+        if (card.activeStatus === 0) {
+          showAlert("Lá bài này đã bị tắt hoạt động", "error");
+          return prev;
+        }
         if (card.cardLimitStatus === 0) {
-          showAlert("Lá bài này đã bị BAN!", "error");
+          showAlert("Lá bài này đã bị BAN", "error");
           return prev;
         }
 
@@ -206,15 +209,16 @@ const Cards = () => {
     });
   };
 
-  const handeleSetStatus = async (code, status) => {
+  const handeleSetStatus = async (code, cardLimitStatus, activeStatus) => {
     try {
       await updateStatusMutation.mutateAsync({
         code,
-        status
+        cardLimitStatus,
+        activeStatus
       });
       showAlert("Cập nhật trạng thái lá bài thành công", "success");
       // update local state
-      setCards((prev) => prev.map((card) => (card.code === code ? { ...card, cardLimitStatus: status } : card)));
+      setCards((prev) => prev.map((card) => (card.code === code ? { ...card, cardLimitStatus, activeStatus } : card)));
     } catch (error) {
       showAlert(error.message, "error")
     }

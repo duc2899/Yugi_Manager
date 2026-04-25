@@ -30,6 +30,23 @@ const CardImage = ({
                 }}
             />
 
+            {/* LOCK OVERLAY */}
+            {card.activeStatus === 0 && (
+                <div
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "rgba(0,0,0,0.6)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        zIndex: 5,
+                    }}
+                >
+                    <span style={{ fontSize: "22px", color: "white" }}>🔒</span>
+                </div>
+            )}
+
             {/* STATUS UI */}
             {showStatus && (
                 <>
