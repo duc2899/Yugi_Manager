@@ -33,7 +33,7 @@ export const validateDeck = (card, deck, zone) => {
 
     // ===== MAIN =====
     if (zone === "MAIN") {
-        if (deck.mainDeck.length >= DECK_LIMIT.MAIN) {
+        if (deck.mainDeckCards.length >= DECK_LIMIT.MAIN) {
             alert(`Main Deck tối đa ${DECK_LIMIT.MAIN} lá!`);
             return false;
         }
@@ -54,7 +54,7 @@ export const validateDeck = (card, deck, zone) => {
 
     // ===== EXTRA =====
     if (zone === "EXTRA") {
-        if (deck.extraDeck.length >= DECK_LIMIT.EXTRA) {
+        if (deck.extraDeckCards.length >= DECK_LIMIT.EXTRA) {
             alert(`Extra Deck tối đa ${DECK_LIMIT.EXTRA} lá!`);
             return false;
         }
@@ -74,7 +74,7 @@ export const validateDeck = (card, deck, zone) => {
 
     // ===== SIDE =====
     if (zone === "SIDE") {
-        if (deck.sideDeck.length >= DECK_LIMIT.SIDE) {
+        if (deck.sideDeckCards.length >= DECK_LIMIT.SIDE) {
             alert(`Side Deck tối đa ${DECK_LIMIT.SIDE} lá!`);
             return false;
         }
@@ -102,10 +102,10 @@ export const validateDeck = (card, deck, zone) => {
 export const removeCardFromDeck = (deck, cardId, from) => {
     const target =
         from === "MAIN"
-            ? deck.mainDeck
+            ? deck.mainDeckCards
             : from === "EXTRA"
-                ? deck.extraDeck
-                : deck.sideDeck;
+                ? deck.extraDeckCards
+                : deck.sideDeckCards;
 
     const index = target.findIndex((c) => c._id === cardId);
     if (index === -1) return;
@@ -123,10 +123,10 @@ export const removeCardFromDeck = (deck, cardId, from) => {
 export const addCardToDeck = (deck, card, toZone) => {
     const target =
         toZone === "MAIN"
-            ? deck.mainDeck
+            ? deck.mainDeckCards
             : toZone === "EXTRA"
-                ? deck.extraDeck
-                : deck.sideDeck;
+                ? deck.extraDeckCards
+                : deck.sideDeckCards;
 
     const index = target.findIndex((c) => c._id === card._id);
 
@@ -138,9 +138,68 @@ export const addCardToDeck = (deck, card, toZone) => {
 };
 // ======================== COUNT CARD IN ALL DECK ========================
 export const countCardInAllDeck = (deck, name) => {
-    const all = [...deck.mainDeck, ...deck.extraDeck, ...deck.sideDeck];
+    const all = [...deck.mainDeckCards, ...deck.extraDeckCards, ...deck.sideDeckCards];
 
     return all
         .filter((c) => c.name === name)
         .reduce((sum, c) => sum + (c.number || 1), 0);
+};
+
+export const normalizeDeck = (deck) => {
+    const normalizeZone = (arr) =>
+        [...arr]
+            .map((c) => ({
+                _id: c._id,
+                number: c.number || 1,
+            }))
+            .sort((a, b) => String(a._id).localeCompare(String(b._id)));
+
+    return {
+        name: deck.name || "",
+        type: deck.type || "",
+        id: deck.id || "",
+        mainDeckCards: normalizeZone(deck.mainDeckCards || []),
+        extraDeckCards: normalizeZone(deck.extraDeckCards || []),
+        sideDeckCards: normalizeZone(deck.sideDeckCards || []),
+    };
+};
+
+export const buildDeckPayload = (deck) => {
+    const mapZone = (cards) =>
+        cards.map((c) => ({
+            code: String(c._id),        // hoặc c.code nếu có sẵn
+            number: c.number || 1,
+        }));
+
+    return {
+        id: deck.id,
+        name: deck.name,
+        type: deck.type,
+        mainDeckCards: mapZone(deck.mainDeckCards),
+        extraDeckCards: mapZone(deck.extraDeckCards),
+        sideDeckCards: mapZone(deck.sideDeckCards),
+    };
+};
+
+export const updateDeckOption = (deckId, updates, setLocalDecks, setDataDeck) => {
+    if (!deckId) return;
+
+    // LOCAL deck
+    if (String(deckId).startsWith("LOCAL_")) {
+        setLocalDecks((prev = []) =>
+            prev.map((d) =>
+                String(d._id) === String(deckId) ? { ...d, ...updates } : d
+            )
+        );
+        return;
+    }
+
+    if (!setDataDeck) return;
+    // SERVER deck
+    setDataDeck((prev) => ({
+        ...(prev || {}),
+        data: (prev?.data || []).map((d) =>
+            String(d._id) === String(deckId) ? { ...d, ...updates } : d
+        ),
+    }));
 };

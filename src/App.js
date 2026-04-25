@@ -21,7 +21,7 @@ import logo from './assets/images/logos/logo.png';
 
 import { useAuth } from 'context/AuthContext';
 // import LoadingScreen from 'layouts/loading';
-import { AlertProvider } from 'context/AlertContext';
+import AlertProvider from 'context/AlertContext';
 import LoadingScreen from 'layouts/loading';
 
 export default function App() {

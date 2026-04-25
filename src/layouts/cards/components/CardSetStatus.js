@@ -1,4 +1,4 @@
-import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { FormControlLabel, MenuItem, Radio, RadioGroup } from "@mui/material";
 
 import MDBox from "components/MDBox";
 import MDDialog from "components/MDDialog";
@@ -6,11 +6,13 @@ import CardImage from "./CardImage";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import { useState } from "react";
+import MDSelectField from "../../../components/MDSelectField";
 
 const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
-    
+
     const [loading, setLoading] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState(open.card?.cardLimitStatus);
+    const [selectActivateStatus, setSelectActivateStatus] = useState(open.card?.activeStatus)
     const StatusChoosen = [
         {
             name: "Banned",
@@ -30,15 +32,45 @@ const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
         }
     ]
 
+    const STATUS_ACTIVATE = [
+        {
+            name: "Bật",
+            key: 1
+        },
+        {
+            name: "Tắt",
+            key: 0
+        },
+    ]
+
     const handleConfirm = async () => {
         try {
             setLoading(true);
-            await handleSetStatus(open.card.code, selectedStatus);
+            await handleSetStatus(open.card.code, selectedStatus, selectActivateStatus);
             setOpen({ isOpen: false, card: null });
         } finally {
             setLoading(false);
         }
     };
+
+    const inputBoxStyle = {
+        padding: "0px", // ✅ loại bỏ padding mặc định
+        "& .MuiInputBase-root": {
+            padding: "10px 0px", // ✅ thêm padding cho input bên trong
+        },
+    };
+
+    const menuProps = {
+        PaperProps: {
+            sx: (theme) => ({
+                backgroundColor: theme.palette.background.card,
+                color: theme.palette.text.main,
+                maxHeight: 300,          // ✅ quan trọng
+                overflowY: "auto",       // ✅ scroll
+            }),
+        },
+    };
+
 
     return (
         <MDDialog
@@ -91,6 +123,18 @@ const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
                             }
                         </RadioGroup>
                     </MDBox>
+
+                    <MDBox sx={{ marginTop: 3 }}>
+                        <MDBox sx={inputBoxStyle}>
+                            <MDSelectField MenuProps={menuProps} value={selectActivateStatus} onChange={(e) => setSelectActivateStatus(e.target.value)} fullWidth>
+                                {STATUS_ACTIVATE.map((item) => (
+                                    <MenuItem key={item.key} value={item.key}>
+                                        {item.name}
+                                    </MenuItem>
+                                ))}
+                            </MDSelectField>
+                        </MDBox>
+                    </MDBox>
                 </MDBox>
             }
             actions={
@@ -99,7 +143,6 @@ const CardSetStatus = ({ open, setOpen, lang, handleSetStatus }) => {
                         variant="outlined"
                         color="secondary"
                         onClick={() => setOpen({ isOpen: false, card: null })}
-
                     >
                         Hủy
                     </MDButton>

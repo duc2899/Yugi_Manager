@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import dayjs from 'dayjs';
 import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, TextField, FormControl, InputLabel, Select, MenuItem, Stack } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -11,8 +12,7 @@ import utc from "dayjs/plugin/utc";
 import MDButton from "components/MDButton";
 import { createTournamentSchema } from "utils/schemaYup";
 import tournamentAPI from 'api/tournamentsAPI';
-import { useState } from 'react';
-import { useAlert } from 'context/AlertContext';
+import { useAlert } from 'hooks/useAlert';
 import MDBox from 'components/MDBox';
 import MDTypography from 'components/MDTypography';
 import cardApi from 'api/cardAPI';

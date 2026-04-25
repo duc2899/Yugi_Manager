@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 
 import MDButton from "components/MDButton";
 import MDBox from "components/MDBox";
-import { useAlert } from "context/AlertContext";
+import { useAlert } from 'hooks/useAlert';
 import adminAPI from "api/adminAPI";
 import MDDialog from "components/MDDialog";
 import MDInput from "components/MDInput";

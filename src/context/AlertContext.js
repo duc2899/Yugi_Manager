@@ -1,49 +1,26 @@
-import MDAlert from 'components/MDAlert';
-import { createContext, useContext, useState, useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React from "react";
+import { SnackbarProvider } from "notistack";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
-const AlertContext = createContext();
-
-export const useAlert = () => useContext(AlertContext);
-
-export const AlertProvider = ({ children }) => {
-    const [alerts, setAlerts] = useState([]);
-
-    const showAlert = useCallback((message, color = 'info', timeout = 3000) => {
-        const id = uuidv4();
-        const newAlert = { id, message, color };
-        setAlerts(prev => [...prev, newAlert]);
-
-        setTimeout(() => {
-            setAlerts(prev => prev.filter(a => a.id !== id));
-        }, timeout);
-    }, []);
-
-    const dismissAlert = id => {
-        setAlerts(prev => prev.filter(a => a.id !== id));
-    };
-
+const AlertProvider = ({ children }) => {
     return (
-        <AlertContext.Provider value={{ showAlert }}>
+        <SnackbarProvider
+            maxSnack={4}
+            autoHideDuration={3000}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            action={(snackbarId) => (
+                <IconButton
+                    size="small"
+                    onClick={() => window.snackbarClose(snackbarId)}
+                >
+                    <CloseIcon fontSize="small" style={{ color: "white" }} />
+                </IconButton>
+            )}
+        >
             {children}
-            <div
-                style={{
-                    position: 'fixed',
-                    top: 20,
-                    right: 20,
-                    zIndex: 9999,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px'
-                }}>
-                {alerts.map(({ id, message, color }) => (
-                    <div key={id} style={{ fontSize: '12px' }}>
-                        <MDAlert color={color} dismissible onDismiss={() => dismissAlert(id)}>
-                            {message}
-                        </MDAlert>
-                    </div>
-                ))}
-            </div>
-        </AlertContext.Provider>
+        </SnackbarProvider>
     );
 };
+
+export default AlertProvider;
