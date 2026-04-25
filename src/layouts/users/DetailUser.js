@@ -6,17 +6,14 @@ import {
     DialogActions,
     Avatar,
     Typography,
-    Select,
-    MenuItem,
     Switch,
     Button,
     Box,
     Paper,
 } from '@mui/material';
 import userAPI from 'api/userAPI';
-import { useAlert } from 'context/AlertContext';
+import { useAlert } from 'hooks/useAlert';
 
-const roles = ['admin', 'user'];
 
 const DetailUser = ({
     visible,
@@ -25,27 +22,26 @@ const DetailUser = ({
     isEdit = false,
 }) => {
     const { showAlert } = useAlert();
-    const [role, setRole] = useState('');
     const [disabled, setDisabled] = useState(false);
 
-    const handleRoleChange = async (event) => {
-        try {
-            const response = await userAPI.setRoleUser({
-                userId: user._id,
-                role: event.target.value,
-            });
-            showAlert(`Vai trò người dùng đã được cập nhật thành ${response.data.role}`, 'success');
-            setRole(response.data.role);
-            if (typeof user.onUpdate === 'function') {
-                user.onUpdate({
-                    ...user,
-                    role: response.data.role,
-                });
-            }
-        } catch (error) {
-            showAlert(error.response?.data?.message || 'Lỗi khi cập nhật vai trò người dùng', 'error');
-        }
-    };
+    // const handleRoleChange = async (event) => {
+    //     try {
+    //         const response = await userAPI.setRoleUser({
+    //             userId: user._id,
+    //             role: event.target.value,
+    //         });
+    //         showAlert(`Vai trò người dùng đã được cập nhật thành ${response.data.role}`, 'success');
+    //         setRole(response.data.role);
+    //         if (typeof user.onUpdate === 'function') {
+    //             user.onUpdate({
+    //                 ...user,
+    //                 role: response.data.role,
+    //             });
+    //         }
+    //     } catch (error) {
+    //         showAlert(error.response?.data?.message || 'Lỗi khi cập nhật vai trò người dùng', 'error');
+    //     }
+    // };
 
     const handleDisableChange = async (event) => {
         try {
@@ -71,7 +67,7 @@ const DetailUser = ({
 
     useEffect(() => {
         if (user) {
-            setRole(user.role || '');
+            // setRole(user.role || '');
             setDisabled(user.isDisabled || false);
         }
     }, [user]);

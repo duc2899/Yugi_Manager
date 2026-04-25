@@ -14,7 +14,7 @@ import {
     Paper,
 } from '@mui/material';
 import userAPI from 'api/userAPI';
-import { useAlert } from 'context/AlertContext';
+import { useAlert } from 'hooks/useAlert';
 
 const roles = ['admin', 'user'];
 

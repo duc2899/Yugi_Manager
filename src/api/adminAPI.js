@@ -50,6 +50,23 @@ const adminAPI = {
             throw error.response?.data || error.message;
         }
     },
+    updateDeck: async (data) => {
+        try {
+            const response = await yugiClient.post("/admin/save-deck", data);
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    createDeck: async (data) => {
+        try {
+            const response = await yugiClient.post("/admin/create-deck", data);
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    }, 
 }
 
 export default adminAPI;

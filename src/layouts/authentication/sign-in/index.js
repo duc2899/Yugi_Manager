@@ -26,7 +26,7 @@ import BasicLayout from 'layouts/authentication/components/BasicLayout';
 // Images
 import bgImage from 'assets/images/bg-sign-in-basic.jpeg';
 import { useAuth } from 'context/AuthContext';
-import { useAlert } from 'context/AlertContext';
+import { useAlert } from 'hooks/useAlert';
 
 
 function Basic() {

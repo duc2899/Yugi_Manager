@@ -8,6 +8,8 @@ import { CARD_TYPE } from "config/card";
 import CardImage from "./CardImage";
 import CardSetStatus from "./CardSetStatus";
 import { CircularProgress } from "@mui/material";
+import MDButton from "components/MDButton";
+import { useCardHover } from "../../../hooks/useCardHover";
 
 function CardTable({
     cards,
@@ -15,18 +17,17 @@ function CardTable({
     hasMore,
     onLoadMore,
     onDropCard,
-    handeleSetStatus
+    handeleSetStatus,
+    setModalDeck,
+    deck,
+    isChanged,
+    handleSaveDeck,
+    isSavingDeck
 }) {
     const [controller] = useMaterialUIController();
-    const {
-        lang
-    } = controller;
-    const PREVIEW_WIDTH = 680;
-    const PREVIEW_HEIGHT = 350;
-    const OFFSET = 20;
+    const { lang } = controller;
 
-    const [hoverCard, setHoverCard] = useState(null);
-    const [pos, setPos] = useState({ x: 0, y: 0 });
+    const { hoverCard, pos, onMouseEnter, onMouseLeave } = useCardHover();
 
     const observerRef = useRef(null);
     const bottomRef = useRef(null);
@@ -55,34 +56,6 @@ function CardTable({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hasMore, loading]);
 
-    const handleMouseEnter = (card, e) => {
-        setHoverCard(card);
-
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
-
-        let x = mouseX + OFFSET;
-        let y = mouseY + OFFSET;
-
-        // 🔁 Flip ngang nếu sát mép phải
-        if (mouseX + PREVIEW_WIDTH + OFFSET > window.innerWidth) {
-            x = mouseX - PREVIEW_WIDTH - OFFSET;
-        }
-
-        // 🔁 Flip dọc nếu sát đáy
-        if (mouseY + PREVIEW_HEIGHT + OFFSET > window.innerHeight) {
-            y = mouseY - PREVIEW_HEIGHT - OFFSET;
-        }
-
-        setPos({ x, y });
-        e.currentTarget.style.transform = 'scale(1.1)';
-    };
-
-    const handleMouseLeave = (event) => {
-        setHoverCard(null);
-        event.currentTarget.style.transform = 'scale(1)'
-    }
-
     const handleDragStart = (e, card) => {
         const payload = {
             _id: card._id,
@@ -96,7 +69,8 @@ function CardTable({
             source: "POOL",
             name: card.name,
             cardLimitStatus: card.cardLimitStatus,
-            number: 1
+            number: 1,
+            data: card
         };
 
         e.dataTransfer.setData("card", JSON.stringify(payload));
@@ -136,6 +110,54 @@ function CardTable({
                     gap: "20px",
                 }}>
                     <MDTypography variant="h6" sx={{ margin: 0 }}>Total Cards: {cards.length}</MDTypography>
+                    <MDBox sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "5px",
+                    }}>
+                        {isChanged &&
+                            <MDButton
+                                color="primary"
+                                size="small"
+                                onClick={handleSaveDeck}
+                                loading={isSavingDeck}
+                            >
+                                Lưu
+                            </MDButton>
+                        }
+                        {deck.name &&
+                            <MDButton
+                                color="success"
+                                size="small"
+                                onClick={() => setModalDeck({
+                                    isOpen: true,
+                                    type: "EDIT",
+                                    data: {
+                                        type: deck.type,
+                                        name: deck.name
+                                    }
+                                })}
+                            >
+                                Sửa
+                            </MDButton>
+                        }
+                        <MDButton
+                            color="info"
+                            size="small"
+                            onClick={() => setModalDeck({
+                                isOpen: true,
+                                type: "CREATE",
+                                data: {
+                                    type: "",
+                                    name: ""
+                                }
+                            })}
+                        >
+                            Tạo
+                        </MDButton>
+                    </MDBox>
+
                 </MDBox>
             </div>
             <div
@@ -204,8 +226,8 @@ function CardTable({
                             cursor: "pointer",
                             transition: "transform 0.2s",
                         }}
-                        onMouseEnter={(e) => handleMouseEnter(card, e)}
-                        onMouseLeave={(e) => handleMouseLeave(e)}
+                        onMouseEnter={(e) => onMouseEnter(card, e)}
+                        onMouseLeave={onMouseLeave}
                         onDragStart={(e) => handleDragStart(e, card)}
                         onClick={() => setCardSetStatusOpen({ isOpen: true, card })}
                     >
@@ -223,7 +245,7 @@ function CardTable({
                     handleSetStatus={handeleSetStatus}
                 />
             )}
-            {hoverCard && <CardHover hoverCard={hoverCard} lang={lang} pos={pos}></CardHover>}
+            {hoverCard && <CardHover hoverCard={hoverCard} lang={lang} pos={pos} />}
         </div >
     );
 }

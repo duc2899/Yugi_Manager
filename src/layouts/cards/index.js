@@ -1,38 +1,51 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useMemo, useRef, useState } from "react";
 import MDBox from "components/MDBox";
+import { useMutation } from "@tanstack/react-query";
+
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Fillter from "./components/CardFilter";
 import CardTable from "./components/CardTable";
 import cardApi from "../../api/cardAPI";
-import Zone from "./components/Zone";
-import { CARD_TYPE } from "config/card";
-import { DECK_LIMIT } from "config/card";
-import CardImage from "./components/CardImage";
-import { useAlert } from "context/AlertContext";
-import { removeCardFromDeck } from "helpers/card";
+import { useAlert } from 'hooks/useAlert';
+import { buildDeckPayload, normalizeDeck, removeCardFromDeck, updateDeckOption } from "helpers/card";
 import { validateDeck } from "helpers/card";
 import { addCardToDeck } from "helpers/card";
 import { countCardInAllDeck } from "helpers/card";
 import { buildParams } from "helpers/card";
 import { useApi } from "hooks/useApi";
 import adminAPI from "api/adminAPI";
+import ModalDeck from "./components/ModalDeck";
+import DeckZones from "./components/DeckZone";
 
-function Cards() {
+const Cards = () => {
+  const initialDeckRef = useRef(null);        // restore
+
   const { showAlert } = useAlert();
   const [cards, setCards] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [selectDeck, setSelectDeck] = useState("")
-
+  const [modalDeck, setModalDeck] = useState({
+    isOpen: false,
+    type: "EDIT" | "CREATE" | "EMPTY",
+    data: {
+      type: "",
+      name: ""
+    }
+  })
   const [deck, setDeck] = useState({
-    mainDeck: [],
-    extraDeck: [],
-    sideDeck: [],
+    mainDeckCards: [],
+    extraDeckCards: [],
+    sideDeckCards: [],
+    id: "",
+    name: "",
+    type: "",
+    isLocal: true
   });
+  const [snapshotHash, setSnapshotHash] = useState("");
+  const [localDecks, setLocalDecks] = useState([]);
+  const [selectedDeckId, setSelectedDeckId] = useState("");
 
   const [filter, setFilter] = useState({
     monsterType: null,
@@ -49,65 +62,80 @@ function Cards() {
     cardLimitStatus: null,
   });
 
-  console.log(deck);
-
-
-  const fetchCards = async (pageNumber = 1, isReset = false) => {
-    if (loading) return;
-
-    try {
-      setLoading(true);
-
-      const params = buildParams(pageNumber, filter);
-
-      const res = await cardApi.searchCard(params);
-      const newCards = res.data.data;
-
-      if (isReset) {
-        setCards(newCards);
-      } else {
-        setCards((prev) => [...prev, ...newCards]);
-      }
-
-      setHasMore(newCards.length > 0);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const { data: dataDetailDeck } = useApi(() => adminAPI.getDetailDeck(selectDeck), [selectDeck], {
-    auto: !!selectDeck,
+  const { data: dataDeck, setData: setDataDeck } = useApi(adminAPI.getAllDeck, [], {
+    auto: true,
     defaultData: [],
   });
 
-  useEffect(() => {
-    if (!dataDetailDeck.data?._id) return;
+  const deckOptions = useMemo(() => {
+    const serverDecks = dataDeck?.data || [];
+    return [...localDecks, ...serverDecks];
+  }, [localDecks, dataDeck]);
 
-    setDeck({
-      mainDeck: Array.isArray(dataDetailDeck.data.mainDeckCards)
-        ? dataDetailDeck.data.mainDeckCards
-        : [],
-      extraDeck: Array.isArray(dataDetailDeck.data.extraDeckCards)
-        ? dataDetailDeck.data.extraDeckCards
-        : [],
-      sideDeck: Array.isArray(dataDetailDeck.data.sideDeckCards)
-        ? dataDetailDeck.data.sideDeckCards
-        : [],
-    });
-  }, [dataDetailDeck]);
+  const { loading, refetch: fetchCardsApi } = useApi(cardApi.searchCard, [filter], {
+    auto: false,
+    defaultData: [],
+  });
 
+  const fetchCards = async (pageNumber = 1, isReset = false) => {
+    const params = buildParams(pageNumber, filter);
 
+    const res = await fetchCardsApi(params);
+    const newCards = res.data.data;
 
-  // khi filter/search thay đổi → reset
+    setCards((prev) => (isReset ? newCards : [...prev, ...newCards]));
+    setHasMore(newCards.length > 0);
+  };
+
   useEffect(() => {
     setCards([]);
+    setPage(1);
     fetchCards(1, true);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
-  // load more
+  const { data: dataDetailDeck } = useApi(
+    () => adminAPI.getDetailDeck(selectedDeckId),
+    [selectedDeckId],
+    {
+      auto: selectedDeckId && !String(selectedDeckId).startsWith("LOCAL_"),
+      defaultData: [],
+    }
+  );
+
+  // CALL POST API
+  const createDeckMutation = useMutation({
+    mutationFn: adminAPI.createDeck,
+  });
+
+  const updateDeckMutation = useMutation({
+    mutationFn: adminAPI.updateDeck,
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: cardApi.setCardStatus,
+  });
+
+  useEffect(() => {
+    if (!dataDetailDeck?.data?._id) return;
+
+    const newDeck = {
+      mainDeckCards: dataDetailDeck.data.mainDeckCards || [],
+      extraDeckCards: dataDetailDeck.data.extraDeckCards || [],
+      sideDeckCards: dataDetailDeck.data.sideDeckCards || [],
+      name: dataDetailDeck.data.name,
+      type: dataDetailDeck.data.type,
+      id: dataDetailDeck.data._id,
+      isLocal: false,
+    };
+
+    setDeck(newDeck);
+
+    initialDeckRef.current = structuredClone(newDeck);
+    setSnapshotHash(JSON.stringify(normalizeDeck(newDeck)));
+  }, [dataDetailDeck]);
+
   const handleLoadMore = () => {
     if (!hasMore || loading) return;
     const nextPage = page + 1;
@@ -116,10 +144,6 @@ function Cards() {
   };
 
   const handleDragStartFromDeck = (e, card, fromDeck) => {
-    console.log(card);
-    console.log(fromDeck);
-    
-    
     const payload = {
       ...card,
       source: fromDeck, // "MAIN" | "EXTRA" | "SIDE"
@@ -134,9 +158,10 @@ function Cards() {
       if (card.source === toZone) return prev;
 
       const newDeck = {
-        mainDeck: [...prev.mainDeck],
-        extraDeck: [...prev.extraDeck],
-        sideDeck: [...prev.sideDeck],
+        ...prev,
+        mainDeckCards: [...prev.mainDeckCards],
+        extraDeckCards: [...prev.extraDeckCards],
+        sideDeckCards: [...prev.sideDeckCards],
       };
 
       // ====== DROP VÀO POOL => remove khỏi deck ======
@@ -159,12 +184,12 @@ function Cards() {
         const totalCopies = countCardInAllDeck(newDeck, card.name);
 
         if (card.cardLimitStatus === 0) {
-          alert("Lá bài này đã bị BAN!");
+          showAlert("Lá bài này đã bị BAN!", "error");
           return prev;
         }
 
         if (totalCopies >= card.cardLimitStatus) {
-          alert(`Lá bài này chỉ được tối đa ${card.cardLimitStatus} bản trong toàn bộ deck!`);
+          showAlert(`Lá bài này chỉ được tối đa ${card.cardLimitStatus} bản trong toàn bộ deck!`, "warning");
           return prev;
         }
       }
@@ -183,7 +208,7 @@ function Cards() {
 
   const handeleSetStatus = async (code, status) => {
     try {
-      await cardApi.setCardStatus({
+      await updateStatusMutation.mutateAsync({
         code,
         status
       });
@@ -193,126 +218,121 @@ function Cards() {
     } catch (error) {
       showAlert(error.message, "error")
     }
-
   };
+
+  const handleRestoreDeck = () => {
+    if (!initialDeckRef.current) return;
+
+    const snapshot = structuredClone(initialDeckRef.current);
+
+    setDeck(snapshot);
+
+    updateDeckOption(snapshot.id, {
+      name: snapshot.name,
+      type: snapshot.type,
+    },
+      setLocalDecks,
+      setDataDeck
+    );
+  };
+
+  const savingDeck = createDeckMutation.isPending || updateDeckMutation.isPending;
+
+  const handleSaveDeck = async () => {
+    try {
+      const payload = buildDeckPayload(deck);
+
+      // ===== CREATE NEW DECK (LOCAL) =====
+      if (String(deck.id).startsWith("LOCAL_")) {
+        const res = await createDeckMutation.mutateAsync(payload);
+        const createdDeck = res.data;
+
+        // remove local deck draft
+        setLocalDecks((prev) => prev.filter((d) => d._id !== deck.id));
+
+        // add deck mới vào list server
+        setDataDeck((prev) => ({
+          ...(prev || {}),
+          data: [createdDeck, ...(prev?.data || [])],
+        }));
+
+        const newDeck = { ...deck, id: createdDeck._id, isLocal: false };
+
+        setDeck(newDeck);
+        setSelectedDeckId(createdDeck._id);
+
+        // update snapshot
+        initialDeckRef.current = structuredClone(newDeck);
+        setSnapshotHash(JSON.stringify(normalizeDeck(newDeck)));
+
+        showAlert("Tạo deck thành công!", "success");
+        return;
+      }
+
+      // ===== UPDATE DECK EXISTING =====
+      await updateDeckMutation.mutateAsync(payload);
+
+      showAlert("Save deck thành công!", "success");
+
+      initialDeckRef.current = structuredClone(deck);
+      setSnapshotHash(JSON.stringify(normalizeDeck(deck)));
+    } catch (err) {
+      showAlert(err?.message || "Save thất bại!", "error");
+    }
+  };
+
+  const handleSelectDeck = (id) => {
+    setSelectedDeckId(id);
+
+    // nếu là LOCAL deck thì không fetch, chỉ set deck local luôn
+    const local = localDecks.find((d) => d._id === id);
+    if (local) {
+      const newDeck = {
+        mainDeckCards: [],
+        extraDeckCards: [],
+        sideDeckCards: [],
+        id: local._id,
+        name: local.name,
+        type: local.type,
+        isLocal: true,
+      };
+
+      setDeck(newDeck);
+
+      initialDeckRef.current = structuredClone(newDeck);
+      setSnapshotHash(JSON.stringify(normalizeDeck(newDeck)));
+    }
+  };
+
+  const isChanged = useMemo(() => {
+    if (!snapshotHash) return false;
+    if (!deck.id) return false;
+    return JSON.stringify(normalizeDeck(deck)) !== snapshotHash;
+  }, [deck, snapshotHash]);
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Fillter filter={filter} setFilter={setFilter} setSelectDeck={setSelectDeck} />
+      <Fillter
+        deckManager={{
+          deck,
+          isChanged,
+          handleRestoreDeck,
+          deckOptions,
+          handleSelectDeck,
+          selectedDeckId
+        }}
+        filterManager={{
+          filter,
+          setFilter
+        }}
+      />
       <MDBox sx={{ display: "flex", gap: 2, height: "100vh", mb: 4 }}>
         <MDBox sx={{ flex: "0 0 75%", height: "100%" }}>
-          <Zone
-            title="Main Deck"
-            cards={deck.mainDeck}
-            onDropCard={(card) => handleDropCard(card, "MAIN")}
-            renderCard={(card) => (
-              <div
-                style={{ position: "relative", width: "55px" }}
-                onDragStart={(e) => handleDragStartFromDeck(e, card, "MAIN")}
-              >
-                <CardImage card={card} width={55} showStatus={false} />
-
-                {/* Quantity */}
-                {card.number > 1 && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "3px",
-                      right: "3px",
-                      background: "rgba(0,0,0,0.75)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                      color: "white",
-                      fontSize: "11px",
-                      fontWeight: "bold",
-                      padding: "1px 5px",
-                      borderRadius: "6px",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    x{card.number}
-                  </div>
-                )}
-              </div>
-            )}
-            validateDrop={(card) => validateDeck(card, deck, "MAIN")}
-            allowTypes={[CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP]}
-            deckLimit={DECK_LIMIT.MAIN}
-          />
-          <Zone
-            title="Extra Deck"
-            cards={deck.extraDeck}
-            onDropCard={(card) => handleDropCard(card, "EXTRA")}
-            renderCard={(card) => (
-              <div
-                style={{ position: "relative", width: "55px" }}
-                draggable
-                onDragStart={(e) => handleDragStartFromDeck(e, card, "EXTRA")}
-              >
-                <CardImage card={card} width={55} showStatus={false} />
-
-                {/* Quantity */}
-                {card.number > 1 && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "3px",
-                      right: "3px",
-                      background: "rgba(0,0,0,0.75)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                      color: "white",
-                      fontSize: "11px",
-                      fontWeight: "bold",
-                      padding: "1px 5px",
-                      borderRadius: "6px",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    x{card.number}
-                  </div>
-                )}
-              </div>
-            )}
-            validateDrop={(card) => validateDeck(card, deck, "EXTRA")}
-            allowTypes={["FUSION", "SYNCHRO", "XYZ", "LINK"]}
-            deckLimit={DECK_LIMIT.EXTRA}
-          />
-          <Zone
-            title="Side Deck"
-            cards={deck.sideDeck}
-            onDropCard={(card) => handleDropCard(card, "SIDE")}
-            renderCard={(card) => (
-              <div
-                style={{ position: "relative", width: "55px" }}
-                onDragStart={(e) => handleDragStartFromDeck(e, card, "SIDE")}
-              >
-                <CardImage card={card} width={55} showStatus={false} />
-
-                {/* Quantity */}
-                {card.number > 1 && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "3px",
-                      right: "3px",
-                      background: "rgba(0,0,0,0.75)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                      color: "white",
-                      fontSize: "11px",
-                      fontWeight: "bold",
-                      padding: "1px 5px",
-                      borderRadius: "6px",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    x{card.number}
-                  </div>
-                )}
-              </div>
-            )}
-            validateDrop={(card) => validateDeck(card, deck, "SIDE")}
-            allowTypes={[CARD_TYPE.MONSTER, CARD_TYPE.SPELL, CARD_TYPE.TRAP]}
-            deckLimit={DECK_LIMIT.SIDE}
+          <DeckZones
+            deck={deck}
+            handleDropCard={handleDropCard}
+            handleDragStartFromDeck={handleDragStartFromDeck}
           />
         </MDBox>
         <MDBox sx={{ flex: "0 0 25%", maxHeight: "100%" }}>
@@ -323,9 +343,26 @@ function Cards() {
             onDropCard={(card) => handleDropCard(card, "POOL")}
             onLoadMore={handleLoadMore}
             handeleSetStatus={handeleSetStatus}
+            setModalDeck={setModalDeck}
+            deck={deck}
+            isChanged={isChanged}
+            handleSaveDeck={handleSaveDeck}
+            isSavingDeck={savingDeck}
           />
         </MDBox>
       </MDBox>
+      <ModalDeck
+        deck={deck}
+        modalDeck={modalDeck}
+        setModalDeck={setModalDeck}
+        setDeck={setDeck}
+        setLocalDecks={setLocalDecks}
+        initialDeckRef={initialDeckRef}
+        setSnapshotHash={setSnapshotHash}
+        setSelectDeck={setSelectedDeckId}
+        setDataDeck={setDataDeck}
+        selectedDeckId={selectedDeckId}
+      />
       <Footer />
     </DashboardLayout>
   );

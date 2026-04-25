@@ -1,6 +1,7 @@
 
 import Grid from "@mui/material/Grid";
 import MenuItem from "@mui/material/MenuItem";
+import RestoreIcon from '@mui/icons-material/Restore';
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -8,23 +9,16 @@ import MDInput from "components/MDInput";
 import MDSelectField from "components/MDSelectField";
 import { TYPE_BY_CATEGORY, CARD_TYPE, TYPE_MONSTERS, CARD_TYPES, TYPE_ATTRIBUTES, CARD_STATUS } from "config/card";
 import useDebouncedFilterInputs from "hooks/useDebouncedFilterInputs";
-import { useApi } from "hooks/useApi";
-import adminAPI from "api/adminAPI";
+import MDBadge from "components/MDBadge";
 import MDButton from "components/MDButton";
 
-export default function CardFilterBar({
-    filter,
-    setFilter,
-    setSelectDeck
-}) {
-
+const CardFilterBar = ({
+    deckManager,
+    filterManager,
+}) => {
+    const { deck, isChanged, handleRestoreDeck, deckOptions, handleSelectDeck, selectedDeckId } = deckManager
+    const { filter, setFilter } = filterManager
     const { inputs, handleChangeDebounced } = useDebouncedFilterInputs(filter, setFilter, 600);
-    const { data: dataDeck } = useApi(adminAPI.getAllDeck, [], {
-        auto: true,
-        defaultData: [],
-    });
-
-
 
     const getOptionsTypeByCategory = (category) => {
         switch (category) {
@@ -113,9 +107,10 @@ export default function CardFilterBar({
         width: "190px", // ✅ fix cứng chiều dài
         padding: "0px", // ✅ loại bỏ padding mặc định
         "& .MuiInputBase-root": {
-            padding: "10px 12px", // ✅ thêm padding cho input bên trong
+            padding: "10px 0px", // ✅ thêm padding cho input bên trong
         },
     };
+
 
     return (
         <MDBox
@@ -334,16 +329,34 @@ export default function CardFilterBar({
                                 </MDTypography>
 
                                 <MDBox sx={inputBoxStyle}>
-                                    <MDSelectField MenuProps={menuProps} onChange={(e) => setSelectDeck(e.target.value)}>
-                                        {dataDeck?.data?.map((item) => (
+                                    <MDSelectField MenuProps={menuProps} onChange={(e) => handleSelectDeck(e.target.value)} value={selectedDeckId}>
+                                        {deckOptions?.map((item) => (
                                             <MenuItem key={item._id} value={item._id}>
-                                                {item.name}
+                                                {item.name} {item.isLocal ? "(Draft)" : ""}
                                             </MenuItem>
                                         ))}
                                     </MDSelectField>
                                 </MDBox>
+                                {deck.name &&
+                                    <MDBadge
+                                        badgeContent={deck.type}
+                                        color={'secondary'}
+                                        variant="gradient"
+                                        size="sm"
+                                    />
+                                }
+                                {
+                                    isChanged &&
+                                    <MDButton
+                                        size="medium"
+                                        color="primary"
+                                        iconOnly={true}
+                                        startIcon={<RestoreIcon></RestoreIcon>}
+                                        onClick={handleRestoreDeck}
+                                    />
+
+                                }
                             </MDBox>
-                            <MDButton color="primary" size="small">Save</MDButton>
                         </MDBox>
                     </MDBox>
                 </Grid>
@@ -351,3 +364,5 @@ export default function CardFilterBar({
         </MDBox>
     );
 }
+
+export default CardFilterBar

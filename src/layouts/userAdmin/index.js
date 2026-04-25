@@ -27,7 +27,7 @@ import { useDebounce } from 'use-debounce';
 import { useAuth } from 'context/AuthContext';
 import MDAvatar from 'components/MDAvatar';
 import ModalConfirm from './ModalConfirm';
-import { useAlert } from 'context/AlertContext';
+import { useAlert } from 'hooks/useAlert';
 import ModalRegister from './ModalRegister';
 import authAPI from 'api/authAPI';
 
