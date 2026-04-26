@@ -66,7 +66,16 @@ const adminAPI = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
-    }, 
+    },
+
+    getActivityLogs: async (params = {}) => {
+        try {
+            const response = await yugiClient.get("/admin/get-logs", { params });
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
 }
 
 export default adminAPI;
