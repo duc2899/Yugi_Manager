@@ -9,6 +9,7 @@ import SignIn from 'layouts/authentication/sign-in';
 import Icon from '@mui/material/Icon';
 import AccountsAdmin from 'layouts/userAdmin';
 import Forbidden from 'layouts/frobidden';
+import ActivityLogs from './layouts/activityLogs';
 
 const routes = [
     {
@@ -30,7 +31,6 @@ const routes = [
         component: <Cards />,
         requiresAuth: true,
         roles: ["ADMIN", "NORMAL"]
-
     },
     {
         type: 'collapse',
@@ -66,13 +66,23 @@ const routes = [
         route: '/authentication/sign-in',
         component: <SignIn />,
         requiresAuth: false,
-
     },
     {
         route: '/tournaments/:id',
         name: 'Tournaments',
         key: 'tournaments',
+        icon: <Icon fontSize="small">receipt_long</Icon>,
         component: <DetailTournament />,
+        requiresAuth: true,
+        roles: ["ADMIN", "NORMAL"]
+    },
+    {
+        type: 'collapse',
+        name: 'Logs',
+        key: 'logs',
+        icon: <Icon fontSize="small">edit_note</Icon>,
+        route: '/logs',
+        component: <ActivityLogs />,
         requiresAuth: true,
         roles: ["ADMIN", "NORMAL"]
     },
