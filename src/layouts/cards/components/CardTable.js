@@ -89,12 +89,12 @@ function CardTable({
     };
 
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '85%', // hoặc height cố định, ví dụ 400px
-        }}
-
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%', // hoặc height cố định, ví dụ 400px
+            }}
         >
             <div
                 style={{
@@ -236,7 +236,7 @@ function CardTable({
                     </div>
                 ))}
 
-                <div ref={bottomRef} style={{ height: 20, width: "100%" }} />
+                <div ref={bottomRef} style={{ height: 40, width: "100%" }} />
             </div>
             {cardSetStatusOpen.isOpen && (
                 <CardSetStatus

@@ -21,6 +21,10 @@ import DeckZones from "./components/DeckZone";
 
 const Cards = () => {
   const initialDeckRef = useRef(null);        // restore
+  const rowRef = useRef(null);
+  const [rowHeight, setRowHeight] = useState("100vh");
+
+
 
   const { showAlert } = useAlert();
   const [cards, setCards] = useState([]);
@@ -86,6 +90,12 @@ const Cards = () => {
     setCards((prev) => (isReset ? newCards : [...prev, ...newCards]));
     setHasMore(newCards.length > 0);
   };
+
+  useEffect(() => {
+    if (!rowRef.current) return;
+    const top = rowRef.current.getBoundingClientRect().top + 10;
+    setRowHeight(`calc(100vh - ${top}px)`);
+  }, []);
 
   useEffect(() => {
     setCards([]);
@@ -331,15 +341,28 @@ const Cards = () => {
           setFilter
         }}
       />
-      <MDBox sx={{ display: "flex", gap: 2, height: "100vh", mb: 4 }}>
-        <MDBox sx={{ flex: "0 0 75%", height: "100%" }}>
+      <MDBox
+        ref={rowRef}
+        sx={{ display: "flex", gap: 2, height: rowHeight, overflow: "hidden" }}
+      >
+        <MDBox sx={{
+          width: "75%",         // fixed ratio
+          flexShrink: 1,        // cho phép co
+          height: "100%",
+          overflowY: "auto"
+        }}>
           <DeckZones
             deck={deck}
             handleDropCard={handleDropCard}
             handleDragStartFromDeck={handleDragStartFromDeck}
           />
         </MDBox>
-        <MDBox sx={{ flex: "0 0 25%", maxHeight: "100%" }}>
+        <MDBox sx={{
+          width: "25%",         // fixed ratio
+          flexShrink: 1,        // cho phép co
+          height: "100%",
+          overflowY: "auto"
+        }}>
           <CardTable
             cards={cards}
             loading={loading}

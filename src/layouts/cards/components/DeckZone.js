@@ -16,7 +16,10 @@ const DeckZones = ({ deck, handleDropCard, handleDragStartFromDeck }) => {
             <Zone
                 title="Main Deck"
                 cards={deck.mainDeckCards}
-                onDropCard={(card) => handleDropCard(card, "MAIN")}
+                onDropCard={(card) => {
+                    handleDropCard(card, "MAIN")
+                    onMouseLeave();
+                }}
                 renderCard={(card) => (
                     <div
                         draggable
@@ -44,7 +47,10 @@ const DeckZones = ({ deck, handleDropCard, handleDragStartFromDeck }) => {
             <Zone
                 title="Extra Deck"
                 cards={deck.extraDeckCards}
-                onDropCard={(card) => handleDropCard(card, "EXTRA")}
+                onDropCard={(card) => {
+                    handleDropCard(card, "EXTRA")
+                    onMouseLeave();
+                }}
                 renderCard={(card) => (
                     <div
                         draggable
@@ -71,7 +77,10 @@ const DeckZones = ({ deck, handleDropCard, handleDragStartFromDeck }) => {
             <Zone
                 title="Side Deck"
                 cards={deck.sideDeckCards}
-                onDropCard={(card) => handleDropCard(card, "SIDE")}
+                onDropCard={(card) => {
+                    handleDropCard(card, "SIDE")
+                    onMouseLeave();
+                }}
                 renderCard={(card) => (
                     <div
                         draggable

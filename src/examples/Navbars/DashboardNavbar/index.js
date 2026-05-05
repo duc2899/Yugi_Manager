@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import ShieldIcon from '@mui/icons-material/Shield';
@@ -42,6 +42,7 @@ import {
 import { useAuth } from 'context/AuthContext';
 import MDAvatar from 'components/MDAvatar';
 import UpdateVersion from 'layouts/updateVersion';
+import UpdateCard from 'layouts/updateCard';
 
 function DashboardNavbar({ absolute, light, isMini }) {
     const { user, logout } = useAuth();
@@ -57,6 +58,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
     } = controller;
     const [openMenu, setOpenMenu] = useState(false);
     const [openUpdateVersion, setOpenUpdateVersion] = useState(false);
+    const [openUpdateCard, setOpenUpdateCard] = useState(false);
     const route = useLocation().pathname.split('/').slice(1);
 
     useEffect(() => {
@@ -101,7 +103,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
     };
 
     const handelOpenUpdateVersion = () => setOpenUpdateVersion(true);
-    
+    const handleOpenUpdateCard = () => setOpenUpdateCard(true);
     // Render the notifications menu
     const renderMenu = () => (
         <Menu
@@ -193,6 +195,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
                             >
                                 <Icon sx={iconsStyle}>update</Icon>
                             </IconButton>
+                            {user?.role === "admin" &&
+                                <IconButton
+                                    size="large"
+                                    disableRipple
+                                    color="inherit"
+                                    sx={navbarIconButton}
+                                    onClick={handleOpenUpdateCard}
+                                >
+                                    <Icon sx={iconsStyle}>style</Icon>
+                                </IconButton>
+                            }
                             <IconButton
                                 size="large"
                                 disableRipple
@@ -233,6 +246,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
                             </IconButton>
                             {renderMenu()}
+                            <UpdateCard open={openUpdateCard} handleClose={() => setOpenUpdateCard(false)} />
                             <UpdateVersion open={openUpdateVersion} handleClose={() => setOpenUpdateVersion(false)} />
                         </MDBox>
                     </MDBox>

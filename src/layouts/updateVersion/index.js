@@ -77,7 +77,7 @@ const UpdateVersion = ({ open, handleClose }) => {
       case "CLIENT_VERSION_DEV":
         return "DEV"
       case "CLIENT_VERSION":
-        return "LIVE"
+        return "PRODUCTION"
       default:
         return "Not found Type"
     }
