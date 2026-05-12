@@ -226,6 +226,7 @@ function CardTable({
                             margin: "10px",
                             cursor: "pointer",
                             transition: "transform 0.2s",
+                            height: "fit-content",
                         }}
                         onMouseEnter={(e) => onMouseEnter(card, e)}
                         onMouseLeave={onMouseLeave}
