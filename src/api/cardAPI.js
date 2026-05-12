@@ -16,6 +16,10 @@ const cardApi = {
     setCardStatus: async (data) => {
         const response = await yugiClient.post(`/cards/set-status`, data);
         return response.data;
+    },
+    syncStatus: async (data) => {
+        const response = await yugiClient.post(`/cards/sync-status`, data);
+        return response.data;
     }
 }
 

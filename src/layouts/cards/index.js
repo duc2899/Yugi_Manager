@@ -21,6 +21,10 @@ import DeckZones from "./components/DeckZone";
 
 const Cards = () => {
   const initialDeckRef = useRef(null);        // restore
+  const rowRef = useRef(null);
+  const [rowHeight, setRowHeight] = useState("100vh");
+
+
 
   const { showAlert } = useAlert();
   const [cards, setCards] = useState([]);
@@ -86,6 +90,12 @@ const Cards = () => {
     setCards((prev) => (isReset ? newCards : [...prev, ...newCards]));
     setHasMore(newCards.length > 0);
   };
+
+  useEffect(() => {
+    if (!rowRef.current) return;
+    const top = rowRef.current.getBoundingClientRect().top + 10;
+    setRowHeight(`calc(100vh - ${top}px)`);
+  }, []);
 
   useEffect(() => {
     setCards([]);
@@ -317,56 +327,73 @@ const Cards = () => {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Fillter
-        deckManager={{
-          deck,
-          isChanged,
-          handleRestoreDeck,
-          deckOptions,
-          handleSelectDeck,
-          selectedDeckId
-        }}
-        filterManager={{
-          filter,
-          setFilter
-        }}
-      />
-      <MDBox sx={{ display: "flex", gap: 2, height: "100vh", mb: 4 }}>
-        <MDBox sx={{ flex: "0 0 75%", height: "100%" }}>
-          <DeckZones
-            deck={deck}
-            handleDropCard={handleDropCard}
-            handleDragStartFromDeck={handleDragStartFromDeck}
-          />
+      <MDBox sx={{
+        mb: 10,
+      }}>
+        <Fillter
+          deckManager={{
+            deck,
+            isChanged,
+            handleRestoreDeck,
+            deckOptions,
+            handleSelectDeck,
+            selectedDeckId
+          }}
+          filterManager={{
+            filter,
+            setFilter
+          }}
+        />
+        <MDBox
+          ref={rowRef}
+          sx={{ display: "flex", gap: 2, height: rowHeight, overflow: "hidden" }}
+        >
+          <MDBox sx={{
+            width: "75%",         // fixed ratio
+            flexShrink: 1,        // cho phép co
+            height: "100%",
+            overflowY: "auto"
+          }}>
+            <DeckZones
+              deck={deck}
+              handleDropCard={handleDropCard}
+              handleDragStartFromDeck={handleDragStartFromDeck}
+            />
+          </MDBox>
+          <MDBox sx={{
+            width: "25%",         // fixed ratio
+            flexShrink: 1,        // cho phép co
+            height: "100%",
+            overflowY: "auto"
+          }}>
+            <CardTable
+              cards={cards}
+              loading={loading}
+              hasMore={hasMore}
+              onDropCard={(card) => handleDropCard(card, "POOL")}
+              onLoadMore={handleLoadMore}
+              handeleSetStatus={handeleSetStatus}
+              setModalDeck={setModalDeck}
+              deck={deck}
+              isChanged={isChanged}
+              handleSaveDeck={handleSaveDeck}
+              isSavingDeck={savingDeck}
+            />
+          </MDBox>
         </MDBox>
-        <MDBox sx={{ flex: "0 0 25%", maxHeight: "100%" }}>
-          <CardTable
-            cards={cards}
-            loading={loading}
-            hasMore={hasMore}
-            onDropCard={(card) => handleDropCard(card, "POOL")}
-            onLoadMore={handleLoadMore}
-            handeleSetStatus={handeleSetStatus}
-            setModalDeck={setModalDeck}
-            deck={deck}
-            isChanged={isChanged}
-            handleSaveDeck={handleSaveDeck}
-            isSavingDeck={savingDeck}
-          />
-        </MDBox>
+        <ModalDeck
+          deck={deck}
+          modalDeck={modalDeck}
+          setModalDeck={setModalDeck}
+          setDeck={setDeck}
+          setLocalDecks={setLocalDecks}
+          initialDeckRef={initialDeckRef}
+          setSnapshotHash={setSnapshotHash}
+          setSelectDeck={setSelectedDeckId}
+          setDataDeck={setDataDeck}
+          selectedDeckId={selectedDeckId}
+        />
       </MDBox>
-      <ModalDeck
-        deck={deck}
-        modalDeck={modalDeck}
-        setModalDeck={setModalDeck}
-        setDeck={setDeck}
-        setLocalDecks={setLocalDecks}
-        initialDeckRef={initialDeckRef}
-        setSnapshotHash={setSnapshotHash}
-        setSelectDeck={setSelectedDeckId}
-        setDataDeck={setDataDeck}
-        selectedDeckId={selectedDeckId}
-      />
       <Footer />
     </DashboardLayout>
   );

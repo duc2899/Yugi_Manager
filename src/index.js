@@ -16,11 +16,11 @@ const queryClient = new QueryClient();
 root.render(
     <QueryClientProvider client={queryClient}>
         <AuthProvider>
-            <BrowserRouter>
-                <MaterialUIControllerProvider>
-                    <App />
-                </MaterialUIControllerProvider>
-            </BrowserRouter>
+                <BrowserRouter>
+                    <MaterialUIControllerProvider>
+                        <App />
+                    </MaterialUIControllerProvider>
+                </BrowserRouter>
         </AuthProvider>
     </QueryClientProvider>
 );
