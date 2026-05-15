@@ -13,12 +13,10 @@ export default styled(Select)(({ theme, ownerState }) => {
     const { error, success, disabled } = ownerState;
 
     const {
-        dark,
         transparent,
         grey,
         error: colorError,
         success: colorSuccess,
-        background,
         text,
     } = palette;
 

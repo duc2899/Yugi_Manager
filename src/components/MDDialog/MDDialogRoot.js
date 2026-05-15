@@ -20,7 +20,7 @@ import { styled } from "@mui/material/styles";
 export default styled(Dialog)(({ theme }) => {
     const { palette, functions, borders, boxShadows, typography } = theme;
 
-    const { background, text, divider, grey, transparent } = palette;
+    const { background, text, divider } = palette;
     const { pxToRem } = functions;
     const { borderRadius } = borders;
     const { xl } = boxShadows;

@@ -10,26 +10,24 @@ import Footer from 'examples/Footer';
 import ReportsLineChart from 'examples/Charts/LineCharts/ReportsLineChart';
 import ComplexStatisticsCard from 'examples/Cards/StatisticsCards/ComplexStatisticsCard';
 
-import { useState } from 'react';
-import { convertPriceVND } from 'utils';
 
 function Dashboard() {
-    const [chartDataBill, setChartDataBill] = useState({
-        labels: [],
-        datasets: {
-            label: 'Daily Sales',
-            data: []
-        },
-        highestMonth: {}
-    });
+    // const [chartDataBill, setChartDataBill] = useState({
+    //     labels: [],
+    //     datasets: {
+    //         label: 'Daily Sales',
+    //         data: []
+    //     },
+    //     highestMonth: {}
+    // });
 
-    const [userStats, setUserStats] = useState({
-        totalUsers: 0,
-        currentMonthUsers: 0,
-        lastMonthUsers: 0,
-        percentageChange: 0,
-        currentDayUsers: 0
-    });
+    // const [userStats, setUserStats] = useState({
+    //     totalUsers: 0,
+    //     currentMonthUsers: 0,
+    //     lastMonthUsers: 0,
+    //     percentageChange: 0,
+    //     currentDayUsers: 0
+    // });
 
     // const fetchChartData = async () => {
     //     try {
@@ -96,10 +94,10 @@ function Dashboard() {
                             <ComplexStatisticsCard
                                 icon="leaderboard"
                                 title="Current Month Users"
-                                count={userStats.currentMonthUsers}
+                                // count={userStats.currentMonthUsers}
                                 percentage={{
                                     color: 'success',
-                                    amount: `${userStats.percentageChange}%`,
+                                    // amount: `${userStats.percentageChange}%`,
                                     label: 'than last month'
                                 }}
                             />
@@ -111,10 +109,10 @@ function Dashboard() {
                                 color="primary"
                                 icon="person_add"
                                 title="Total Users"
-                                count={userStats.totalUsers}
+                                // count={userStats.totalUsers}
                                 percentage={{
                                     color: 'success',
-                                    amount: `+ ${userStats.currentDayUsers}`,
+                                    // amount: `+ ${userStats.currentDayUsers}`,
                                     label: 'users today'
                                 }}
                             />
@@ -128,16 +126,16 @@ function Dashboard() {
                                 <ReportsLineChart
                                     color="success"
                                     title="Monthly Bills"
-                                    description={
-                                        <>
-                                            High month is {chartDataBill.highestMonth.month} (<strong style={{
-                                                color: "greenyellow"
-                                            }}>+{convertPriceVND(chartDataBill.highestMonth.value)}</strong>)
-                                        </>
-                                    }
+                                    // description={
+                                    //     <>
+                                    //         High month is {chartDataBill.highestMonth.month} (<strong style={{
+                                    //             color: "greenyellow"
+                                    //         }}>+{convertPriceVND(chartDataBill.highestMonth.value)}</strong>)
+                                    //     </>
+                                    // }
 
                                     date="updated 4 min ago"
-                                    chart={chartDataBill}
+                                    // chart={chartDataBill}
                                 />
                             </MDBox>
                         </Grid>
