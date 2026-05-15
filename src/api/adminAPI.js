@@ -68,6 +68,15 @@ const adminAPI = {
         }
     },
 
+    deleteDeck: async (data) => {
+        try {
+            const response = await yugiClient.post("/admin/delete-deck", data);
+            return response.data
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
     getActivityLogs: async (params = {}) => {
         try {
             const response = await yugiClient.get("/admin/get-logs", { params });

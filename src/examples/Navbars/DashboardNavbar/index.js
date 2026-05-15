@@ -171,8 +171,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 </MDBox>
                 {isMini ? null : (
                     <MDBox sx={theme => navbarRow(theme, { isMini })}>
-                        <MDBox pr={1}>
-                            <MDInput label="Search here" />
+                        <MDBox pr={1} sx={{ flexGrow: 1 }}>
+                            <MDInput
+                                label="Search here"
+                                sx={{
+                                    width: { xs: "100%", md: "auto" } // full width trên màn nhỏ, auto trên màn lớn
+                                }}
+                            />
                         </MDBox>
                         <MDBox color={light ? 'white' : 'inherit'}>
 

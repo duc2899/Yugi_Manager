@@ -50,7 +50,6 @@ const Cards = () => {
   const [snapshotHash, setSnapshotHash] = useState("");
   const [localDecks, setLocalDecks] = useState([]);
   const [selectedDeckId, setSelectedDeckId] = useState("");
-
   const [filter, setFilter] = useState({
     monsterType: null,
     monsterCategory: null,
@@ -99,7 +98,7 @@ const Cards = () => {
 
   useEffect(() => {
     setCards([]);
-    setPage(1);
+    // setPage(1);
     fetchCards(1, true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,6 +124,10 @@ const Cards = () => {
 
   const updateStatusMutation = useMutation({
     mutationFn: cardApi.setCardStatus,
+  });
+
+  const deleteDeckMutation = useMutation({
+    mutationFn: adminAPI.deleteDeck,
   });
 
   useEffect(() => {
@@ -318,11 +321,46 @@ const Cards = () => {
     }
   };
 
+  const handleDeleteDeck = async (id) => {
+    try {
+      await deleteDeckMutation.mutateAsync({ id: id.toString() });
+      showAlert("Xóa deck thành công!", "success");
+      setSelectedDeckId("");
+      setDeck({
+        mainDeckCards: [],
+        extraDeckCards: [],
+        sideDeckCards: [],
+        id: "",
+        name: "",
+        type: "",
+        isLocal: true
+      });
+      setDataDeck((prev) => ({
+        ...(prev || {}),
+        data: (prev?.data || []).filter((d) => d._id !== id),
+      }));
+    } catch (err) {
+      showAlert(err?.message || "Xóa deck thất bại!", "error");
+    }
+  };
+
   const isChanged = useMemo(() => {
     if (!snapshotHash) return false;
     if (!deck.id) return false;
     return JSON.stringify(normalizeDeck(deck)) !== snapshotHash;
   }, [deck, snapshotHash]);
+
+  useEffect(() => {
+    if (!isChanged) return;
+
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = ""; // bắt buộc phải có để browser hiện popup
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isChanged]);
 
   return (
     <DashboardLayout>
@@ -377,7 +415,9 @@ const Cards = () => {
               deck={deck}
               isChanged={isChanged}
               handleSaveDeck={handleSaveDeck}
+              handeleDeleteDeck={handleDeleteDeck}
               isSavingDeck={savingDeck}
+              isDeletingDeck={deleteDeckMutation.isPending}
             />
           </MDBox>
         </MDBox>

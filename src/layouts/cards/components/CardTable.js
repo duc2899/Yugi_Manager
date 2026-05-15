@@ -21,8 +21,10 @@ function CardTable({
     setModalDeck,
     deck,
     isChanged,
+    isDeletingDeck,
     handleSaveDeck,
-    isSavingDeck
+    isSavingDeck,
+    handeleDeleteDeck
 }) {
     const [controller] = useMaterialUIController();
     const { lang } = controller;
@@ -117,6 +119,17 @@ function CardTable({
                         justifyContent: "space-between",
                         gap: "5px",
                     }}>
+
+                        {deck.name &&
+                            <MDButton
+                                color="error"
+                                size="small"
+                                onClick={() => handeleDeleteDeck(deck.id)}
+                                loading={isDeletingDeck}
+                            >
+                                Xóa
+                            </MDButton>
+                        }
                         {isChanged &&
                             <MDButton
                                 color="primary"
