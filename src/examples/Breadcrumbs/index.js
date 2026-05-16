@@ -30,6 +30,7 @@ import { useAuth } from 'context/AuthContext';
 
 function Breadcrumbs({ icon, title, route, light }) {
     const { user } = useAuth();
+    
     const routes = route.slice(0, -1);
 
     return (

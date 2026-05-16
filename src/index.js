@@ -7,6 +7,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Material Dashboard 2 React Context Provider
 import { MaterialUIControllerProvider } from 'context';
+import { SocketProvider } from './context/SocketsContext';
+import AlertProvider from './context/AlertContext';
 
 const container = document.getElementById('app');
 const root = createRoot(container);
@@ -15,12 +17,17 @@ const queryClient = new QueryClient();
 
 root.render(
     <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-                <BrowserRouter>
-                    <MaterialUIControllerProvider>
-                        <App />
-                    </MaterialUIControllerProvider>
-                </BrowserRouter>
-        </AuthProvider>
+
+        <AlertProvider>
+            <AuthProvider>
+                <SocketProvider>
+                    <BrowserRouter>
+                        <MaterialUIControllerProvider>
+                            <App />
+                        </MaterialUIControllerProvider>
+                    </BrowserRouter>
+                </SocketProvider>
+            </AuthProvider>
+        </AlertProvider>
     </QueryClientProvider>
 );

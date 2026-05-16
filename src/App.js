@@ -21,14 +21,15 @@ import logo from './assets/images/logos/logo.png';
 
 import { useAuth } from 'context/AuthContext';
 // import LoadingScreen from 'layouts/loading';
-import AlertProvider from 'context/AlertContext';
 import LoadingScreen from 'layouts/loading';
+import { useDeviceGuard } from 'hooks/useDeviceGuard';
 
 export default function App() {
     const [controller, dispatch] = useMaterialUIController();
     const { miniSidenav, direction, layout, sidenavColor, darkMode } = controller;
     const { isAuthenticated, isLoading, user } = useAuth();
 
+    useDeviceGuard();
 
     const [onMouseEnter, setOnMouseEnter] = useState(false);
     const { pathname } = useLocation();
@@ -111,7 +112,6 @@ export default function App() {
 
     return (
         <ThemeProvider theme={darkMode ? themeDark : theme}>
-            <AlertProvider>
                 <CssBaseline />
                 {isAuthenticated && (
                     <>
@@ -144,7 +144,6 @@ export default function App() {
                         }
                     />
                 </Routes>
-            </AlertProvider>
         </ThemeProvider>
     );
 }

@@ -56,7 +56,7 @@ ChartJS.register(
 );
 
 function ReportsLineChart({ color, title, description, date, chart }) {
-    const { data, options } = configs(chart.labels || [], chart.datasets || {});
+    const { data, options } = configs(chart?.labels || [], chart?.datasets || []);
 
     return (
         <Card sx={{ height: '100%' }}>
