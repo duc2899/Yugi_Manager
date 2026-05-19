@@ -18,12 +18,33 @@ export const yugiClient = axios.create({
     },
 });
 
-// Interceptors để xử lý request/response chung
+// Request interceptor - gắn token
 yugiClient.interceptors.request.use(config => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
+    const token = localStorage.getItem('access_token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
 });
+
+// Response interceptor - chuẩn hóa lỗi
+yugiClient.interceptors.response.use(
+    response => response,
+    error => {
+        const data = error.response?.data;
+
+        let message = 'Đã có lỗi xảy ra';
+
+        if (data?.errors?.length > 0) {
+            // Validation error - gộp tất cả message lại
+            message = data.errors.map(e => e.message).join(', ');
+        } else if (data?.message) {
+            message = data.message;
+        } else if (error.message) {
+            message = error.message;
+        }
+
+        error.userMessage = message;
+
+        return Promise.reject(error);
+    }
+);
 

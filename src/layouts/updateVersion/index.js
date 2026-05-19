@@ -41,7 +41,7 @@ const UpdateVersion = ({ open, handleClose }) => {
       // reset input version mới về rỗng khi mở dialog
       reset({ version: "" });
     } catch (error) {
-      showAlert("Không lấy được version hiện tại", "error");
+      showAlert(error?.userMessage, "error");
     }
   };
 
@@ -60,7 +60,7 @@ const UpdateVersion = ({ open, handleClose }) => {
       showAlert("Cập nhật phiên bản thành công", "success");
       handleClose();
     } catch (error) {
-      showAlert(error?.errors?.[0]?.message || "Update version thất bại", "error");
+      showAlert(error?.userMessage, "error");
     }
   };
 

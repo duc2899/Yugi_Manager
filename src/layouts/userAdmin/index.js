@@ -77,7 +77,7 @@ function AccountsAdmin() {
             setUsers(response.data.data);
             setPagination(response.data.pagination);
         } catch (error) {
-            console.error("Error fetching tournaments:", error);
+            console.error(error.userMessage, error);
         } finally {
             setLoading(false);
         }
@@ -99,7 +99,7 @@ function AccountsAdmin() {
             );
             fetchData()
         } catch (error) {
-            showAlert(error.message, "error")
+            showAlert(error.userMessage, "error")
         }
     }
 
@@ -114,7 +114,7 @@ function AccountsAdmin() {
             }
             showAlert(res.message, "error")
         } catch (error) {
-            showAlert(error.message, "error")
+            showAlert(error.userMessage, "error")
         }
 
     }

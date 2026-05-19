@@ -50,7 +50,7 @@ const UpdateCard = ({ open, handleClose }) => {
       showAlert("Cập nhật thành công", "success");
 
     } catch (error) {
-      showAlert(error?.errors?.[0]?.message || "Cập nhật thất bại", "error");
+      showAlert(error.userMessage || "Cập nhật thất bại", "error");
     }
   };
 

@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             return {
                 status: false,
-                message: error.response.data.message
+                message: error.userMessage
             };
         }
     };
@@ -98,6 +98,9 @@ export const AuthProvider = ({ children }) => {
         try {
             localStorage.removeItem("access_token");
             await authAPI.logout();
+        }
+        catch (error) {
+            console.error("Logout error:", error.userMessage);
         } finally {
             dispatch({ type: 'LOGOUT' });
         }

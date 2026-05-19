@@ -17,7 +17,7 @@ export const useApi = (apiFunc, deps = [], options = {}) => {
 
             return res;
         } catch (err) {
-            setError(err);
+            setError(err.userMessage || "An error occurred");
             throw err;
         } finally {
             setLoading(false);
