@@ -10,8 +10,8 @@ export function SocketProvider({ children }) {
 
     useEffect(() => {
         if (!user) return // chưa login thì không connect
-
-        const newSocket = io(process.env.REACT_APP_WS_URL, {
+        const API_URL = window.__ENV__?.REACT_APP_WS_URL || process.env.REACT_APP_WS_URL
+        const newSocket = io(API_URL, {
             auth: { userId: user._id },
             transports: ['websocket'],
         })

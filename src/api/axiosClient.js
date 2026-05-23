@@ -9,9 +9,14 @@ export const ygoproClient = axios.create({
     },
 });
 
+const isElectron = window.navigator.userAgent.includes('Electron');
+
+const API_URL = isElectron
+    ? window.__ENV__?.REACT_APP_URL_API_YUGI  // Electron
+    : process.env.REACT_APP_URL_API_YUGI;      // Web
 
 export const yugiClient = axios.create({
-    baseURL: process.env.REACT_APP_URL_API_YUGI,
+    baseURL: API_URL,
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",

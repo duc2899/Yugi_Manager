@@ -201,7 +201,42 @@ function Sidenav({ color, brand, brandName, routes, role, ...rest }) {
                 }
             />
             <List>{renderRoutes}</List>
-        </SidenavRoot>
+
+            {/* Download Button - chỉ hiện trên web */}
+            {!window.navigator.userAgent.includes('Electron') && (
+                <MDBox p={2} mt="auto">
+                    <Divider light={
+                        (!darkMode && !whiteSidenav && !transparentSidenav) ||
+                        (darkMode && !transparentSidenav && whiteSidenav)
+                    } />
+                    <MDBox
+                        component="a"
+                        href="https://github.com/duc2899/Yugi_Manager/releases/download/Yugi_Admin_Desktop/YugiOhAdminDashboard.exe"
+                        download
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                        p={1}
+                        borderRadius="lg"
+                        sx={{
+                            cursor: 'pointer',
+                            textDecoration: 'none',
+                            '&:hover': { opacity: 0.8 }
+                        }}
+                    >
+                        <Icon sx={{
+                            color: "white !important"
+                        }}>download</Icon>
+                        {!miniSidenav && (
+                            <MDTypography variant="button" fontWeight="medium" color={textColor}>
+                                Tải về cho Windows
+                            </MDTypography>
+                        )}
+                    </MDBox>
+                </MDBox>
+            )}
+
+        </SidenavRoot >
     );
 }
 

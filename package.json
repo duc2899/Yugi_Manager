@@ -1,6 +1,6 @@
 {
   "name": "YugiOhAdminDashboard",
-  "version": "2.2.0",
+  "version": "1.0.0",
   "private": true,
   "author": "duc2899",
   "license": "",
@@ -19,6 +19,7 @@
     "chroma-js": "2.4.2",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.19",
+    "electron-is-dev": "^3.0.1",
     "js-cookie": "^3.0.5",
     "notistack": "^3.0.2",
     "prop-types": "15.8.1",
@@ -46,7 +47,10 @@
     "lint": "eslint --fix --ext js,jsx src/",
     "lint:fix": "prettier --check \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
     "prettier": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
-    "prettier:fix": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\""
+    "prettier:fix": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
+    "electron:dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build": "electron-builder",
+    "package": "build --dir"
   },
   "eslintConfig": {
     "extends": [
@@ -68,6 +72,9 @@
   },
   "devDependencies": {
     "ajv": "^7.2.4",
+    "concurrently": "^9.2.1",
+    "electron": "^28.0.0",
+    "electron-builder": "^26.8.1",
     "eslint": "8.39.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",
@@ -75,9 +82,41 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
-    "prettier": "2.8.8"
+    "prettier": "2.8.8",
+    "wait-on": "^9.0.10"
   },
   "overrides": {
     "svgo": "3.0.2"
+  },
+  "main": "public/electron.js",
+  "homepage": "./",
+  "productName": "YugiManager",
+   "build": {
+    "appId": "com.yugioh.admin.dashboard",
+    "productName": "YugiOhAdminDashboard",
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "files": [
+      "build/**/*",
+      "public/electron.js",
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/electron/dist/icudtl.dat",
+        "to": "icudtl.dat"
+      }
+    ],
+    "directories": {
+      "buildResources": "public"
+    }
   }
 }

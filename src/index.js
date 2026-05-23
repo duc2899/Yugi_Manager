@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, HashRouter } from 'react-router-dom';
 import App from 'App';
 import { AuthProvider } from 'context/AuthContext';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,7 +12,8 @@ import AlertProvider from './context/AlertContext';
 
 const container = document.getElementById('app');
 const root = createRoot(container);
-
+const isElectron = window.navigator.userAgent.includes('Electron');
+const Router = isElectron ? HashRouter : BrowserRouter;
 const queryClient = new QueryClient();
 
 root.render(
@@ -21,11 +22,11 @@ root.render(
         <AlertProvider>
             <AuthProvider>
                 <SocketProvider>
-                    <BrowserRouter>
+                    <Router>
                         <MaterialUIControllerProvider>
                             <App />
                         </MaterialUIControllerProvider>
-                    </BrowserRouter>
+                    </Router>
                 </SocketProvider>
             </AuthProvider>
         </AlertProvider>
