@@ -1,6 +1,6 @@
 {
   "name": "YugiOhAdminDashboard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "author": "duc2899",
   "license": "",
@@ -20,6 +20,8 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.19",
     "electron-is-dev": "^3.0.1",
+    "electron-log": "^5.4.4",
+    "electron-updater": "^6.8.3",
     "js-cookie": "^3.0.5",
     "notistack": "^3.0.2",
     "prop-types": "15.8.1",
@@ -49,8 +51,9 @@
     "prettier": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
     "prettier:fix": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
     "electron:dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:build": "electron-builder",
-    "package": "build --dir"
+    "electron-pack": "electron-builder",
+    "electron-pack:win": "electron-builder --win",
+    "deploy": "electron-builder --publish always"
   },
   "eslintConfig": {
     "extends": [
@@ -91,11 +94,20 @@
   "main": "public/electron.js",
   "homepage": "./",
   "productName": "YugiManager",
-   "build": {
+  "build": {
     "appId": "com.yugioh.admin.dashboard",
     "productName": "YugiOhAdminDashboard",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "duc2899",
+        "repo": "Yugi_Manager"
+      }
+    ],
     "win": {
-      "target": "nsis",
+      "target": [
+        "nsis"
+      ],
       "icon": "public/icon.ico"
     },
     "nsis": {
@@ -106,14 +118,7 @@
     },
     "files": [
       "build/**/*",
-      "public/electron.js",
-      "node_modules/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "node_modules/electron/dist/icudtl.dat",
-        "to": "icudtl.dat"
-      }
+      "public/electron.js"
     ],
     "directories": {
       "buildResources": "public"
