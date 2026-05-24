@@ -74,7 +74,7 @@ function Basic() {
                         fontWeight="medium"
                         color="white"
                         mt={1}>
-                        Sign in
+                        Sign In
                     </MDTypography>
                     <Grid
                         container

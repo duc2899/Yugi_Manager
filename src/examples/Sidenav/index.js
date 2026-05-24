@@ -211,7 +211,7 @@ function Sidenav({ color, brand, brandName, routes, role, ...rest }) {
                     } />
                     <MDBox
                         component="a"
-                        href="https://github.com/duc2899/Yugi_Manager/releases/download/Yugi_Admin_Desktop/YugiOhAdminDashboard.exe"
+                        href="https://github.com/duc2899/Yugi_Manager/releases/download/v1.0.1/YugiOhAdminDashboard-Setup-1.0.1.exe"
                         download
                         display="flex"
                         alignItems="center"

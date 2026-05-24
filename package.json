@@ -1,6 +1,6 @@
 {
   "name": "YugiOhAdminDashboard",
-  "version": "1.0.1",
+  "version": "1.0.9",
   "private": true,
   "author": "duc2899",
   "license": "",
@@ -111,10 +111,11 @@
       "icon": "public/icon.ico"
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "perMachine": true
     },
     "files": [
       "build/**/*",

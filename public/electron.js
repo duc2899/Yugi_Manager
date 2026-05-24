@@ -1,87 +1,81 @@
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
-// 1. Cấu hình log để kiểm tra lỗi nếu có (File log lưu ở AppData của máy user)
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
-log.info('Ứng dụng đang khởi động...');
+let mainWindow; // Đưa biến này ra ngoài để các hàm khác dùng chung
 
 function createUpdateListeners() {
-    // Tắt tự động tải ngầm, mình sẽ hỏi ý kiến user trước khi tải
-    autoUpdater.autoDownload = false;
+    // 1. Cho phép tự động tải ngầm luôn khi tìm thấy bản mới
+    autoUpdater.autoDownload = true;
 
-    // Sự kiện 1: Phát hiện có bản cập nhật mới trên GitHub
+    // Sự kiện 1: Phát hiện thấy có bản mới -> Thông báo cho React biết để hiện trạng thái "Đang tải"
     autoUpdater.on('update-available', (info) => {
-        log.info('Tìm thấy bản cập nhật mới:', info.version);
-        
-        dialog.showMessageBox({
-            type: 'info',
-            title: 'Có bản cập nhật mới!',
-            message: `Phiên bản v${info.version} đã sẵn sàng. Bạn có muốn tải về ngầm không?`,
-            buttons: ['Tải về ngầm', 'Để sau'],
-            defaultId: 0,
-            cancelId: 1
-        }).then(result => {
-            if (result.response === 0) {
-                autoUpdater.downloadUpdate(); // Bắt đầu tải file exe về máy ngầm
-                log.info('User đồng ý tải bản cập nhật.');
-            }
-        });
+        log.info('Có bản mới v' + info.version);
+        if (mainWindow) {
+            mainWindow.webContents.send('update-status', {
+                status: 'available',
+                version: info.version
+            });
+        }
     });
 
-    // Sự kiện 2: Đã tải xong file .exe bản mới về máy thành công
+    // Sự kiện 2: Đang tải file - Electron liên tục gửi % về cho React vẽ Progress Bar
+    autoUpdater.on('download-progress', (progressObj) => {
+        log.info(`Đang tải: ${progressObj.percent}%`);
+        if (mainWindow) {
+            mainWindow.webContents.send('update-progress', {
+                percent: Math.round(progressObj.percent),
+                bytesPerSecond: progressObj.bytesPerSecond
+            });
+        }
+    });
+
+    // Sự kiện 3: Đã tải xong bản cập nhật thành công
     autoUpdater.on('update-downloaded', (info) => {
-        log.info('Đã tải xong bản cập nhật v', info.version);
-
-        dialog.showMessageBox({
-            type: 'info',
-            title: 'Tải về hoàn tất!',
-            message: 'Bản cập nhật đã được tải xong. Khởi động lại ứng dụng để áp dụng ngay?',
-            buttons: ['Cập nhật ngay', 'Để sau'],
-            defaultId: 0,
-            cancelId: 1
-        }).then(result => {
-            if (result.response === 0) {
-                // Tắt app và kích hoạt file .exe vừa tải để tự động cài đè luôn
-                autoUpdater.quitAndInstall(); 
-            }
-        });
+        log.info('Đã tải xong bản v' + info.version);
+        if (mainWindow) {
+            mainWindow.webContents.send('update-status', {
+                status: 'downloaded',
+                version: info.version
+            });
+        }
     });
 
-    // Sự kiện phụ: Quản lý lỗi nếu quá trình check/download thất bại
     autoUpdater.on('error', (err) => {
-        log.error('Lỗi Auto Update:', err);
+        log.error('Lỗi tự động cập nhật:', err);
+        if (mainWindow) {
+            mainWindow.webContents.send('update-status', { status: 'error' });
+        }
     });
 }
 
+// Lắng nghe lệnh từ giao diện React khi user bấm nút "Khởi động lại để cập nhật"
+ipcMain.on('restart-app', () => {
+    autoUpdater.quitAndInstall();
+});
+
 function createWindow() {
-    const win = new BrowserWindow({
+    mainWindow = new BrowserWindow({ // Gán vào biến global vừa tạo ở trên
         width: 1200,
         height: 800,
         icon: path.join(__dirname, 'icon.ico'),
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false,
+            contextIsolation: false, // Giữ nguyên theo config hiện tại của ông để React sài trực tiếp ipcRenderer
         },
     });
 
-    win.loadFile(path.join(__dirname, '../build/index.html'));
+    mainWindow.loadFile(path.join(__dirname, '../build/index.html'));
 }
 
 app.whenReady().then(() => {
     createWindow();
-    
-    // Khởi tạo các bộ lắng nghe sự kiện update
     createUpdateListeners();
 
-    // Chờ 3 giây sau khi mở app rồi kích hoạt kiểm tra update
     setTimeout(() => {
         autoUpdater.checkForUpdatesAndNotify();
     }, 3000);
 });
 
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
-});
+// ... các phần window-all-closed giữ nguyên
