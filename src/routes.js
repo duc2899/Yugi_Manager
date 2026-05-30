@@ -10,6 +10,7 @@ import Icon from '@mui/material/Icon';
 import AccountsAdmin from 'layouts/userAdmin';
 import Forbidden from 'layouts/frobidden';
 import ActivityLogs from './layouts/activityLogs';
+import ProfilePage from './layouts/profile';
 
 const routes = [
     {
@@ -66,6 +67,11 @@ const routes = [
         route: '/authentication/sign-in',
         component: <SignIn />,
         requiresAuth: false,
+    },
+    {
+        route: '/user-profile',
+        component: <ProfilePage />,
+        requiresAuth: true,
     },
     {
         route: '/tournaments/:id',
