@@ -182,7 +182,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
                             />
                         </MDBox>
                         <MDBox color={light ? 'white' : 'inherit'}>
-
                             <IconButton
                                 size="large"
                                 disableRipple
@@ -244,7 +243,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                     size="xs"
                                     sx={{
                                         bgcolor: !user?.avatar ? "primary.main" : undefined,
-                                        pt: 0.3
                                     }}
                                     onClick={handleOpenMenu}
                                 >

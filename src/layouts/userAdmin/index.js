@@ -145,7 +145,6 @@ function AccountsAdmin() {
                     size="xs"
                     sx={{
                         bgcolor: !u?.avatar ? "primary.main" : undefined,
-                        pt: 0.3
                     }}
                 >
                     {!u?.avatar && u?.username?.charAt(0).toUpperCase()}
