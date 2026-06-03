@@ -21,6 +21,20 @@ const authAPI = {
     getProfile: async () => {
         const response = await yugiClient.get('/auth/profile');
         return response.data;
+    },
+    
+    uploadAvatar: async formData => {
+        const response = await yugiClient.post('/auth/upload-avatar', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
+
+    changePassword: async data => {
+        const response = await yugiClient.post('/auth/change-password', data);
+        return response.data;
     }
 };
 export default authAPI;

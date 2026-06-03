@@ -3,7 +3,7 @@ import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import ShieldIcon from '@mui/icons-material/Shield';
 // react-router components
-import { useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 // prop-types is a library for typechecking of props.
 import PropTypes from 'prop-types';
@@ -123,6 +123,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 title={user.role.toUpperCase()}
             />
             <NotificationItem
+                component={NavLink}
+                to={`/user-profile`}
                 icon={<PermContactCalendarIcon />}
                 title="My Profile"
             />
@@ -180,7 +182,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
                             />
                         </MDBox>
                         <MDBox color={light ? 'white' : 'inherit'}>
-
                             <IconButton
                                 size="large"
                                 disableRipple
@@ -242,7 +243,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                     size="xs"
                                     sx={{
                                         bgcolor: !user?.avatar ? "primary.main" : undefined,
-                                        pt: 0.3
                                     }}
                                     onClick={handleOpenMenu}
                                 >

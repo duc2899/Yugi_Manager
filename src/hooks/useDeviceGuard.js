@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // hook/useDeviceGuard.ts
 import { useEffect } from 'react'
 import { useSocket } from '../context/SocketsContext'
