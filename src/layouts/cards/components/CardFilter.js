@@ -112,6 +112,24 @@ const CardFilterBar = ({
     };
 
 
+    const isFilterActive = Object.values(filter).some(value => value !== null && value !== '');
+
+    const handleClearFilters = () => {
+        setFilter({
+            category: null, 
+            monsterCategory: null,
+            monsterAttribute: null,
+            monsterType: null,
+            spellType: null,
+            trapType: null,
+            cardLimitStatus: null,
+            atk: null,
+            def: null,
+            gte: null,
+            lte: null,
+            name: null,
+        });
+    }
     return (
         <MDBox
             sx={(theme) => ({
@@ -172,6 +190,15 @@ const CardFilterBar = ({
                                     ))}
                                 </MDSelectField>
                             </MDBox>
+                            {isFilterActive && (
+                                <MDButton
+                                    size="medium"
+                                    color="primary"
+                                    onClick={handleClearFilters}
+                                >
+                                    Clear
+                                </MDButton>
+                            )}
                         </MDBox>
 
                         <MDBox display="flex" alignItems="center" gap={1}>

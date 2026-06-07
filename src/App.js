@@ -22,7 +22,6 @@ import logo from './assets/images/logos/logo.png';
 import { useAuth } from 'context/AuthContext';
 // import LoadingScreen from 'layouts/loading';
 import LoadingScreen from 'layouts/loading';
-import { useDeviceGuard } from 'hooks/useDeviceGuard';
 
 // Thay vì gọi trực tiếp, ta kiểm tra xem có phải đang chạy trong Electron không
 const isElectron = /electron/i.test(navigator.userAgent);
@@ -42,8 +41,6 @@ export default function App() {
     const { miniSidenav, direction, layout, sidenavColor, darkMode } = controller;
     const { isAuthenticated, isLoading, user } = useAuth();
     const [updateInfo, setUpdateInfo] = useState({ status: 'idle', percent: 0, version: '' });
-
-    useDeviceGuard();
 
     const [onMouseEnter, setOnMouseEnter] = useState(false);
     const { pathname } = useLocation();

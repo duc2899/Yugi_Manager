@@ -35,7 +35,7 @@ yugiClient.interceptors.response.use(
     response => response,
     error => {
         const data = error.response?.data;
-
+        
         let message = 'Đã có lỗi xảy ra';
 
         if (data?.errors?.length > 0) {
