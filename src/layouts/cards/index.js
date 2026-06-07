@@ -293,8 +293,10 @@ const Cards = () => {
 
       initialDeckRef.current = structuredClone(deck);
       setSnapshotHash(JSON.stringify(normalizeDeck(deck)));
-    } catch (err) {
-      showAlert(err?.message || "Save thất bại!", "error");
+    } catch (error) {
+      console.log(error);
+      
+      showAlert(error.userMessage || "Save thất bại!", "error");
     }
   };
 
