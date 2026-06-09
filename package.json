@@ -50,7 +50,8 @@
     "lint": "eslint --fix --ext js,jsx src/",
     "lint:fix": "prettier --check \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
     "prettier": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
-    "prettier:fix": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\""
+    "prettier:fix": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
+    "deploy": "electron-builder --publish always"
   },
   "eslintConfig": {
     "extends": [
