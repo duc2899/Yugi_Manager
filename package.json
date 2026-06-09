@@ -80,5 +80,39 @@
   },
   "overrides": {
     "svgo": "3.0.2"
+  },
+  "main": "public/electron.js",
+  "homepage": "./",
+  "productName": "YugiManager",
+  "build": {
+    "appId": "com.yugioh.admin.dashboard",
+    "productName": "YugiOhAdminDashboard",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "duc2899",
+        "repo": "Yugi_Manager"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "public/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "perMachine": true
+    },
+    "files": [
+      "build/**/*",
+      "public/electron.js"
+    ],
+    "directories": {
+      "buildResources": "public"
+    }
   }
 }
