@@ -1,1 +1,3 @@
 package.json merge=ours
+public/electron.js merge=ours
+public/icon.ico merge=ours
