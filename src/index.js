@@ -5,7 +5,6 @@ import App from 'App';
 import { AuthProvider } from 'context/AuthContext';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// Material Dashboard 2 React Context Provider
 import { MaterialUIControllerProvider } from 'context';
 import AlertProvider from './context/AlertContext';
 
