@@ -1,3 +1,7 @@
+build/** merge=ours
+dist/** merge=ours
 package.json merge=ours
 public/electron.js merge=ours
 public/icon.ico merge=ours
+src/hooks/useUpdater.js merge=ours
+src/components/UpdateNotification.jsx merge=ours
