@@ -1,6 +1,6 @@
 {
   "name": "YugiOhAdminDashboard",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "private": true,
   "author": "duc2899",
   "license": "",
@@ -49,7 +49,7 @@
     "lint:fix": "prettier --check \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
     "prettier": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
     "prettier:fix": "prettier --write \"src/**/(**.jsx|*.js|*.scss|*.css)\"",
-    "deploy": "electron-builder --publish always"
+    "deploy": "npm run build && electron-builder --publish always"
   },
   "eslintConfig": {
     "extends": [
