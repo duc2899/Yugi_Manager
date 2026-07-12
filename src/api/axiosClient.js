@@ -10,7 +10,10 @@ export const ygoproClient = axios.create({
 });
 
 
-const API_URL = "http://152.42.175.252:5000/api/v1"
+const API_URL = process.env.REACT_APP_URL_API_YUGI;
+
+console.log(API_URL);
+
 
 export const yugiClient = axios.create({
     baseURL: API_URL,
