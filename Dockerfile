@@ -1,16 +1,22 @@
-FROM node:22-alpine
+# Stage 1: Build
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
 
+RUN npm install --legacy-peer-deps
 
 COPY . .
 
-
 RUN npm run build
 
-EXPOSE 3000
 
-CMD ["npx", "serve", "-s", "build"]
+# Stage 2: Runtime
+FROM nginx:alpine
+
+COPY --from=builder /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
