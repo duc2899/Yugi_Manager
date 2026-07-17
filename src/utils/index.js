@@ -1,9 +1,24 @@
 import { STATUS_TOURNAMENT } from 'config/constant';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
-const convertTimeVN = (time) => {
-    return format(new Date(time), 'dd/MM/yyyy HH:mm:ss', { locale: vi })
+const convertTimeVN = (timeString, isShowDetail = true) => {
+    if (!timeString) return 'Chưa từng hoạt động';
+
+    if (isShowDetail) {
+        return format(new Date(timeString), 'dd/MM/yyyy HH:mm:ss', { locale: vi })
+    }
+
+    // Ép kiểu chuỗi ISO sang đối tượng Date chuẩn
+    const date = new Date(timeString);
+
+    // Kiểm tra xem chuỗi đầu vào có hợp lệ không
+    if (isNaN(date.getTime())) return 'Thời gian không hợp lệ';
+
+    return formatDistanceToNow(date, {
+        locale: vi,
+        addSuffix: true // Để hiển thị thêm chữ "trước"
+    });
 }
 
 /**

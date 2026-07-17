@@ -27,6 +27,8 @@ import Footer from "examples/Footer";
 // API
 import adminAPI from "../../api/adminAPI";
 import { CircularProgress } from "@mui/material";
+import { convertTimeVN } from "../../utils";
+import MDButton from "../../components/MDButton";
 
 // ===== CONST ACTION LIST =====
 const ACTION_OPTIONS = [
@@ -42,13 +44,6 @@ const ACTION_OPTIONS = [
     { label: "SET_VERSION", value: "SET_VERSION" },
 ];
 
-const formatTime = (iso) => {
-    try {
-        return new Date(iso).toLocaleString("vi-VN");
-    } catch {
-        return iso;
-    }
-};
 
 const getActionColor = (action) => {
     if (!action) return "secondary";
@@ -72,6 +67,7 @@ const getTargetIcon = (targetType) => {
 const ActivityLogs = () => {
     const [page, setPage] = useState(1);
     const [action, setAction] = useState("ALL");
+    const [listUsers, setListUsers] = useState([]);
 
     const limit = 10;
 
@@ -131,31 +127,52 @@ const ActivityLogs = () => {
 
             <MDBox mb={2}>
                 <MDTypography variant="h4" fontWeight="bold">
-                    Activity Logs
+                    Lịch sử hoạt động
                 </MDTypography>
                 <MDTypography variant="button" color="text">
-                    Theo dõi lịch sử hành động admin/user
+                    Theo dõi lịch sử hoạt động admin/user
                 </MDTypography>
             </MDBox>
 
             {/* FILTER */}
             <Card style={{ padding: "16px", marginBottom: "16px" }}>
                 <MDBox display="flex" alignItems="center" gap={2}>
-                    <MDTypography variant="button" fontWeight="bold" sx={{ width: 70 }}>
-                        Action:
-                    </MDTypography>
+                    <MDBox display="flex" alignItems="center" gap={4}>
+                        <MDTypography variant="button" fontWeight="bold" sx={{ width: 70 }}>
+                            Hành động:
+                        </MDTypography>
 
-                    <MDBox sx={inputBoxStyle}>
-                        <MDSelectField
-                            value={action}
-                            onChange={(e) => handleChangeAction(e.target.value)}
-                        >
-                            {ACTION_OPTIONS.map((item) => (
-                                <MenuItem key={item.value} value={item.value}>
-                                    {item.label}
-                                </MenuItem>
-                            ))}
-                        </MDSelectField>
+                        <MDBox sx={inputBoxStyle}>
+                            <MDSelectField
+                                value={action}
+                                onChange={(e) => handleChangeAction(e.target.value)}
+                            >
+                                {ACTION_OPTIONS.map((item) => (
+                                    <MenuItem key={item.value} value={item.value}>
+                                        {item.label}
+                                    </MenuItem>
+                                ))}
+                            </MDSelectField>
+                        </MDBox>
+                    </MDBox>
+                    <MDBox display="flex" alignItems="center" gap={1}>
+                        <MDTypography variant="button" fontWeight="bold" sx={{ width: 70 }}>
+                            Người dùng:
+                        </MDTypography>
+
+                        <MDBox sx={inputBoxStyle}>
+                            <MDSelectField
+                                value={"ALL"}
+                                onChange={(e) => handleChangeAction(e.target.value)}
+                            >
+                                {listUsers.map((item) => (
+                                    <MenuItem key={item.value} value={item.value}>
+                                        {item.label}
+                                    </MenuItem>
+                                ))}
+                            </MDSelectField>
+                        </MDBox>
+                        <MDButton size="small">@</MDButton>
                     </MDBox>
                 </MDBox>
             </Card>
@@ -229,7 +246,7 @@ const ActivityLogs = () => {
                                 </MDBox>
 
                                 <MDTypography variant="caption" color="text" fontWeight="bold">
-                                    {formatTime(log.createdAt)}
+                                    {convertTimeVN(log.createdAt)}
                                 </MDTypography>
                             </MDBox>
 
