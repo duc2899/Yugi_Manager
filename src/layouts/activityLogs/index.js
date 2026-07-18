@@ -27,6 +27,10 @@ import Footer from "examples/Footer";
 // API
 import adminAPI from "../../api/adminAPI";
 import { CircularProgress } from "@mui/material";
+import { convertTimeVN } from "../../utils";
+import MDButton from "../../components/MDButton";
+
+import { useAuth } from "../../context/AuthContext";
 
 // ===== CONST ACTION LIST =====
 const ACTION_OPTIONS = [
@@ -42,13 +46,6 @@ const ACTION_OPTIONS = [
     { label: "SET_VERSION", value: "SET_VERSION" },
 ];
 
-const formatTime = (iso) => {
-    try {
-        return new Date(iso).toLocaleString("vi-VN");
-    } catch {
-        return iso;
-    }
-};
 
 const getActionColor = (action) => {
     if (!action) return "secondary";
@@ -70,23 +67,39 @@ const getTargetIcon = (targetType) => {
 };
 
 const ActivityLogs = () => {
+    const { user } = useAuth()
     const [page, setPage] = useState(1);
     const [action, setAction] = useState("ALL");
+    const [userId, setUserId] = useState("");
 
     const limit = 10;
 
     const { data, isLoading } = useQuery({
-        queryKey: ["activityLogs", page, limit, action],
+        queryKey: ["activityLogs", page, limit, action, userId],
         queryFn: () =>
             adminAPI.getActivityLogs({
                 page,
                 limit,
+                ...(userId && { userId }),
                 ...(action !== "ALL" && { action }),
             }),
         keepPreviousData: true,
     });
-    const logs = data?.data?.data || [];
-    const pagination = data?.data?.pagination || { page: 1, totalPages: 1 };
+
+    const { data: logs = [], pagination = { page: 1, totalPages: 1 } } = data?.data || {};
+
+
+    const { data: userOptions = [] } = useQuery({
+        queryKey: ["adminUserOptions"], // Key cố định, không phụ thuộc vào page/action của log
+        queryFn: async () => {
+            // Gọi đến đúng endpoint /accounts vừa sửa, truyền thêm flag isAll: true
+            const response = await adminAPI.getAllAccounts({ isAll: true });
+            return response?.data || []; // Trả về mảng phẳng [ { _id, username }, ... ]
+        },
+        // Khuyên dùng: vì danh sách user làm filter rất ít khi đổi, set staleTime cao để đỡ gọi lại API vô ích
+        staleTime: 5 * 60 * 1000,
+    });
+
 
     const handlePageChange = (newPage) => {
         if (newPage < 1 || newPage > pagination.totalPages) return;
@@ -96,6 +109,22 @@ const ActivityLogs = () => {
     const handleChangeAction = (value) => {
         setPage(1);
         setAction(value);
+    };
+
+    const handleSelectUserId = (value) => {
+        setUserId(value)
+    };
+
+    const handleSelectMe = () => {
+        if (!user?._id) return;
+
+        // Nếu đang là ID của mình rồi thì set về "" (hoặc null) để xem tất cả
+        if (userId === user._id) {
+            setUserId("");
+        } else {
+            // Nếu chưa phải thì mới gán ID của mình vào
+            setUserId(user._id);
+        }
     };
 
     const paginationItems = useMemo(() => {
@@ -131,31 +160,56 @@ const ActivityLogs = () => {
 
             <MDBox mb={2}>
                 <MDTypography variant="h4" fontWeight="bold">
-                    Activity Logs
+                    Lịch sử hoạt động
                 </MDTypography>
                 <MDTypography variant="button" color="text">
-                    Theo dõi lịch sử hành động admin/user
+                    Theo dõi lịch sử hoạt động admin/user
                 </MDTypography>
             </MDBox>
 
             {/* FILTER */}
             <Card style={{ padding: "16px", marginBottom: "16px" }}>
                 <MDBox display="flex" alignItems="center" gap={2}>
-                    <MDTypography variant="button" fontWeight="bold" sx={{ width: 70 }}>
-                        Action:
-                    </MDTypography>
+                    <MDBox display="flex" alignItems="center" gap={4}>
+                        <MDTypography variant="button" fontWeight="bold" sx={{ width: 70 }}>
+                            Hành động:
+                        </MDTypography>
 
-                    <MDBox sx={inputBoxStyle}>
-                        <MDSelectField
-                            value={action}
-                            onChange={(e) => handleChangeAction(e.target.value)}
-                        >
-                            {ACTION_OPTIONS.map((item) => (
-                                <MenuItem key={item.value} value={item.value}>
-                                    {item.label}
-                                </MenuItem>
-                            ))}
-                        </MDSelectField>
+                        <MDBox sx={inputBoxStyle}>
+                            <MDSelectField
+                                value={action}
+                                onChange={(e) => handleChangeAction(e.target.value)}
+                            >
+                                {ACTION_OPTIONS.map((item) => (
+                                    <MenuItem key={item.value} value={item.value}>
+                                        {item.label}
+                                    </MenuItem>
+                                ))}
+                            </MDSelectField>
+                        </MDBox>
+                    </MDBox>
+                    <MDBox display="flex" alignItems="center" gap={1}>
+                        <MDTypography variant="button" fontWeight="bold" sx={{ width: 70 }}>
+                            Người dùng:
+                        </MDTypography>
+
+                        <MDBox sx={inputBoxStyle}>
+                            <MDSelectField
+                                value={userId}
+                                onChange={(e) => handleSelectUserId(e.target.value)}
+                            >
+                                {userOptions.map((item) => (
+                                    <MenuItem key={item._id} value={item._id}>
+                                        {item.username}
+                                    </MenuItem>
+                                ))}
+                            </MDSelectField>
+                        </MDBox>
+                        <MDButton
+                            size="small"
+                            color={userId === user?._id ? "primary" : "default"}
+                            onClick={handleSelectMe}
+                        >@</MDButton>
                     </MDBox>
                 </MDBox>
             </Card>
@@ -229,7 +283,7 @@ const ActivityLogs = () => {
                                 </MDBox>
 
                                 <MDTypography variant="caption" color="text" fontWeight="bold">
-                                    {formatTime(log.createdAt)}
+                                    {convertTimeVN(log.createdAt)}
                                 </MDTypography>
                             </MDBox>
 
