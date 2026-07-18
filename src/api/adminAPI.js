@@ -1,9 +1,9 @@
 import { yugiClient } from './axiosClient';
 
 const adminAPI = {
-    getAllAccounts: async () => {
+    getAllAccounts: async (params = {}) => {
         try {
-            const response = await yugiClient.get("/admin/accounts");
+            const response = await yugiClient.get("/admin/accounts", { params });
             return response.data
         } catch (error) {
             throw error.response?.data || error.message;
