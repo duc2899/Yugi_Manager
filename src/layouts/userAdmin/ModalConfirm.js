@@ -3,12 +3,22 @@ import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
 import MDDialog from "components/MDDialog";
 import MDTypography from "components/MDTypography";
+import { useAlert } from 'hooks/useAlert';
 
-const ModalConfirm = ({ open, setOpen, handleBanUnban }) => {
+const ModalConfirm = ({ open, setOpen, handleBanUnban, user }) => {
+    const { showAlert } = useAlert();
+
     const [loading, setLoading] = useState(false);
 
     const handleConfirm = async () => {
         try {
+            if (!user) {
+                return showAlert("Vui lòng đăng nhập", "error")
+            }
+
+            if (user._id === open.user._id) {
+                return showAlert("Không thể tự ban chính mình", "error")
+            }
             setLoading(true);
             await handleBanUnban(open.user);
             setOpen({ isOpen: false, user: null });

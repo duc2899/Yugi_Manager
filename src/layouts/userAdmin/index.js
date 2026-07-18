@@ -161,6 +161,7 @@ function AccountsAdmin() {
                 </MDBox>
             </MDBox>
         ),
+
         isDisabled: (
             <MDBox ml={-1}>
                 <Switch checked={!u.isDisabled} onClick={() => setOpenConfirm({
@@ -176,7 +177,7 @@ function AccountsAdmin() {
         ),
         lastedLogin: (
             <MDTypography variant="caption" color="text" fontWeight="medium">
-                {convertTimeVN(u.lastedLogin)}
+                {convertTimeVN(u.lastedLogin, false)}
             </MDTypography>
         ),
         action: (
@@ -351,7 +352,7 @@ function AccountsAdmin() {
                 </MDBox>
             </MDBox>
             <Footer />
-            <ModalConfirm open={openConfirm} setOpen={setOpenConfirm} handleBanUnban={handelBanUnBan} />
+            <ModalConfirm open={openConfirm} setOpen={setOpenConfirm} handleBanUnban={handelBanUnBan} user={user} />
             <ModalRegister open={openRegister} setOpen={setOpenRegister} handelRegister={handelRegister} />
         </DashboardLayout>
     );
