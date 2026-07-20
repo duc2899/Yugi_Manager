@@ -93,8 +93,12 @@ const ActivityLogs = () => {
         queryKey: ["adminUserOptions"], // Key cố định, không phụ thuộc vào page/action của log
         queryFn: async () => {
             // Gọi đến đúng endpoint /accounts vừa sửa, truyền thêm flag isAll: true
-            const response = await adminAPI.getAllAccounts({ isAll: true });
-            return response?.data || []; // Trả về mảng phẳng [ { _id, username }, ... ]
+            // Truyền 1 thay vì true
+            const response = await adminAPI.getAllAccounts({ isAll: 1 });
+
+            // Luôn làm sạch dữ liệu phòng trường hợp bất ngờ
+            const rawData = response?.data;
+            return Array.isArray(rawData) ? rawData : (rawData?.data || []);
         },
         // Khuyên dùng: vì danh sách user làm filter rất ít khi đổi, set staleTime cao để đỡ gọi lại API vô ích
         staleTime: 5 * 60 * 1000,
@@ -198,7 +202,7 @@ const ActivityLogs = () => {
                                 value={userId}
                                 onChange={(e) => handleSelectUserId(e.target.value)}
                             >
-                                {userOptions.map((item) => (
+                                {userOptions && userOptions.map((item) => (
                                     <MenuItem key={item._id} value={item._id}>
                                         {item.username}
                                     </MenuItem>
