@@ -92,11 +92,7 @@ const ActivityLogs = () => {
     const { data: userOptions = [] } = useQuery({
         queryKey: ["adminUserOptions"], // Key cố định, không phụ thuộc vào page/action của log
         queryFn: async () => {
-            // Gọi đến đúng endpoint /accounts vừa sửa, truyền thêm flag isAll: true
-            // Truyền 1 thay vì true
-            const response = await adminAPI.getAllAccounts({ isAll: 1 });
-
-            // Luôn làm sạch dữ liệu phòng trường hợp bất ngờ
+            const response = await adminAPI.getAllAccounts();
             const rawData = response?.data;
             return Array.isArray(rawData) ? rawData : (rawData?.data || []);
         },
