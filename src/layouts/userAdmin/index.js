@@ -72,7 +72,7 @@ function AccountsAdmin() {
                 params.key = debouncedSearchText.trim();
             }
 
-            const response = await adminAPI.getAllAccounts(params);
+            const response = await adminAPI.getAllAccountsDetail(params);
 
             setUsers(response.data.data);
             setPagination(response.data.pagination);
