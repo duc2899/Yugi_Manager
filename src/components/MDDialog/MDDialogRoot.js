@@ -32,7 +32,6 @@ export default styled(Dialog)(({ theme }) => {
             borderRadius: borderRadius.xl,
             border: `1px solid ${divider}`,
             boxShadow: xl,
-            overflow: "hidden",
         },
         // ===== HEADER =====
         "& .md-dialog-header": {
