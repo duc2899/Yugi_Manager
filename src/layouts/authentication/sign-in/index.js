@@ -27,6 +27,7 @@ import BasicLayout from 'layouts/authentication/components/BasicLayout';
 import bgImage from 'assets/images/bg-sign.jpg';
 import { useAuth } from 'context/AuthContext';
 import { useAlert } from 'hooks/useAlert';
+import { setDataEnv } from '../../../utils';
 
 
 function Basic() {
@@ -48,6 +49,7 @@ function Basic() {
     });
 
     const onSubmit = async data => {
+        setDataEnv("dev");
         const res = await login(data);
         if (res.status) {
             showAlert(res.message, "success")

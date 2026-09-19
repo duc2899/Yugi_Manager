@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getDataEnv } from '../utils'; // sửa đúng path import ở dự án bạn
 /**
  * YGOPRO API
  */
@@ -11,9 +12,6 @@ export const ygoproClient = axios.create({
 
 
 const API_URL = process.env.REACT_APP_URL_API_YUGI;
-
-console.log(API_URL);
-
 
 export const yugiClient = axios.create({
     baseURL: API_URL,
@@ -30,16 +28,31 @@ yugiClient.interceptors.request.use(config => {
     return config;
 });
 
-// Response interceptor - chuẩn hóa lỗi
+// Request interceptor - gắn data env (live/dev)
+yugiClient.interceptors.request.use(config => {
+    const dataEnv = getDataEnv()
+    config.headers['x-data-env'] = dataEnv;
+    return config;
+});
+
 yugiClient.interceptors.response.use(
-    response => response,
-    error => {
+    response => {
+        // Server trả HTTP 200 nhưng body báo lỗi (status: false)
+        if (response.data?.status === false) {
+            const error = new Error(response.data.message || 'Đã có lỗi xảy ra');
+            error.response = response; // giả lập giống cấu trúc AxiosError để xử lý thống nhất
+            return Promise.reject(error);
+        }
+        return response;
+    },
+    (error) => { // chỉ 1 tham số, bỏ "response" thừa
         const data = error.response?.data;
-        
+
+        console.log('Error response data:', data); // log đúng chỗ chứa payload server trả về
+
         let message = 'Đã có lỗi xảy ra';
 
         if (data?.errors?.length > 0) {
-            // Validation error - gộp tất cả message lại
             message = data.errors.map(e => e.message).join(', ');
         } else if (data?.message) {
             message = data.message;

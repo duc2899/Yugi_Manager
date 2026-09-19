@@ -2,6 +2,9 @@ import { STATUS_TOURNAMENT } from 'config/constant';
 import { format, formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
+const DEFAULT_DATA_ENV = 'dev'; // fallback an toàn nếu chưa có lựa chọn nào lưu
+
+
 const convertTimeVN = (timeString, isShowDetail = true) => {
     if (!timeString) return 'Chưa từng hoạt động';
 
@@ -111,10 +114,21 @@ const getStatusInfo = (key, type = "color") => {
     return status[type];
 };
 
+// Helper để đổi env từ UI (nút switch Live/Dev)
+const setDataEnv = (env) => {
+    localStorage.setItem('data_env', env);
+};
+
+const getDataEnv = () => {
+    return localStorage.getItem('data_env') || DEFAULT_DATA_ENV;
+};
+
 export {
     convertTimeVN,
     convertPriceVND,
     formatTimestampFixed,
     formatTimestampVN,
-    getStatusInfo
+    getStatusInfo,
+    setDataEnv,
+    getDataEnv
 }

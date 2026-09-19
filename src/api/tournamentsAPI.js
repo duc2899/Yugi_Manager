@@ -16,7 +16,7 @@ const tournamentAPI = {
             const response = await axiosClient.post(`/createTournament`, data);
             return response.data;
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
     getTournaments: async (params = {}) => {
@@ -24,7 +24,7 @@ const tournamentAPI = {
             const response = await yugiClient.get("/tournaments", { params })
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
     getDetailTournament: async (id) => {
@@ -32,7 +32,7 @@ const tournamentAPI = {
             const response = await yugiClient.get(`/tournaments/${id}`)
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     }
 }

@@ -43,6 +43,7 @@ import { useAuth } from 'context/AuthContext';
 import MDAvatar from 'components/MDAvatar';
 import UpdateVersion from 'layouts/updateVersion';
 import UpdateCard from 'layouts/updateCard';
+import EnvSwitch from 'components/EnvSwitch';
 
 function DashboardNavbar({ absolute, light, isMini }) {
     const { user, logout } = useAuth();
@@ -192,6 +193,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                     {miniSidenav ? 'menu_open' : 'menu'}
                                 </Icon>
                             </IconButton>
+                            <EnvSwitch />
                             <IconButton
                                 size="large"
                                 disableRipple

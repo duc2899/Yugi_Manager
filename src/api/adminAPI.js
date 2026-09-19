@@ -6,7 +6,7 @@ const adminAPI = {
             const response = await yugiClient.get("/admin/accounts");
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
 
@@ -15,7 +15,7 @@ const adminAPI = {
             const response = await yugiClient.get("/admin/accounts/detail", { params });
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
 
@@ -24,7 +24,7 @@ const adminAPI = {
             const response = await yugiClient.get("/admin/get-version-client");
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
     setVersionClient: async (data) => {
@@ -32,7 +32,7 @@ const adminAPI = {
             const response = await yugiClient.post("/admin/set-version-client", data);
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
     toggleBanUser: async (data) => {
@@ -40,7 +40,7 @@ const adminAPI = {
             const response = await yugiClient.post("/admin/toggle-ban", data);
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
 
@@ -49,7 +49,7 @@ const adminAPI = {
             const response = await yugiClient.get("/admin/get-decks");
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
     getDetailDeck: async (id) => {
@@ -57,7 +57,7 @@ const adminAPI = {
             const response = await yugiClient.get(`/admin/get-deck/${id}`);
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
     updateDeck: async (data) => {
@@ -65,7 +65,7 @@ const adminAPI = {
             const response = await yugiClient.post("/admin/save-deck", data);
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
 
@@ -74,7 +74,7 @@ const adminAPI = {
             const response = await yugiClient.post("/admin/create-deck", data);
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
 
@@ -83,7 +83,7 @@ const adminAPI = {
             const response = await yugiClient.post("/admin/delete-deck", data);
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
 
@@ -92,7 +92,7 @@ const adminAPI = {
             const response = await yugiClient.get("/admin/get-logs", { params });
             return response.data
         } catch (error) {
-            throw error.response?.data || error.message;
+            throw error
         }
     },
 }

@@ -58,8 +58,13 @@ const UpdateVersion = ({ open, handleClose }) => {
       }
       await adminAPI.setVersionClient({ version: data.version, type: oldVersion.type });
       showAlert("Cập nhật phiên bản thành công", "success");
+      reset({ version: "", type: "" });
+      setOldVersion({
+        type: "",
+        version: ""
+      })  
       handleClose();
-    } catch (error) {
+    } catch (error) {      
       showAlert(error?.userMessage, "error");
     }
   };
@@ -83,11 +88,19 @@ const UpdateVersion = ({ open, handleClose }) => {
     }
   }
 
+  const handelClosePopup = () => {
+    reset({ version: "", type: "" });
+    setOldVersion({ 
+      type: "",
+      version: ""
+    })
+    handleClose();
+  }
 
   return (
     <MDDialog
       open={open}
-      onClose={handleClose}
+      onClose={handelClosePopup}
       title="Thay đổi phiên bản"
       content={
         <MDBox>
