@@ -11,6 +11,18 @@ export const createTournamentSchema = yup.object({
         .string()
         .required('Vui lòng chọn loại giải đấu'),
 
+    matchFormat: yup
+        .string()
+        .oneOf(['BO1', 'BO3'], 'Định dạng phải là BO1 hoặc BO3')
+        .required('Vui lòng chọn BO1 hoặc BO3'),
+
+    intermissionSeconds: yup
+        .number()
+        .typeError('Thời gian nghỉ phải là số')
+        .min(30, 'Tối thiểu 30 giây')
+        .nullable()
+        .transform((value, original) => (original === '' || original == null ? 120 : value)),
+
     rubyFee: yup
         .number()
         .typeError('Phí tham gia phải là số')

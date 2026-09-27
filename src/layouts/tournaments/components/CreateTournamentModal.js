@@ -37,6 +37,8 @@ const CreateTournaments = ({ open, handleClose, fectchData }) => {
         defaultValues: {
             name: '',
             type: 'SERVER',
+            matchFormat: 'BO1',
+            intermissionSeconds: 120,
             rubyFee: '',
             rubyReward: '',
             limitNumberPlayers: '',
@@ -127,6 +129,33 @@ const CreateTournaments = ({ open, handleClose, fectchData }) => {
                             </p>
                         )}
                     </FormControl>
+                    <FormControl fullWidth margin="normal" error={!!errors.matchFormat}>
+                        <InputLabel>Định dạng trận (BO1/BO3)</InputLabel>
+                        <Controller
+                            name="matchFormat"
+                            control={control}
+                            render={({ field }) => (
+                                <Select {...field} label="Định dạng trận (BO1/BO3)" sx={{ p: 1.5 }}>
+                                    <MenuItem value="BO1">BO1 — 1 ván</MenuItem>
+                                    <MenuItem value="BO3">BO3 — first to 2</MenuItem>
+                                </Select>
+                            )}
+                        />
+                        {errors.matchFormat && (
+                            <p style={{ color: '#d32f2f', fontSize: 12 }}>
+                                {errors.matchFormat.message}
+                            </p>
+                        )}
+                    </FormControl>
+                    <TextField
+                        label="Thời gian nghỉ giữa ván (giây)"
+                        fullWidth
+                        margin="normal"
+                        type="number"
+                        {...register('intermissionSeconds')}
+                        error={!!errors.intermissionSeconds}
+                        helperText={errors.intermissionSeconds?.message || 'Mặc định 120 giây (BO3)'}
+                    />
                     <TextField label="Phí tham gia" fullWidth margin="normal" type="number" {...register('rubyFee')} error={!!errors.rubyFee} helperText={errors.rubyFee?.message} />
                     <TextField label="Phần thưởng tham gia" fullWidth margin="normal" type="number" {...register('rubyReward')} error={!!errors.rubyReward} helperText={errors.rubyReward?.message} />
                     <TextField label="Số lượng tham gia" fullWidth margin="normal" type="number" {...register('limitNumberPlayers')} error={!!errors.limitNumberPlayers} helperText={errors.limitNumberPlayers?.message} />
