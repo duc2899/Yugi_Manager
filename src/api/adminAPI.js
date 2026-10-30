@@ -95,6 +95,24 @@ const adminAPI = {
             throw error
         }
     },
+
+    sendMail: async (data) => {
+        try {
+            const response = await yugiClient.post("/admin/mail/send", data);
+            return response.data
+        } catch (error) {
+            throw error
+        }
+    },
+
+    listMails: async (params = {}) => {
+        try {
+            const response = await yugiClient.get("/admin/mail", { params });
+            return response.data
+        } catch (error) {
+            throw error
+        }
+    },
 }
 
 export default adminAPI;

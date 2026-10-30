@@ -44,6 +44,7 @@ const ACTION_OPTIONS = [
     { label: "UNBAN_USER", value: "UNBAN_USER" },
     { label: "CHANGE_ROLE", value: "CHANGE_ROLE" },
     { label: "SET_VERSION", value: "SET_VERSION" },
+    { label: "SEND_MAIL", value: "SEND_MAIL" },
 ];
 
 

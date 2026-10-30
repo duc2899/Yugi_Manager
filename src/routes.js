@@ -11,6 +11,7 @@ import AccountsAdmin from 'layouts/userAdmin';
 import Forbidden from 'layouts/frobidden';
 import ActivityLogs from './layouts/activityLogs';
 import ProfilePage from './layouts/profile';
+import Mailbox from './layouts/mailbox';
 
 const routes = [
     {
@@ -81,6 +82,16 @@ const routes = [
         component: <DetailTournament />,
         requiresAuth: true,
         roles: ["ADMIN", "NORMAL"]
+    },
+    {
+        type: 'collapse',
+        name: 'Hộp thư',
+        key: 'mailbox',
+        icon: <Icon fontSize="small">mail</Icon>,
+        route: '/mailbox',
+        component: <Mailbox />,
+        requiresAuth: true,
+        roles: ["ADMIN"]
     },
     {
         type: 'collapse',
