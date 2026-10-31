@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import Chip from "@mui/material/Chip";
 import Icon from "@mui/material/Icon";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
@@ -9,6 +10,9 @@ import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
+import Autocomplete from "@mui/material/Autocomplete";
+import CloseIcon from "@mui/icons-material/Close";
+import { useDebounce } from "use-debounce";
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -23,10 +27,16 @@ import { convertTimeVN } from "utils";
 
 const emptyReward = () => ({ type: "RUBY", code: "", qty: 1 });
 
+const formatRecipient = (account) =>
+  `${account._id} - ${account.username} (${account.displayName || ""})`;
+
 function Mailbox() {
   const { showAlert } = useAlert();
-  const [username, setUsername] = useState("");
-  const [accountId, setAccountId] = useState("");
+  const [recipientQuery, setRecipientQuery] = useState("");
+  const [debouncedRecipientQuery] = useDebounce(recipientQuery, 300);
+  const [recipientOptions, setRecipientOptions] = useState([]);
+  const [searchingRecipients, setSearchingRecipients] = useState(false);
+  const [recipients, setRecipients] = useState([]);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [rewards, setRewards] = useState([emptyReward()]);
@@ -34,6 +44,33 @@ function Mailbox() {
   const [filterUsername, setFilterUsername] = useState("");
   const [mails, setMails] = useState([]);
   const [loadingList, setLoadingList] = useState(false);
+
+  useEffect(() => {
+    const q = debouncedRecipientQuery.trim();
+    if (!q) {
+      setRecipientOptions([]);
+      setSearchingRecipients(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    setSearchingRecipients(true);
+    adminAPI
+      .searchMailRecipients({ q, limit: 10 })
+      .then((res) => {
+        if (!cancelled) setRecipientOptions(res?.data || []);
+      })
+      .catch(() => {
+        if (!cancelled) setRecipientOptions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setSearchingRecipients(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedRecipientQuery]);
 
   const updateReward = (index, field, value) => {
     setRewards((prev) =>
@@ -48,8 +85,8 @@ function Mailbox() {
   };
 
   const handleSend = async () => {
-    if (!username.trim() && !accountId.trim()) {
-      showAlert("Nhập username hoặc accountId", "warning");
+    if (!recipients.length) {
+      showAlert("Chọn ít nhất một người nhận", "warning");
       return;
     }
     if (!title.trim()) {
@@ -77,22 +114,27 @@ function Mailbox() {
 
     setSubmitting(true);
     try {
-      const payload = {
+      await adminAPI.sendMail({
+        accountIds: recipients.map((account) => account._id),
         title: title.trim(),
         body: body || "",
         rewards: normalizedRewards,
-      };
-      if (accountId.trim()) payload.accountId = accountId.trim();
-      if (username.trim()) payload.username = username.trim();
-
-      await adminAPI.sendMail(payload);
-      showAlert("Gửi thư thành công", "success");
+      });
+      showAlert(
+        recipients.length > 1
+          ? `Gửi thư thành công cho ${recipients.length} người`
+          : "Gửi thư thành công",
+        "success"
+      );
       setTitle("");
       setBody("");
       setRewards([emptyReward()]);
-      if (username.trim()) {
-        setFilterUsername(username.trim());
-        await loadMails(username.trim());
+      setRecipients([]);
+      setRecipientQuery("");
+      const firstUsername = recipients[0]?.username;
+      if (firstUsername) {
+        setFilterUsername(firstUsername);
+        await loadMails(firstUsername);
       }
     } catch (error) {
       showAlert(error?.userMessage || error?.message || "Gửi thư thất bại", "error");
@@ -126,26 +168,79 @@ function Mailbox() {
       <MDBox pt={6} pb={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <Card>
-              <MDBox p={3}>
-                <MDTypography variant="h5" fontWeight="medium" mb={2}>
+            <Card sx={{ height: "calc(100vh - 200px)", display: "flex", flexDirection: "column" }}>
+              <MDBox
+                p={3}
+                sx={{
+                  height: "100%",
+                  minHeight: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <MDTypography variant="h5" fontWeight="medium" mb={1}>
                   Gửi thư
                 </MDTypography>
 
                 <MDBox mb={2}>
-                  <MDInput
-                    label="Username"
-                    fullWidth
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </MDBox>
-                <MDBox mb={2}>
-                  <MDInput
-                    label="Account ID (tuỳ chọn)"
-                    fullWidth
-                    value={accountId}
-                    onChange={(e) => setAccountId(e.target.value)}
+                  <Autocomplete
+                    multiple
+                    options={recipientOptions}
+                    value={recipients}
+                    loading={searchingRecipients}
+                    inputValue={recipientQuery}
+                    filterSelectedOptions
+                    filterOptions={(options) => options}
+                    getOptionLabel={(option) => formatRecipient(option)}
+                    isOptionEqualToValue={(option, value) => String(option._id) === String(value._id)}
+                    onInputChange={(_, value, reason) => {
+                      if (reason === "reset") {
+                        setRecipientQuery("");
+                        return;
+                      }
+                      if (reason === "input" || reason === "clear") {
+                        setRecipientQuery(value);
+                      }
+                    }}
+                    onChange={(_, value) => {
+                      if (value.length > 50) {
+                        showAlert("Tối đa 50 người nhận", "warning");
+                        return;
+                      }
+                      setRecipients(value);
+                      setRecipientQuery("");
+                    }}
+                    renderTags={(tagValue, getTagProps) =>
+                      tagValue.map((option, index) => {
+                        const { key, ...tagProps } = getTagProps({ index });
+                        return (
+                          <Chip
+                            key={key}
+                            {...tagProps}
+                            size="small"
+                            label={formatRecipient(option)}
+                            deleteIcon={<CloseIcon fontSize="small" />}
+                          />
+                        );
+                      })
+                    }
+                    noOptionsText={
+                      recipientQuery.trim() ? "Không tìm thấy" : "Nhập username hoặc id"
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Người nhận"
+                        placeholder={recipients.length ? "" : "Tìm theo username hoặc id"}
+                      />
+                    )}
+                    sx={{
+                      "& .MuiAutocomplete-inputRoot": {
+                        alignItems: "flex-start",
+                        maxHeight: 140,
+                        overflowY: "auto",
+                      },
+                    }}
                   />
                 </MDBox>
                 <MDBox mb={2}>
@@ -162,48 +257,51 @@ function Mailbox() {
                     fullWidth
                     multiline
                     minRows={3}
+                    maxRows={4}
                     value={body}
                     onChange={(e) => setBody(e.target.value)}
                   />
                 </MDBox>
 
-                <MDTypography variant="button" fontWeight="medium" mb={1}>
+                <MDTypography variant="button" fontWeight="medium" mb={2}>
                   Rewards
                 </MDTypography>
-                {rewards.map((reward, index) => (
-                  <MDBox key={index} display="flex" gap={1} alignItems="center" mb={1}>
-                    <FormControl size="small" sx={{ minWidth: 110 }}>
-                      <InputLabel>Type</InputLabel>
-                      <Select
-                        label="Type"
-                        value={reward.type}
-                        onChange={(e) => updateReward(index, "type", e.target.value)}
-                      >
-                        <MenuItem value="RUBY">RUBY</MenuItem>
-                        <MenuItem value="CARD">CARD</MenuItem>
-                      </Select>
-                    </FormControl>
-                    {reward.type === "CARD" && (
+                <MDBox sx={{ flex: 1, minHeight: 0, overflowY: "auto", pr: 1 }}>
+                  {rewards.map((reward, index) => (
+                    <MDBox key={index} display="flex" gap={1} alignItems="center" mb={1}>
+                      <FormControl sx={{ minWidth: 120 }}>
+                        <InputLabel>Type</InputLabel>
+                        <Select
+                          label="Type"
+                          value={reward.type}
+                          onChange={(e) => updateReward(index, "type", e.target.value)}
+                          sx={{ p: 1.5 }}
+                        >
+                          <MenuItem value="RUBY">RUBY</MenuItem>
+                          <MenuItem value="CARD">CARD</MenuItem>
+                        </Select>
+                      </FormControl>
+                      {reward.type === "CARD" && (
+                        <TextField
+                          label="Card code"
+                          value={reward.code}
+                          onChange={(e) => updateReward(index, "code", e.target.value)}
+                          sx={{ flex: 1, minWidth: 120 }}
+                        />
+                      )}
                       <TextField
-                        size="small"
-                        label="Card code"
-                        value={reward.code}
-                        onChange={(e) => updateReward(index, "code", e.target.value)}
+                        type="number"
+                        label="Qty"
+                        value={reward.qty}
+                        onChange={(e) => updateReward(index, "qty", e.target.value)}
+                        sx={{ width: 110 }}
                       />
-                    )}
-                    <TextField
-                      size="small"
-                      type="number"
-                      label="Qty"
-                      value={reward.qty}
-                      onChange={(e) => updateReward(index, "qty", e.target.value)}
-                      sx={{ width: 90 }}
-                    />
-                    <IconButton onClick={() => removeRewardRow(index)} size="small">
-                      <Icon>delete</Icon>
-                    </IconButton>
-                  </MDBox>
-                ))}
+                      <IconButton onClick={() => removeRewardRow(index)} size="small">
+                        <Icon>delete</Icon>
+                      </IconButton>
+                    </MDBox>
+                  ))}
+                </MDBox>
                 <MDBox display="flex" gap={1} mt={1}>
                   <MDButton variant="outlined" color="info" size="small" onClick={addRewardRow}>
                     Thêm reward

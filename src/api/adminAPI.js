@@ -96,6 +96,15 @@ const adminAPI = {
         }
     },
 
+    searchMailRecipients: async (params = {}) => {
+        try {
+            const response = await yugiClient.get("/admin/mail/recipients", { params });
+            return response.data
+        } catch (error) {
+            throw error
+        }
+    },
+
     sendMail: async (data) => {
         try {
             const response = await yugiClient.post("/admin/mail/send", data);
