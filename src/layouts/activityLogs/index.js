@@ -45,6 +45,7 @@ const ACTION_OPTIONS = [
     { label: "CHANGE_ROLE", value: "CHANGE_ROLE" },
     { label: "SET_VERSION", value: "SET_VERSION" },
     { label: "SEND_MAIL", value: "SEND_MAIL" },
+    { label: "RECALL_MAIL", value: "RECALL_MAIL" },
 ];
 
 

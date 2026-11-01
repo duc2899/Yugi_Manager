@@ -122,6 +122,15 @@ const adminAPI = {
             throw error
         }
     },
+
+    recallMail: async (id) => {
+        try {
+            const response = await yugiClient.delete(`/admin/mail/${id}`);
+            return response.data
+        } catch (error) {
+            throw error
+        }
+    },
 }
 
 export default adminAPI;

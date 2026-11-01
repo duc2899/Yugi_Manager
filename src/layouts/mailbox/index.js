@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -12,7 +12,6 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import Autocomplete from "@mui/material/Autocomplete";
 import CloseIcon from "@mui/icons-material/Close";
-import { useDebounce } from "use-debounce";
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -23,54 +22,22 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import adminAPI from "api/adminAPI";
 import { useAlert } from "hooks/useAlert";
-import { convertTimeVN } from "utils";
+import MailList from "./MailList";
+import useRecipientSearch, { formatRecipient } from "./useRecipientSearch";
 
 const emptyReward = () => ({ type: "RUBY", code: "", qty: 1 });
-
-const formatRecipient = (account) =>
-  `${account._id} - ${account.username} (${account.displayName || ""})`;
 
 function Mailbox() {
   const { showAlert } = useAlert();
   const [recipientQuery, setRecipientQuery] = useState("");
-  const [debouncedRecipientQuery] = useDebounce(recipientQuery, 300);
-  const [recipientOptions, setRecipientOptions] = useState([]);
-  const [searchingRecipients, setSearchingRecipients] = useState(false);
   const [recipients, setRecipients] = useState([]);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [rewards, setRewards] = useState([emptyReward()]);
   const [submitting, setSubmitting] = useState(false);
-  const [filterUsername, setFilterUsername] = useState("");
-  const [mails, setMails] = useState([]);
-  const [loadingList, setLoadingList] = useState(false);
-
-  useEffect(() => {
-    const q = debouncedRecipientQuery.trim();
-    if (!q) {
-      setRecipientOptions([]);
-      setSearchingRecipients(false);
-      return undefined;
-    }
-
-    let cancelled = false;
-    setSearchingRecipients(true);
-    adminAPI
-      .searchMailRecipients({ q, limit: 10 })
-      .then((res) => {
-        if (!cancelled) setRecipientOptions(res?.data || []);
-      })
-      .catch(() => {
-        if (!cancelled) setRecipientOptions([]);
-      })
-      .finally(() => {
-        if (!cancelled) setSearchingRecipients(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [debouncedRecipientQuery]);
+  const [listAccount, setListAccount] = useState(null);
+  const { options: recipientOptions, searching: searchingRecipients } =
+    useRecipientSearch(recipientQuery);
 
   const updateReward = (index, field, value) => {
     setRewards((prev) =>
@@ -94,21 +61,23 @@ function Mailbox() {
       return;
     }
 
-    const normalizedRewards = rewards
-      .map((r) => {
-        const type = String(r.type || "").toUpperCase();
-        const qty = Number(r.qty);
-        if (type === "CARD") {
-          return { type: "CARD", code: String(r.code || "").trim(), qty };
-        }
-        return { type: "RUBY", qty };
-      })
-      .filter((r) => r.qty > 0);
-
-    for (const r of normalizedRewards) {
-      if (r.type === "CARD" && !r.code) {
-        showAlert("Reward CARD cần code", "warning");
+    const normalizedRewards = [];
+    for (const r of rewards) {
+      const type = String(r.type || "").toUpperCase();
+      const qty = Number(r.qty);
+      if (!Number.isInteger(qty) || qty < 1) {
+        showAlert("Số lượng phải lớn hơn hoặc bằng 1", "warning");
         return;
+      }
+      if (type === "CARD") {
+        const code = String(r.code || "").trim();
+        if (!code) {
+          showAlert("Reward CARD cần code", "warning");
+          return;
+        }
+        normalizedRewards.push({ type: "CARD", code, qty });
+      } else {
+        normalizedRewards.push({ type: "RUBY", qty });
       }
     }
 
@@ -126,41 +95,18 @@ function Mailbox() {
           : "Gửi thư thành công",
         "success"
       );
+      setListAccount({ ...recipients[0], sentAt: Date.now() });
       setTitle("");
       setBody("");
       setRewards([emptyReward()]);
       setRecipients([]);
       setRecipientQuery("");
-      const firstUsername = recipients[0]?.username;
-      if (firstUsername) {
-        setFilterUsername(firstUsername);
-        await loadMails(firstUsername);
-      }
     } catch (error) {
       showAlert(error?.userMessage || error?.message || "Gửi thư thất bại", "error");
     } finally {
       setSubmitting(false);
     }
   };
-
-  const loadMails = async (uname) => {
-    const key = (uname ?? filterUsername).trim();
-    if (!key) {
-      showAlert("Nhập username để load thư", "warning");
-      return;
-    }
-    setLoadingList(true);
-    try {
-      const res = await adminAPI.listMails({ username: key, page: 1, limit: 20 });
-      setMails(res?.data || []);
-    } catch (error) {
-      showAlert(error?.userMessage || error?.message || "Load thư thất bại", "error");
-    } finally {
-      setLoadingList(false);
-    }
-  };
-
-  const handleLoadMails = () => loadMails();
 
   return (
     <DashboardLayout>
@@ -266,7 +212,7 @@ function Mailbox() {
                 <MDTypography variant="button" fontWeight="medium" mb={2}>
                   Rewards
                 </MDTypography>
-                <MDBox sx={{ flex: 1, minHeight: 0, overflowY: "auto", pr: 1 }}>
+                <MDBox sx={{ flex: 1, minHeight: 0, overflowY: "auto", pr: 1, pt: 1 }}>
                   {rewards.map((reward, index) => (
                     <MDBox key={index} display="flex" gap={1} alignItems="center" mb={1}>
                       <FormControl sx={{ minWidth: 120 }}>
@@ -293,6 +239,7 @@ function Mailbox() {
                         type="number"
                         label="Qty"
                         value={reward.qty}
+                        inputProps={{ min: 1, step: 1 }}
                         onChange={(e) => updateReward(index, "qty", e.target.value)}
                         sx={{ width: 110 }}
                       />
@@ -320,56 +267,7 @@ function Mailbox() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Card>
-              <MDBox p={3}>
-                <MDTypography variant="h5" fontWeight="medium" mb={2}>
-                  Danh sách thư
-                </MDTypography>
-                <MDBox display="flex" gap={1} mb={2}>
-                  <MDInput
-                    label="Username"
-                    fullWidth
-                    value={filterUsername}
-                    onChange={(e) => setFilterUsername(e.target.value)}
-                  />
-                  <MDButton variant="gradient" color="dark" onClick={handleLoadMails}>
-                    {loadingList ? "..." : "Load"}
-                  </MDButton>
-                </MDBox>
-                {mails.length === 0 ? (
-                  <MDTypography variant="caption" color="text">
-                    Chưa có dữ liệu. Nhập username rồi bấm Load.
-                  </MDTypography>
-                ) : (
-                  mails.map((mail) => (
-                    <MDBox
-                      key={String(mail._id)}
-                      mb={1.5}
-                      p={1.5}
-                      borderRadius="md"
-                      sx={{ border: "1px solid #e0e0e0" }}
-                    >
-                      <MDTypography variant="button" fontWeight="medium">
-                        {mail.title}
-                      </MDTypography>
-                      <MDTypography variant="caption" display="block" color="text">
-                        #{String(mail._id)} · {mail.status} ·{" "}
-                        {mail.createdTime ? convertTimeVN(mail.createdTime) : "-"}
-                      </MDTypography>
-                      <MDTypography variant="caption" display="block">
-                        {(mail.rewards || [])
-                          .map((r) =>
-                            r.type === "CARD"
-                              ? `${r.type}:${r.code}x${r.qty}`
-                              : `${r.type}x${r.qty}`
-                          )
-                          .join(", ") || "No rewards"}
-                      </MDTypography>
-                    </MDBox>
-                  ))
-                )}
-              </MDBox>
-            </Card>
+            <MailList focusAccount={listAccount} />
           </Grid>
         </Grid>
       </MDBox>
